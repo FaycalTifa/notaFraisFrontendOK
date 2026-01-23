@@ -1,0 +1,162 @@
+<div class="grid centerClass">
+    <div class="col-12">
+        <div class="card">
+            <div class="my-custom-text">
+                <h5 class="my-custom-text">LISTES DES DIRECTION AFFICHAGE</h5>
+            </div>
+            <p-table #dt1 [value]="directions" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true"
+                     styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['code','libelle']"
+                     responsiveLayout="scroll">
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <div>
+                            <button pButton pRipple type="button" label="Ajouter" icon="pi pi-plus"
+                                    (click)="onDisplayDialogue()" class="p-button-info mr-2 mb-2"></button>
+                        </div>
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" #filter
+                                   (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Recherche"
+                                   class="w-full"/>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="code">CODE
+                            <p-sortIcon field="code"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="libelle"> LIBELLE
+                            <p-sortIcon field="libelle"></p-sortIcon>
+                        </th>
+                        <th>
+                            <div class="flex justify-content-between align-items-center">
+                                ACTIONS
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-direction>
+                    <tr>
+                        <td>
+                            {{ direction?.code }}
+                        </td>
+                        <td>
+                            {{ direction?.libelle }}
+                        </td>
+                        <td>
+                            <button pButton pRipple type="button" icon="pi pi-pencil"
+                                    (click)="onDisplayDialogueModif(direction)"
+                                    class="p-button-success mr-2 mb-2">
+                            </button>
+
+                            <button pButton pRipple type="button" icon="pi pi-trash"
+                                    (click)="deleteDirection(direction)"
+                                    class="p-button-danger mr-2 mb-2">
+                            </button>
+                            <button pButton pRipple type="button" icon="pi pi-eye"
+                                    (click)="onDisplayDialoguDetail(direction)"
+                                    class="p-button-info mr-2 mb-2">
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="12">Pas de Direction</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="12">Chargement des données. Veuillez patienter.</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    <div class="p-d-flex p-ai-center p-jc-between">
+                        Il y'a au total {{ directions ? directions.length : 0 }} directions.
+                    </div>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP D'ENREGISTREMENT -->
+<p-dialog header="ENREGISTREMENT D'UNE DIRECTION" [(visible)]="displayDialogue" [style]="{width: '50vw'}">
+    <div class="col-12 md:col-12">
+        <form #myForm="ngForm" name="myForm" role="form" novalidate>
+            <div class="card p-fluid">
+                <div class="field">
+                    <label for="code">CODE</label>
+                    <input pInputText id="code" type="text" name="code" [(ngModel)]="newDirection.code" required minlength="1"/>
+                </div>
+                <div class="field">
+                    <label for="libelle">LIBELLE</label>
+                    <input pInputText id="libelle" type="text" name="libelle" [(ngModel)]="newDirection.libelle" required minlength="1"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="Annuler" icon="pi pi-times" (click)="onHidenDialogue()"
+                class="p-button-danger mr-2 mb-2"></button>
+        <button pButton pRipple type="submit" [disabled]="!myForm.valid" label="Enregistrer" icon="pi pi-save"
+                (click)="onSave()"
+                class="p-button-success mr-2 mb-2"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- POPUP DE MODIFICATION -->
+<p-dialog header="MODIFICATION D'UNE DIRECTION" [(visible)]="displayDialogueModification" [style]="{width: '50vw'}">
+    <div class="col-12 md:col-12">
+        <form #myFormModif="ngForm" name="myFormModif" role="form" novalidate>
+            <div class="card p-fluid">
+                <div class="field">
+                    <label for="codeModifier">CODE</label>
+                    <input pInputText id="codeModifier" type="text" name="codeModifier"
+                           [(ngModel)]="selectedDirection.code" required minlength="1"/>
+                </div>
+                <div class="field">
+                    <label for="libelleModifier">LIBELLE</label>
+                    <input pInputText id="libelleModifier" type="text" name="libelleModifier"
+                           [(ngModel)]="selectedDirection.libelle" required minlength="1"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="Annuler" icon="pi pi-times" (click)="onHidenDialogueModif()"
+                class="p-button-danger mr-2 mb-2"></button>
+        <button pButton pRipple type="submit" [disabled]="!myFormModif.valid" label="Enregistrer" icon="pi pi-save"
+                (click)="updateDirection()"
+                class="p-button-success mr-2 mb-2"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- POPUP DETAILS -->
+<p-dialog header="DÉTAILS D'UNE DIRECTION" [(visible)]="displayDialogueDetail" [style]="{width: '50vw'}">
+    <div class="col-12 md:col-12">
+        <div class="col-12 md:col-12">
+            <div>
+                <h5>
+                    <span style="color: black;">CODE :  </span>
+                    <span [ngStyle]="{ color: 'blue' }">{{ selectedDirection?.code }}</span>
+                </h5>
+            </div>
+            <div>
+                <h5>
+                    <span style="color: black;">LIBELLE :  </span>
+                    <span [ngStyle]="{ color: 'blue' }">{{ selectedDirection?.libelle }}</span>
+                </h5>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="Fermer" icon="pi pi-times"
+                (click)="displayDialogueDetail = false"
+                class="p-button-danger mr-2 mb-2"></button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmPopup [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'"></p-confirmPopup>

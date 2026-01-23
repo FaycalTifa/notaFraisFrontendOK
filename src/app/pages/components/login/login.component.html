@@ -1,0 +1,26 @@
+<div class="grid align-items-center justify-content-center h-screen">
+    <div class="col-12 md:col-4">
+        <p-card header="Connexion" class="shadow-3 border-round-xl">
+            <div class="p-fluid">
+                <div class="field">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input id="username" type="text" pInputText [(ngModel)]="utilisateur.username" placeholder="Entrer votre login" />
+                </div>
+
+                <div class="field">
+                    <label for="password">Mot de passe</label>
+                    <p-password id="password" [(ngModel)]="utilisateur.password" [feedback]="false" toggleMask></p-password>
+                </div>
+
+                <div class="field mt-3">
+                    <button pButton label="Se connecter"
+                            icon="pi pi-sign-in"
+                            class="p-button-primary w-full"
+                            (click)="login()"
+                            [loading]="loading"></button>
+                </div>
+                <a [routerLink]="['/create-users']">créer un utilisateurs</a>
+            </div>
+        </p-card>
+    </div>
+</div>

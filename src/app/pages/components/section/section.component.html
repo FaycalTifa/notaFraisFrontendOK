@@ -1,0 +1,97 @@
+<div class="p-grid p-fluid">
+    <div class="p-col-12">
+        <div class="card">
+            <h5>Gestion des Sections</h5>
+
+            <p-toolbar>
+                <div class="p-toolbar-group-left">
+                    <button pButton type="button" icon="pi pi-plus" label="Ajouter"
+                            class="p-button-success mr-2" (click)="showAddDialog()"></button>
+                </div>
+            </p-toolbar>
+
+            <p-table [value]="sections" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Code</th>
+                        <th>Libellé</th>
+                        <th>Service</th>
+                        <th>Direction</th>
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-section>
+                    <tr>
+                        <td>{{section.code}}</td>
+                        <td>{{section.libelle}}</td>
+                        <td>{{getServiceLibelle(section)}}</td> <!-- Méthode utilitaire -->
+                        <td>{{getDirectionLibelle(section)}}</td> <!-- Méthode utilitaire -->
+                        <td>
+                            <button pButton type="button" icon="pi pi-pencil"
+                                    class="p-button-warning mr-2"
+                                    (click)="showEditDialog(section)"></button>
+                            <button pButton type="button" icon="pi pi-trash"
+                                    class="p-button-danger"
+                                    (click)="confirmDelete(section)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<!-- Dialog Ajout -->
+<p-dialog header="Nouvelle Section" [(visible)]="displayDialog" [style]="{width: '450px'}">
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="code">Code</label>
+            <input id="code" type="text" pInputText [(ngModel)]="newSection.code">
+        </div>
+        <div class="p-field">
+            <label for="libelle">Libellé</label>
+            <input id="libelle" type="text" pInputText [(ngModel)]="newSection.libelle">
+        </div>
+        <div class="p-field">
+            <label for="service">Service</label>
+            <p-dropdown [options]="services" [(ngModel)]="newSection.serviceId"
+                        optionLabel="libelle" optionValue="id" placeholder="Sélectionnez un service">
+            </p-dropdown>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Annuler" icon="pi pi-times"
+                class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton type="button" label="Enregistrer" icon="pi pi-check"
+                class="p-button-success" (click)="createSection()"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- Dialog Modification -->
+<p-dialog header="Modifier Section" [(visible)]="displayEditDialog" [style]="{width: '450px'}">
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="editCode">Code</label>
+            <input id="editCode" type="text" pInputText [(ngModel)]="selectedSection.code">
+        </div>
+        <div class="p-field">
+            <label for="editLibelle">Libellé</label>
+            <input id="editLibelle" type="text" pInputText [(ngModel)]="selectedSection.libelle">
+        </div>
+        <div class="p-field">
+            <label for="editService">Service</label>
+            <p-dropdown [options]="services" [(ngModel)]="selectedSection.serviceId"
+                        optionLabel="libelle" optionValue="id" placeholder="Sélectionnez un service">
+            </p-dropdown>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Annuler" icon="pi pi-times"
+                class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton type="button" label="Enregistrer" icon="pi pi-check"
+                class="p-button-success" (click)="updateSection()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

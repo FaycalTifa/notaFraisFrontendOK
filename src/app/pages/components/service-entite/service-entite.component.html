@@ -1,0 +1,98 @@
+<div class="p-grid p-fluid">
+    <div class="p-col-12">
+        <div class="card">
+            <h5>Gestion des Services</h5>
+
+            <p-toolbar>
+                <div class="p-toolbar-group-left">
+                    <button pButton type="button" icon="pi pi-plus" label="Ajouter"
+                            class="p-button-success mr-2" (click)="showAddDialog()"></button>
+                </div>
+            </p-toolbar>
+
+            <!-- service-entite.component.html -->
+            <p-table [value]="services" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Code</th>
+                        <th>Libellé</th>
+                        <th>Direction</th>
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-service>
+                    <tr>
+                        <td>{{service.code}}</td>
+                        <td>{{service.libelle}}</td>
+                        <td>{{getDirectionLibelle(service)}}</td> <!-- Utilisez la méthode -->
+                        <td>
+                            <button pButton type="button" icon="pi pi-pencil"
+                                    class="p-button-warning mr-2"
+                                    (click)="showEditDialog(service)"></button>
+                            <button pButton type="button" icon="pi pi-trash"
+                                    class="p-button-danger"
+                                    (click)="confirmDelete(service)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<!-- Dialog Ajout -->
+<p-dialog header="Nouveau Service" [(visible)]="displayDialog" [style]="{width: '450px'}">
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="code">Code *</label>
+            <input id="code" type="text" pInputText [(ngModel)]="newService.code" required>
+        </div>
+        <div class="p-field">
+            <label for="libelle">Libellé *</label>
+            <input id="libelle" type="text" pInputText [(ngModel)]="newService.libelle" required>
+        </div>
+        <div class="p-field">
+            <label for="direction">Direction *</label>
+            <p-dropdown [options]="directions" [(ngModel)]="newService.directionId"
+                        optionLabel="libelle" optionValue="id" placeholder="Sélectionnez une direction" required>
+            </p-dropdown>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Annuler" icon="pi pi-times"
+                class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton type="button" label="Enregistrer" icon="pi pi-check"
+                class="p-button-success" (click)="createService()"
+                [disabled]="!newService.code || !newService.libelle || !newService.directionId"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- Dialog Modification -->
+<p-dialog header="Modifier Service" [(visible)]="displayEditDialog" [style]="{width: '450px'}">
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="editCode">Code *</label>
+            <input id="editCode" type="text" pInputText [(ngModel)]="selectedService.code" required>
+        </div>
+        <div class="p-field">
+            <label for="editLibelle">Libellé *</label>
+            <input id="editLibelle" type="text" pInputText [(ngModel)]="selectedService.libelle" required>
+        </div>
+        <div class="p-field">
+            <label for="editDirection">Direction *</label>
+            <p-dropdown [options]="directions" [(ngModel)]="selectedService.directionId"
+                        optionLabel="libelle" optionValue="id" placeholder="Sélectionnez une direction" required>
+            </p-dropdown>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Annuler" icon="pi pi-times"
+                class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton type="button" label="Enregistrer" icon="pi pi-check"
+                class="p-button-success" (click)="updateService()"
+                [disabled]="!selectedService.code || !selectedService.libelle || !selectedService.directionId"></button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

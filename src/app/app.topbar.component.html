@@ -1,0 +1,131 @@
+<div class="layout-topbar shadow-4">
+    <div class="layout-topbar-left">
+        <a class="layout-topbar-logo" routerLink="/">
+            <img id="app-logo" src="assets/layout/images/logo/uab.jpg" alt="Logo de UAB ASSURANCES" style="height: 4rem; width: 7rem; ">
+        </a>
+
+        <a class="layout-menu-button shadow-6" (click)="appMain.onMenuButtonClick($event)" pRipple>
+            <i class="pi pi-chevron-right"></i>
+        </a>
+
+        <a class="layout-topbar-mobile-button" (click)="appMain.onTopbarMobileButtonClick($event)" pRipple>
+            <i class="pi pi-ellipsis-v fs-large"></i>
+        </a>
+    </div>
+    <div class="layout-topbar-right" [ngClass]="{'layout-topbar-mobile-active': appMain.mobileTopbarActive}">
+        <div class="layout-topbar-actions-left">
+        </div>
+        <div class="layout-topbar-actions-right">
+            <ul class="layout-topbar-items">
+                <li class="layout-topbar-item layout-search-item">
+                    <div class="layout-search-panel p-inputgroup" [@topbarActionPanelAnimation]="'visible'" *ngIf="appMain.search" (@topbarActionPanelAnimation.done)="onSearchAnimationEnd($event)">
+                        <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
+                        <input #searchInput type="text" pInputText placeholder="Search" (click)="appMain.searchClick = true;" (keydown)="appMain.onSearchKeydown($event)">
+                        <span class="p-inputgroup-addon">
+                            <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain" (click)="appMain.searchClick = false;"></button>
+                        </span>
+                    </div>
+                </li>
+                <li class="layout-topbar-item notifications"  *ngIf=" allNeedsSendedByChefServiceToDgLenght > 0 && IS_DG_ROLE">
+                    <a class="layout-topbar-action rounded-circle" (click)="appMain.onTopbarItemClick($event, 'notifications')" pRipple>
+                        <span class="p-overlay-badge">
+                            <i class="pi pi-bell fs-large"></i>
+                           <span *ngIf="allNeedsSendedByChefServiceToDgLenght > 0" class="p-badge p-badge-warning">{{allNeedsSendedByChefServiceToDgLenght}}</span>
+                        </span>
+                    </a>
+                    <ul class="layout-topbar-action-panel shadow-6"  [@topbarActionPanelAnimation]="'visible'" *ngIf="appMain.activeTopbarItem === 'notifications'">
+                        <li class="mb-3">
+                            <span class="px-3 fs-small" *ngIf="allNeedsSendedByChefServiceToDgLenght &&  IS_DG_ROLE == 1">Vous avez <b> <span class="p-badge-warning p-badge" >{{allNeedsSendedByChefServiceToDgLenght}}</span></b> nouvelle notification</span>
+                            <span class="px-3 fs-small" *ngIf="allNeedsSendedByChefServiceToDgLenght &&  IS_DG_ROLE > 1">Vous avez <b> <span class="p-badge-warning p-badge" >{{allNeedsSendedByChefServiceToDgLenght}}</span></b> nouvelles notifications</span>
+                        </li>
+                        <li class="layout-topbar-action-item" *ngFor=" let  need of allNeedsSendedByChefServiceToDg">
+                            <div class="flex flex-row align-items-center">
+<!--
+                                <img src="assets/demo/images/avatar/avatar-1.png"/>
+-->
+                                <div class="flex flex-column" [ngClass]="{'ml-3': !app.isRTL, 'mr-3': app.isRTL}" style="flex-grow: 1;">
+                                    <div class="flex align-items-center justify-content-between mb-1">
+                                        <span class="fs-small font-bold"> {{need?.agents?.firstName}} {{need?.agents?.lastName}}</span>
+                                        <small> Date: {{need?.lastModifiedDate | date:'medium'}}</small>
+                                    </div>
+                                    <div class="flex align-items-center justify-content-between mb-1">
+                                        <span class="fs-small"> Désignation: {{need?.typeNeeds?.libelle}}</span>
+                                        <small> Montant: {{need?.montant}}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+<!--
+                <li class="layout-topbar-item notifications" *ngIf=" allNeedsSendedByAgentToChefServiceLength > 0 &&  (isAgentRole == true || isChefServiceRole == true) ">
+                    <a class="layout-topbar-action rounded-circle" (click)="appMain.onTopbarItemClick($event, 'notifications')" pRipple>
+                        <span class="p-overlay-badge">
+                            <i class="pi pi-bell fs-large"></i>
+                           <span *ngIf="allNeedsSendedByAgentToChefServiceLength > 0" class="p-badge p-badge-warning">{{allNeedsSendedByAgentToChefServiceLength}}</span>
+                        </span>
+                    </a>
+                    <ul class="layout-topbar-action-panel shadow-6" [@topbarActionPanelAnimation]="'visible'" *ngIf="appMain.activeTopbarItem === 'notifications'">
+                        <li class="mb-3">
+                            <span class="px-3 fs-small" *ngIf="isChefServiceRole == true && allNeedsSendedByAgentToChefServiceLength ==  1 ">Vous avez <b> <span class="p-badge-warning p-badge" >{{allNeedsSendedByAgentToChefServiceLength}}</span></b> nouvelle notification.</span>
+                            <span class="px-3 fs-small" *ngIf="isAgentRole == true && allNeedsSendedByAgentToChefServiceLength ==  1  ">Vous avez envoyé <b> <span class="p-badge-warning p-badge" >{{allNeedsSendedByAgentToChefServiceLength}}</span></b> expression de besoin.</span>
+
+                            <span class="px-3 fs-small" *ngIf="isChefServiceRole == true && allNeedsSendedByAgentToChefServiceLength > 1">Vous avez <b> <span class="p-badge-warning p-badge" >{{allNeedsSendedByAgentToChefServiceLength}}</span></b> nouvelles notifications.</span>
+                            <span class="px-3 fs-small" *ngIf="isAgentRole == true && allNeedsSendedByAgentToChefServiceLength > 1">Vous avez envoyé <b> <span class="p-badge-warning p-badge" >{{allNeedsSendedByAgentToChefServiceLength}}</span></b> expressions de besoin.</span>
+                        </li>
+                        <li class="layout-topbar-action-item" *ngFor=" let  need of allNeedsSendedByAgentToChefService">
+                            <div class="flex flex-row align-items-center">
+&lt;!&ndash;
+                                <img src="assets/demo/images/avatar/avatar-1.png"/>
+&ndash;&gt;
+                                <div class="flex flex-column" [ngClass]="{'ml-3': !app.isRTL, 'mr-3': app.isRTL}" style="flex-grow: 1;">
+                                    <div class="flex align-items-center justify-content-between mb-1">
+                                        <span class="fs-small" *ngIf="isAgentRole == true "> Type: {{need?.typeNeeds?.typeEnum}}</span>
+                                        <span class="fs-small font-bold" *ngIf="isChefServiceRole == true "> {{need?.agents?.firstName}} {{need?.agents?.lastName}}</span>
+                                        <small> Date: {{need?.lastModifiedDate | date:'medium'}}</small>
+                                    </div>
+                                    <div class="flex align-items-center justify-content-between mb-1">
+                                        <span class="fs-small"> Désignation: {{need?.typeNeeds?.libelle}}</span>
+                                        <small> Montant: {{need?.montant}}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+-->
+<!--                <li class="layout-topbar-item notifications mr-4"> Au Chef service: {{allNeedsSendedByAgentToChefServiceLength}}</li>
+                <li class="layout-topbar-item notifications mr-4"> Au DG: {{allNeedsSendedByChefServiceToDgLenght}}</li>
+                <li class="layout-topbar-item notifications mr-4"> À la comptabilité: {{allNeedsSendedByDgToChefComptableLenght}}</li>
+                <li class="layout-topbar-item notifications mr-4"> À la caisse: {{allNeedsSendedByDgToCaisseLenght}}</li>
+                <li class="layout-topbar-item notifications mr-4" *ngIf="allNeedsSendedByDgToCaisseLenght > 0">
+                    <marquee>
+                        <span *ngIf="IS_EMPLOYE_ROLE || IS_CHEF_PERSONNEL_ROLE || IS_CHEF_SERVICE_ROLE || IS_ADMIN_ROLE " class="text_danger">Veuillez vous vous présenter à la caisse pour liquidation de vos exprèssions de besoin!</span>
+                        <span *ngIf="IS_CHEF_COMPTABILITE || IS_ADMIN_ROLE || IS_CHEF_COMPTABILITE_ROLE " class="text_danger">Des agents se présenteront pour liquidation de leurs exprèssions de besoin!</span>
+                    </marquee>
+                </li>-->
+                <li class="layout-topbar-item notifications">
+                    <a class="cursor-pointer"  type="button" pRipple (click)="onLogout()">
+                        <span  class="px-3 fs-small"><b> {{lastName }} {{firstName | uppercase}} </b></span>
+                    </a>
+                    <button  (click)="onCkliced($event)" pButton pRipple type="button"  icon="pi pi-power-off"
+                            class="p-button-outlined p-button-warning p-button-rounded mr-3"></button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--
+<p-dialog header="CONNEXION"  position="center" [transitionOptions]="'1300ms'"  [(visible)]="display" [style]="{width: '20vw'}">
+
+    <div class="col-12 md:col-12" >
+            <div class=" p-fluid">
+                <div class=" field col-12">
+                    <span> Vérifiez votre connexion! </span>
+                </div>
+            </div>
+    </div>
+</p-dialog>
+
+-->

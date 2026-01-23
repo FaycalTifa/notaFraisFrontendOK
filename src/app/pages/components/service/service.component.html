@@ -1,0 +1,112 @@
+<!--
+<p-messages severity="error" *ngIf="cannotDelete">
+    <ng-template pTemplate>
+        <span class="custom-message">Veuillez supprimer d'abord les emploies associés à ce service</span>
+    </ng-template>
+</p-messages>
+<p-dialog header="ENREGISTREMENT D'UN SERVICE" [(visible)]="displayDialogue" [style]="{width: '50vw'}">
+    <div class="col-12 md:col-12" >
+        <form  #myForm="ngForm" name="myForm" role="form" novalidate>
+            <div class="card p-fluid">
+                <div class="field">
+                    <label htmlFor="libelle">SERVICEsss</label>
+                    <input pInputText id="libelle" type="text" name="libelle" [(ngModel)]="service.libelle" #libelle="ngModel"
+                           required minlength="1"
+                           [ngClass] ="{'ng-invalid ng-dirty' : libelle.touched && !libelle.valid}"
+                    />
+                    <span *ngIf="libelle.invalid && (libelle.dirty || libelle.touched)">
+                <span *ngIf="libelle.errors?.required">
+                  <small class="ng-invalid ng-dirty">Le type est requis</small>
+                </span>
+                <span *ngIf="libelle.errors?.minlength">
+                  <small class="form-text ng-invalid ng-dirty">Entrez au minimum 1 caractère</small>
+                </span>
+              </span>
+                </div>
+                <div class="field">
+                    <label htmlFor="description">DESCRIPTION</label>
+                    <input pInputText id="description" type="text" name="description" [(ngModel)]="service.description"
+                           minlength="1"
+                    />
+                </div>
+            </div>
+        </form>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="Annuler" icon="pi pi-times" (click)="onHidenDialogue()" class="p-button-danger mr-2 mb-2"></button>
+        <button pButton pRipple ttype="submit" [disabled]="!myForm.valid"  label="Enregistrer" icon="pi pi-save" (click)="onSave(service); ngOnInit();"
+                class="p-button-success mr-2 mb-2"></button>
+    </ng-template>
+</p-dialog>
+
+<div class="grid centerClass">
+    <div class="col-12">
+        <div class="card">
+            <h5>LISTES DES SERVICE</h5>
+            <p-table #dt1 [value]="services" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['libelle']" responsiveLayout="scroll">
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <div>
+                            <button pButton pRipple type="button" label="Ajouter un service" icon="pi pi-plus" (click)="onDisplayDialogue(service)"  class="p-button-info mr-2 mb-2"></button>
+                        </div>
+                        <span class="p-input-icon-left mb-2">
+							<i class="pi pi-search"></i>
+							<input pInputText type="text" #filter (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Recherche" class="w-full"/>
+						</span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="libelle">SERVICES <p-sortIcon field="libelle"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="description">DESCRIPTION <p-sortIcon field="description"></p-sortIcon>
+
+                        </th>
+                        <th>
+                            <div class="flex justify-content-between align-items-center">
+                                ACTIONS
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-service>
+                    <tr>
+                        <td style="min-width: 15rem;">
+                            {{service?.libelle}}
+                        </td>
+                        <td style="min-width: 40rem;">
+                            {{service?.description}}
+                        </td>
+                        <td style="min-width: 30rem;">
+                            <button pButton pRipple type="button" (click)="onDisplayDialogue(service)" icon="pi pi-pencil" class="p-button-success mr-2 mb-2"></button>
+                            <button pButton pRipple type="button"  icon="pi pi-trash"
+                                    (click)="onDeleteService($event, service)"
+                                    class="p-button-danger mr-2 mb-2"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="12">Pas de service</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="12">Chargement des données. Veuillez patienter.</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    <div class="p-d-flex p-ai-center p-jc-between">
+                        Il y'a au total {{ services ? services.length : 0 }} services.
+                    </div>
+                </ng-template>
+            </p-table>
+        </div>
+
+    </div>
+
+</div>
+<p-toast></p-toast>
+<p-confirmPopup  [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'"></p-confirmPopup>
+
+-->

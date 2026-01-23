@@ -1,0 +1,151 @@
+<!--
+<p-dialog header="ENREGISTREMENT D'UN POSTE" [(visible)]="displayDialogue" [style]="{width: '50vw'}">
+    <div class="col-12 md:col-12" >
+        <form  #myForm="ngForm" name="myForm" role="form" novalidate>
+            <div class="card p-fluid">
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="form-control-label">SERVICES</label>
+                        <p-dropdown
+                                [disabled]="false"
+                                autoWidth="true"
+                                [style]="{ width: '100%' }"
+                                #service="ngModel"
+                                (onChange)='onSelectedService(service.value)'
+                                [required]="true"
+                                [options]="services"
+                                [virtualScroll]="false"
+                                name="services"
+                                [(ngModel)]="poste.services"
+                                placeholder="Selectionner le service"
+                                [filter]="true"
+                                [showClear]="true"
+                                [baseZIndex]="10000"
+                                [scrollHeight]="'100px'"
+                                [showTransitionOptions]="'0ms'"
+                                [hideTransitionOptions]="'0ms'"
+                                optionLabel="libelle"
+                                [ngClass] ="{'ng-invalid ng-dirty' : service.touched && !service.valid}"
+                        >
+                        </p-dropdown>
+                        <span *ngIf="service.invalid && (service.dirty || service.touched)">
+                            <span *ngIf="service.errors?.required">
+                                <small class="ng-invalid ng-dirty">Le service requis</small>
+                            </span>
+                                <span *ngIf="service.errors?.minlength">
+                                <small class="form-text ng-invalid ng-dirty">Entrez au minimum 1 caractère</small>
+                            </span>
+                        </span>
+                    </div>
+                </div><br>
+
+                <div class="field">
+                    <label htmlFor="libelle">POSTES</label>
+                    <input pInputText id="libelle" type="text" name="libelle" [(ngModel)]="poste.libelle" #libelle="ngModel"
+                           required minlength="1"
+                           [ngClass] ="{'ng-invalid ng-dirty' : libelle.touched && !libelle.valid}"
+                    />
+                    <span *ngIf="libelle.invalid && (libelle.dirty || libelle.touched)">
+                <span *ngIf="libelle.errors?.required">
+                  <small class="ng-invalid ng-dirty">Le type est requis</small>
+                </span>
+                <span *ngIf="libelle.errors?.minlength">
+                  <small class="form-text ng-invalid ng-dirty">Entrez au minimum 1 caractère</small>
+                </span>
+              </span>
+                </div>
+                <div class="field">
+                    <label htmlFor="description">DESCRIPTION</label>
+                    <input pInputText id="description" type="text" name="description" [(ngModel)]="poste.description"
+                            minlength="1"
+                    />
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple type="button" label="Annuler" icon="pi pi-times" (click)="onHidenDialogue()" class="p-button-danger mr-2 mb-2"></button>
+        <button pButton pRipple ttype="submit" [disabled]="!myForm.valid"  label="Enregistrer" icon="pi pi-save" (click)="onSave(poste); ngOnInit();"
+                class="p-button-success mr-2 mb-2"></button>
+    </ng-template>
+</p-dialog>
+
+<div class="grid centerClass">
+    <div class="col-12">
+        <div class="card">
+            <h5>LISTES DES POSTES</h5>
+            <p-table #dt1 [value]="postes" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['libelle','description', 'services.libelle']" responsiveLayout="scroll">
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <div>
+                            <button pButton pRipple type="button" label="Ajouter un emplois" icon="pi pi-plus" (click)="onDisplayDialogue(poste)"  class="p-button-info mr-2 mb-2"></button>
+                            &lt;!&ndash;<button pButton label="Effacer" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>&ndash;&gt;
+                        </div>
+                        <span class="p-input-icon-left mb-2">
+							<i class="pi pi-search"></i>
+							<input pInputText type="text" #filter (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Recherche" class="w-full"/>
+						</span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="libelle">POSTE <p-sortIcon field="libelle"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="description"> DESCRIPTION<p-sortIcon field="description"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="services.libelle">SERVICE <p-sortIcon field="services.libelle"></p-sortIcon>
+                        </th>
+                        <th>
+                            <div class="flex justify-content-between align-items-center">
+                                ACTIONS
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-poste>
+                    <tr>
+                        <td style="min-width: 12rem;">
+                            {{poste?.libelle}}
+                        </td>
+                        <td style="min-width: 15rem;">
+                            {{poste?.description}}
+                        </td>
+                        <td style="min-width: 12rem;">
+                            {{poste?.serviceLibelle}}
+                        </td>
+                        <td style="min-width: 30rem;">
+                            <button pButton pRipple type="button" (click)="onDisplayDialogue(poste)" icon="pi pi-pencil" class="p-button-success mr-2 mb-2"></button>
+                            <button pButton pRipple type="button"  icon="pi pi-trash"
+                                    (click)="onDeletePoste($event, poste)"
+                                    class="p-button-danger mr-2 mb-2"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="12">Pas de poste</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="12">Chargement des données. Veuillez patienter.</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    <div class="p-d-flex p-ai-center p-jc-between">
+                        Il y'a au total {{ postes ? postes.length : 0 }} emplois.
+                    </div>
+                </ng-template>
+            </p-table>
+        </div>
+
+    </div>
+
+</div>
+<p-toast></p-toast>
+<p-confirmPopup  [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'"></p-confirmPopup>
+
+-->
