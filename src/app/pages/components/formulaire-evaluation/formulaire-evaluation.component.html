@@ -1,0 +1,886 @@
+<div class="card">
+    <p-toast></p-toast>
+
+    <!-- En-tête avec statut -->
+    <div class="flex justify-content-between align-items-center mb-4">
+        <div class="flex align-items-center gap-3">
+            <h2>{{ isEdit ? 'Modifier' : 'Nouvelle' }} évaluation</h2>
+            <p-tag *ngIf="isEdit" [value]="getStatutLabel()" [severity]="getStatutClass()"></p-tag>
+        </div>
+        <p-button
+                label="Retour"
+                icon="pi pi-arrow-left"
+                styleClass="p-button-outlined p-button-sm"
+                (onClick)="cancel()"
+        ></p-button>
+    </div>
+
+    <!-- Steps -->
+    <p-steps [model]="steps" [(activeIndex)]="activeStep" [readonly]="false" styleClass="mb-4"></p-steps>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-content-center p-5">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <!-- Formulaire -->
+    <div *ngIf="!loading">
+
+        <!-- ÉTAPE 1: Informations générales -->
+        <div *ngIf="activeStep === 0" class="step-content">
+            <h3 class="mb-4">Informations générales</h3>
+
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Collaborateur <span class="text-danger">*</span></label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.collaborateurId"
+                                [options]="collaborateurs"
+                                optionLabel="nomComplet"
+                                optionValue="id"
+                                placeholder="Sélectionner un collaborateur"
+                                [filter]="true"
+                                [disabled]="isEdit || evaluation.collaborateurId > 0 || !canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Année d'évaluation <span class="text-danger">*</span></label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.annee"
+                                [options]="anneeOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Sélectionner l'année"
+                                [disabled]="isEdit || !canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Date de l'entretien</label>
+                        <p-calendar
+                                [(ngModel)]="evaluation.dateEntretien"
+                                dateFormat="dd/mm/yy"
+                                [showIcon]="true"
+                                placeholder="Sélectionner une date"
+                                [disabled]="!canEdit"
+                        ></p-calendar>
+                    </div>
+                </div>
+
+                <div class="col-12" *ngIf="!isEdit">
+                    <p class="text-500">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        L'évaluation sera créée avec le statut <strong>Brouillon</strong>
+                    </p>
+                </div>
+
+                <div class="col-12" *ngIf="isEdit">
+                    <p class="text-500">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        Statut actuel: <strong>{{ getStatutLabel() }}</strong>
+                        <span *ngIf="evaluationComplete?.dateCreation"> - Créée le {{ evaluationComplete?.dateCreation | date:'dd/MM/yyyy' }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 2: Faits marquants -->
+        <div *ngIf="activeStep === 1" class="step-content">
+            <h3 class="mb-4">Faits marquants de l'année</h3>
+
+            <div class="field">
+                <label>Liste des faits marquants</label>
+                <p class="text-500 mb-3">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Ajoutez les événements importants, réalisations, changements de poste, promotions, formations...
+                </p>
+
+                <div *ngFor="let fait of evaluation.faitsMarquants; let i = index" class="flex align-items-center mb-2">
+                    <input
+                            pInputText
+                            [(ngModel)]="evaluation.faitsMarquants[i]"
+                            placeholder="Fait marquant {{i+1}}"
+                            class="flex-1 mr-2"
+                            [disabled]="!canEdit"
+                    />
+                    <p-button
+                            *ngIf="canEdit"
+                            icon="pi pi-trash"
+                            styleClass="p-button-rounded p-button-text p-button-danger p-button-sm"
+                            (onClick)="removeFaitMarquant(i)"
+                    ></p-button>
+                </div>
+
+                <p-button
+                        *ngIf="canEdit"
+                        label="Ajouter un fait marquant"
+                        icon="pi pi-plus"
+                        styleClass="p-button-outlined p-button-sm mt-2"
+                        (onClick)="addFaitMarquant()"
+                ></p-button>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 3: Objectifs de l'année -->
+        <div *ngIf="activeStep === 2" class="step-content">
+            <h3 class="mb-4">Objectifs de l'année</h3>
+
+            <div class="field">
+                <p class="text-500 mb-3">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Définissez les objectifs et leur niveau d'atteinte
+                </p>
+
+                <div *ngFor="let obj of evaluation.objectifs; let i = index" class="grid p-fluid mb-4 p-3 border-1 surface-border border-round">
+                    <div class="col-12">
+                        <div class="flex justify-content-between align-items-center">
+                            <h5>Objectif #{{i+1}}</h5>
+                            <p-button
+                                    *ngIf="canEdit"
+                                    icon="pi pi-trash"
+                                    styleClass="p-button-rounded p-button-text p-button-danger"
+                                    (onClick)="removeObjectif(i)"
+                            ></p-button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="field">
+                            <label>Libellé de l'objectif</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="obj.libelle"
+                                    rows="2"
+                                    placeholder="Décrire l'objectif"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-4">
+                        <div class="field">
+                            <label>Taux d'atteinte (%)</label>
+                            <p-inputNumber
+                                    [(ngModel)]="obj.tauxAtteinte"
+                                    [min]="0"
+                                    [max]="150"
+                                    [showButtons]="true"
+                                    suffix="%"
+                                    [disabled]="!canEdit"
+                            ></p-inputNumber>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-4">
+                        <div class="field">
+                            <label>Cotation /10</label>
+                            <p-inputNumber
+                                    [(ngModel)]="obj.cotation"
+                                    [min]="0"
+                                    [max]="10"
+                                    [showButtons]="true"
+                                    [disabled]="!canEdit"
+                            ></p-inputNumber>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-4">
+                        <div class="field">
+                            <label>Niveau d'atteinte</label>
+                            <p-dropdown
+                                    [(ngModel)]="obj.niveauAtteinte"
+                                    [options]="niveauAtteinteOptions"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="Sélectionner"
+                                    [disabled]="!canEdit"
+                            ></p-dropdown>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="field">
+                            <label>Appréciation du collaborateur</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="obj.appreciationCollaborateur"
+                                    rows="2"
+                                    placeholder="Commentaire du collaborateur"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="field">
+                            <label>Appréciation du responsable</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="obj.appreciationResponsable"
+                                    rows="2"
+                                    placeholder="Commentaire du responsable"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <p-button
+                        *ngIf="canEdit"
+                        label="Ajouter un objectif"
+                        icon="pi pi-plus"
+                        styleClass="p-button-outlined"
+                        (onClick)="addObjectif()"
+                ></p-button>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 4: Tenue du poste -->
+        <div *ngIf="activeStep === 3" class="step-content">
+            <h3 class="mb-4">Évaluation de la tenue du poste</h3>
+
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Respect des engagements</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.respectEngagements"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Qualité, méthodes de travail</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.qualiteMethodesTravail"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Capacités d'adaptation et d'organisation</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.capacitesAdaptationOrganisation"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Encadrement</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.encadrement"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Esprit d'initiative et capacité d'innovation</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.espritInitiativeInnovation"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Relation, présentation</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.relationPresentation"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Ponctualité</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.ponctualite"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Respect du règlement intérieur</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.respectReglementInterieur"
+                                [options]="noteTenueOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Noter de 0 à 10"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 5: Maîtrise du poste -->
+        <div *ngIf="activeStep === 4" class="step-content">
+            <h3 class="mb-4">Niveau de maîtrise du poste</h3>
+
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-4">
+                    <div class="field">
+                        <label>Compétences et connaissances techniques</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.niveauTechnique"
+                                [options]="niveauOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Sélectionner le niveau"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-4">
+
+                    <div class="field">
+                        <label>Expérience</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.niveauExperience"
+                                [options]="niveauOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Sélectionner le niveau"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-4">
+                    <div class="field">
+                        <label>Aptitude à l'encadrement</label>
+                        <p-dropdown
+                                [(ngModel)]="evaluation.niveauEncadrement"
+                                [options]="niveauOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Sélectionner le niveau"
+                                [disabled]="!canEdit"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="field">
+                        <label>Commentaires sur la maîtrise</label>
+                        <textarea
+                                pInputTextarea
+                                [(ngModel)]="evaluation.commentairesMaitrise"
+                                rows="4"
+                                placeholder="Observations complémentaires..."
+                                class="w-full"
+                                [disabled]="!canEdit"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 6: Objectifs N+1 -->
+        <div *ngIf="activeStep === 5" class="step-content">
+            <h3 class="mb-4">Objectifs pour l'année N+1</h3>
+
+            <div class="field">
+                <p class="text-500 mb-3">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Définissez les objectifs pour l'année à venir
+                </p>
+
+                <div *ngFor="let obj of evaluation.objectifsFuturs; let i = index" class="grid p-fluid mb-4 p-3 border-1 surface-border border-round">
+                    <div class="col-12">
+                        <div class="flex justify-content-between align-items-center">
+                            <h5>Objectif futur #{{i+1}}</h5>
+                            <p-button
+                                    *ngIf="canEdit"
+                                    icon="pi pi-trash"
+                                    styleClass="p-button-rounded p-button-text p-button-danger"
+                                    (onClick)="removeObjectifFutur(i)"
+                            ></p-button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="field">
+                            <label>Libellé de l'objectif</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="obj.libelle"
+                                    rows="2"
+                                    placeholder="Décrire l'objectif"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="field">
+                            <label>Type d'objectif</label>
+                            <p-dropdown
+                                    [(ngModel)]="obj.type"
+                                    [options]="typeObjectifOptions"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="Sélectionner le type"
+                                    [disabled]="!canEdit"
+                            ></p-dropdown>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="field">
+                            <label>Plan d'action</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="obj.planAction"
+                                    rows="2"
+                                    placeholder="Actions à mettre en œuvre"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="field">
+                            <label>Moyens</label>
+                            <input
+                                    pInputText
+                                    [(ngModel)]="obj.moyens"
+                                    placeholder="Moyens nécessaires"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="field">
+                            <label>Indicateurs de suivi</label>
+                            <input
+                                    pInputText
+                                    [(ngModel)]="obj.indicateursSuivi"
+                                    placeholder="Comment mesurer l'atteinte"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <p-button
+                        *ngIf="canEdit"
+                        label="Ajouter un objectif futur"
+                        icon="pi pi-plus"
+                        styleClass="p-button-outlined"
+                        (onClick)="addObjectifFutur()"
+                ></p-button>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 7: Formations -->
+        <div *ngIf="activeStep === 6" class="step-content">
+            <h3 class="mb-4">Souhaits de formation</h3>
+
+            <div class="field">
+                <p class="text-500 mb-3">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Exprimez les besoins en formation
+                </p>
+
+                <div *ngFor="let formation of evaluation.souhaitsFormations; let i = index" class="grid p-fluid mb-4 p-3 border-1 surface-border border-round">
+                    <div class="col-12">
+                        <div class="flex justify-content-between align-items-center">
+                            <h5>Formation #{{i+1}}</h5>
+                            <p-button
+                                    *ngIf="canEdit"
+                                    icon="pi pi-trash"
+                                    styleClass="p-button-rounded p-button-text p-button-danger"
+                                    (onClick)="removeFormation(i)"
+                            ></p-button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="field">
+                            <label>Thème de la formation</label>
+                            <input
+                                    pInputText
+                                    [(ngModel)]="formation.theme"
+                                    placeholder="Intitulé de la formation"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="field">
+                            <label>Objectifs de la formation</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="formation.objectifs"
+                                    rows="2"
+                                    placeholder="Ce que la formation doit apporter"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="field">
+                            <label>Résultats attendus</label>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="formation.resultatsAttendus"
+                                    rows="2"
+                                    placeholder="Ce qui est attendu après la formation"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                        <div class="field">
+                            <label>Délais d'évaluation</label>
+                            <input
+                                    pInputText
+                                    [(ngModel)]="formation.delaisEvaluation"
+                                    placeholder="Quand évaluer l'efficacité"
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <p-button
+                        *ngIf="canEdit"
+                        label="Ajouter une formation"
+                        icon="pi pi-plus"
+                        styleClass="p-button-outlined"
+                        (onClick)="addFormation()"
+                ></p-button>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 8: Validation et signature -->
+        <div *ngIf="activeStep === 7" class="step-content">
+            <h3 class="mb-4">Validation et signature</h3>
+
+            <div class="grid">
+                <!-- Statut actuel -->
+                <div class="col-12">
+                    <p-card>
+                        <div class="flex align-items-center">
+                            <i class="pi pi-info-circle mr-2" style="font-size: 2rem; color: var(--primary-color)"></i>
+                            <div>
+                                <h4 class="mb-1">Statut actuel</h4>
+                                <p-tag [value]="getStatutLabel()" [severity]="getStatutClass()" styleClass="mr-2"></p-tag>
+                                <small class="text-500 ml-2">
+                                    Dernière mise à jour: {{ evaluationComplete?.updatedAt ? (evaluationComplete?.updatedAt | date:'dd/MM/yyyy HH:mm') : 'N/A' }}
+                                </small>
+                            </div>
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Informations de signature -->
+                <div class="col-12 md:col-6">
+                    <p-card header="Signature responsable">
+                        <div *ngIf="evaluationComplete?.signatureResponsable" class="text-green-600">
+                            <i class="pi pi-check-circle mr-2"></i>
+                            Signé par {{ evaluationComplete?.signatureResponsable }}
+                            <div *ngIf="evaluationComplete?.dateValidation" class="text-500 text-sm">
+                                le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}
+                            </div>
+                        </div>
+                        <div *ngIf="!evaluationComplete?.signatureResponsable" class="text-500">
+                            <i class="pi pi-hourglass mr-2"></i>
+                            En attente de signature responsable
+                        </div>
+                    </p-card>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <p-card header="Signature collaborateur">
+                        <div *ngIf="evaluationComplete?.signatureCollaborateur" class="text-green-600">
+                            <i class="pi pi-check-circle mr-2"></i>
+                            Signé par {{ evaluationComplete?.signatureCollaborateur }}
+                            <div *ngIf="evaluationComplete?.dateValidation" class="text-500 text-sm">
+                                le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}
+                            </div>
+                        </div>
+                        <div *ngIf="!evaluationComplete?.signatureCollaborateur" class="text-500">
+                            <i class="pi pi-hourglass mr-2"></i>
+                            En attente de signature collaborateur
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Notes calculées -->
+                <div class="col-12">
+                    <p-card header="Notes de l'évaluation">
+                        <div class="grid">
+                            <div class="col-4 text-center">
+                                <h5>Objectifs</h5>
+                                <p class="text-xl font-bold" [class.text-primary]="evaluationComplete?.noteGlobaleObjectifs">
+                                    {{ evaluationComplete?.noteGlobaleObjectifs?.toFixed(1) || 'N/A' }}/10
+                                </p>
+                                <small class="text-500">60% de la note finale</small>
+                            </div>
+                            <div class="col-4 text-center">
+                                <h5>Tenue du poste</h5>
+                                <p class="text-xl font-bold" [class.text-primary]="evaluationComplete?.noteGlobaleTenuePoste">
+                                    {{ evaluationComplete?.noteGlobaleTenuePoste?.toFixed(1) || 'N/A' }}/10
+                                </p>
+                                <small class="text-500">40% de la note finale</small>
+                            </div>
+                            <div class="col-4 text-center">
+                                <h5>Note finale</h5>
+                                <p class="text-2xl font-bold text-primary">
+                                    {{ evaluationComplete?.noteGlobaleFinale?.toFixed(1) || 'N/A' }}/10
+                                </p>
+                            </div>
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Actions selon le statut et les droits -->
+                <div class="col-12" *ngIf="canSubmit || canValidate || canSign">
+                    <p-card header="Actions disponibles">
+                        <div class="flex flex-wrap gap-2">
+
+                            <p-button
+                                    *ngIf="canValidate"
+                                    label="Valider l'évaluation"
+                                    icon="pi pi-check"
+                                    styleClass="p-button-success"
+                                    (onClick)="validerEvaluation()"
+                            ></p-button>
+
+                            <p-button
+                                    *ngIf="canValidate"
+                                    label="Valider l'évaluation"
+                                    icon="pi pi-check"
+                                    styleClass="p-button-success"
+                                    (onClick)="validerEvaluation()"
+                            ></p-button>
+
+                            <p-button
+                                    *ngIf="canValidate"
+                                    label="Refuser"
+                                    icon="pi pi-times"
+                                    styleClass="p-button-danger"
+                                    (onClick)="refuserEvaluation()"
+                            ></p-button>
+
+                            <p-button
+                                    *ngIf="canSign && !evaluationComplete?.signatureResponsable"
+                                    label="Signer comme responsable"
+                                    icon="pi pi-pencil"
+                                    styleClass="p-button-help"
+                                    (onClick)="signerEvaluation(true)"
+                            ></p-button>
+
+                            <p-button
+                                    *ngIf="canSign && !evaluationComplete?.signatureCollaborateur"
+                                    label="Signer comme collaborateur"
+                                    icon="pi pi-pencil"
+                                    styleClass="p-button-info"
+                                    (onClick)="signerEvaluation(false)"
+                            ></p-button>
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Historique des notes -->
+                <div class="col-12" *ngIf="evaluationComplete?.notesAnterieures && evaluationComplete.notesAnterieures.length > 0">
+                    <p-card header="Historique des notes">
+                        <div class="flex gap-2 flex-wrap">
+                            <p-tag
+                                    *ngFor="let note of evaluationComplete.notesAnterieures; let i = index"
+                                    [value]="note.toFixed(1)"
+                                    severity="secondary"
+                                    styleClass="mr-1"
+                            ></p-tag>
+                            <span class="text-500 ml-2">(Notes des années précédentes)</span>
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Résumé de l'évaluation -->
+                <div class="col-12">
+                    <p-accordion>
+                        <p-accordionTab header="Voir le résumé détaillé de l'évaluation">
+                            <div class="grid">
+                                <div class="col-6">
+                                    <h5>Faits marquants ({{ evaluation.faitsMarquants?.length || 0 }})</h5>
+                                    <ul class="pl-3">
+                                        <li *ngFor="let fait of evaluation.faitsMarquants" class="mb-1">{{ fait || 'Non renseigné' }}</li>
+                                        <li *ngIf="!evaluation.faitsMarquants?.length" class="text-500">Aucun fait marquant</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <h5>Objectifs ({{ evaluation.objectifs?.length || 0 }})</h5>
+                                    <ul class="pl-3">
+                                        <li *ngFor="let obj of evaluation.objectifs" class="mb-1">{{ obj.libelle || 'Objectif non renseigné' }}</li>
+                                        <li *ngIf="!evaluation.objectifs?.length" class="text-500">Aucun objectif</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6 mt-3">
+                                    <h5>Objectifs futurs ({{ evaluation.objectifsFuturs?.length || 0 }})</h5>
+                                    <ul class="pl-3">
+                                        <li *ngFor="let obj of evaluation.objectifsFuturs" class="mb-1">{{ obj.libelle || 'Objectif non renseigné' }}</li>
+                                        <li *ngIf="!evaluation.objectifsFuturs?.length" class="text-500">Aucun objectif futur</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6 mt-3">
+                                    <h5>Formations ({{ evaluation.souhaitsFormations?.length || 0 }})</h5>
+                                    <ul class="pl-3">
+                                        <li *ngFor="let formation of evaluation.souhaitsFormations" class="mb-1">{{ formation.theme || 'Formation non renseignée' }}</li>
+                                        <li *ngIf="!evaluation.souhaitsFormations?.length" class="text-500">Aucune formation souhaitée</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </p-accordionTab>
+                    </p-accordion>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons de navigation -->
+        <div class="flex justify-content-between mt-4 pt-3 border-top-1 surface-border">
+            <p-button
+                    label="Précédent"
+                    icon="pi pi-arrow-left"
+                    (onClick)="prevStep()"
+                    [disabled]="activeStep === 0 || saving"
+                    styleClass="p-button-outlined"
+            ></p-button>
+
+            <div class="flex gap-2">
+                <!-- Bouton Annuler -->
+                <p-button
+                        label="Annuler"
+                        icon="pi pi-times"
+                        (onClick)="cancel()"
+                        [disabled]="saving"
+                        styleClass="p-button-outlined p-button-secondary"
+                ></p-button>
+
+                <!-- Bouton Sauvegarder brouillon (toujours visible si modifiable) -->
+                <p-button
+                        *ngIf="canEdit && activeStep < steps.length - 1"
+                        label="Sauvegarder brouillon"
+                        icon="pi pi-save"
+                        (onClick)="saveDraft()"
+                        [loading]="saving"
+                        styleClass="p-button-secondary"
+                ></p-button>
+
+                <!-- Bouton Sauvegarder et continuer (pour les étapes intermédiaires) -->
+                <p-button
+                        *ngIf="canEdit && activeStep < steps.length - 2"
+                        label="Sauvegarder et continuer"
+                        icon="pi pi-arrow-right"
+                        iconPos="right"
+                        (onClick)="saveAndContinue()"
+                        [loading]="saving"
+                        styleClass="p-button-primary"
+                ></p-button>
+
+                <!-- Bouton Suivant simple (si déjà sauvegardé) -->
+                <p-button
+                        *ngIf="isEdit && canEdit && activeStep < steps.length - 2"
+                        label="Suivant"
+                        icon="pi pi-arrow-right"
+                        iconPos="right"
+                        (onClick)="nextStep()"
+                        [disabled]="saving"
+                        styleClass="p-button-outlined p-button-primary"
+                ></p-button>
+
+                <!-- Bouton pour aller à la validation (avant dernière étape) -->
+                <p-button
+                        *ngIf="activeStep === steps.length - 2"
+                        label="Aller à la validation"
+                        icon="pi pi-arrow-right"
+                        iconPos="right"
+                        (onClick)="goToStep(steps.length - 1)"
+                        [disabled]="!isEdit && !canEdit"
+                        styleClass="p-button-help"
+                ></p-button>
+
+                <!-- Bouton Terminer (dernière étape) -->
+                <p-button
+                        *ngIf="activeStep === steps.length - 1"
+                        [label]="isEdit ? 'Mettre à jour' : 'Créer l\'évaluation'"
+                        icon="pi pi-check"
+                        (onClick)="saveAndFinish()"
+                        [loading]="saving"
+                        [disabled]="!canEdit && !canSubmit && !canValidate"
+                        styleClass="p-button-success"
+                ></p-button>
+            </div>
+        </div>
+
+        <!-- Message d'information sur les permissions -->
+        <div class="mt-3 text-center" *ngIf="!canEdit && !canSubmit && !canValidate && !canSign">
+            <p-message severity="info" text="Cette évaluation n'est pas modifiable dans son état actuel"></p-message>
+        </div>
+    </div>
+</div>

@@ -1,162 +1,148 @@
-<div class="grid centerClass">
-    <div class="col-12">
-        <div class="card">
-            <div class="my-custom-text">
-                <h5 class="my-custom-text">LISTES DES DIRECTION AFFICHAGE</h5>
-            </div>
-            <p-table #dt1 [value]="directions" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true"
-                     styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['code','libelle']"
-                     responsiveLayout="scroll">
-                <ng-template pTemplate="caption">
-                    <div class="flex justify-content-between flex-column sm:flex-row">
-                        <div>
-                            <button pButton pRipple type="button" label="Ajouter" icon="pi pi-plus"
-                                    (click)="onDisplayDialogue()" class="p-button-info mr-2 mb-2"></button>
-                        </div>
-                        <span class="p-input-icon-left mb-2">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" #filter
-                                   (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Recherche"
-                                   class="w-full"/>
-                        </span>
-                    </div>
-                </ng-template>
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th pSortableColumn="code">CODE
-                            <p-sortIcon field="code"></p-sortIcon>
-                        </th>
-                        <th pSortableColumn="libelle"> LIBELLE
-                            <p-sortIcon field="libelle"></p-sortIcon>
-                        </th>
-                        <th>
-                            <div class="flex justify-content-between align-items-center">
-                                ACTIONS
-                            </div>
-                        </th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-direction>
-                    <tr>
-                        <td>
-                            {{ direction?.code }}
-                        </td>
-                        <td>
-                            {{ direction?.libelle }}
-                        </td>
-                        <td>
-                            <button pButton pRipple type="button" icon="pi pi-pencil"
-                                    (click)="onDisplayDialogueModif(direction)"
-                                    class="p-button-success mr-2 mb-2">
-                            </button>
+<div class="direction-container">
+    <!-- En-tête -->
+    <div class="header">
+        <h1>Gestion des Directions</h1>
+        <button class="btn-add" (click)="onAdd()" [disabled]="showForm">
+            <span class="icon">➕</span> Nouvelle direction
+        </button>
+    </div>
 
-                            <button pButton pRipple type="button" icon="pi pi-trash"
-                                    (click)="deleteDirection(direction)"
-                                    class="p-button-danger mr-2 mb-2">
-                            </button>
-                            <button pButton pRipple type="button" icon="pi pi-eye"
-                                    (click)="onDisplayDialoguDetail(direction)"
-                                    class="p-button-info mr-2 mb-2">
-                            </button>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="12">Pas de Direction</td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="loadingbody">
-                    <tr>
-                        <td colspan="12">Chargement des données. Veuillez patienter.</td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="summary">
-                    <div class="p-d-flex p-ai-center p-jc-between">
-                        Il y'a au total {{ directions ? directions.length : 0 }} directions.
+    <!-- Messages de notification -->
+    <div *ngIf="successMessage" class="alert success">
+        {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert error">
+        {{ errorMessage }}
+    </div>
+
+    <!-- Formulaire d'ajout/édition -->
+    <div *ngIf="showForm" class="form-section">
+        <div class="form-header">
+            <h2>{{ isEditing ? 'Modifier' : 'Nouvelle' }} direction</h2>
+        </div>
+
+        <form [formGroup]="directionForm" (ngSubmit)="onSubmit()" class="direction-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="code">Code <span class="required">*</span></label>
+                    <input
+                            type="text"
+                            id="code"
+                            formControlName="code"
+                            [class.is-invalid]="f['code'].touched && f['code'].invalid"
+                            placeholder="Ex: DIR001"
+                            [readonly]="isEditing"
+                    />
+                    <div *ngIf="f['code'].touched && f['code'].invalid" class="error-message">
+                        <small *ngIf="f['code'].errors?.['required']">Le code est requis</small>
+                        <small *ngIf="f['code'].errors?.['maxlength']">Max 50 caractères</small>
                     </div>
-                </ng-template>
-            </p-table>
+                </div>
+
+                <div class="form-group">
+                    <label for="nom">Nom <span class="required">*</span></label>
+                    <input
+                            type="text"
+                            id="nom"
+                            formControlName="nom"
+                            [class.is-invalid]="f['nom'].touched && f['nom'].invalid"
+                            placeholder="Ex: Direction des Ressources Humaines"
+                    />
+                    <div *ngIf="f['nom'].touched && f['nom'].invalid" class="error-message">
+                        <small *ngIf="f['nom'].errors?.['required']">Le nom est requis</small>
+                        <small *ngIf="f['nom'].errors?.['maxlength']">Max 100 caractères</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea
+                        id="description"
+                        formControlName="description"
+                        rows="3"
+                        placeholder="Description de la direction..."
+                        [class.is-invalid]="f['description'].touched && f['description'].invalid"
+                ></textarea>
+                <div *ngIf="f['description'].touched && f['description'].invalid" class="error-message">
+                    <small *ngIf="f['description'].errors?.['maxlength']">Max 500 caractères</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="submitting">
+                    Annuler
+                </button>
+                <button type="submit" class="btn-submit" [disabled]="directionForm.invalid || submitting">
+                    {{ submitting ? 'Enregistrement...' : (isEditing ? 'Mettre à jour' : 'Créer') }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="search-bar">
+        <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="applyFilter()"
+                placeholder="Rechercher par code, nom ou directeur..."
+                class="search-input"
+        />
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Indicateur de chargement -->
+    <div *ngIf="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Chargement des directions...</p>
+    </div>
+
+    <!-- Tableau des directions -->
+    <div *ngIf="!loading" class="table-section">
+        <div class="table-header">
+            <span class="count">{{ filteredDirections.length }} direction(s)</span>
+        </div>
+
+        <div class="table-container">
+            <table class="direction-table">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Directeur</th>
+                    <th>Services</th>
+                    <th>Collaborateurs</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let direction of filteredDirections">
+                    <td><span class="badge">{{ direction.code }}</span></td>
+                    <td>{{ direction.nom }}</td>
+                    <td>
+              <span class="directeur-badge" [class.not-assigned]="!direction.directeurNom">
+                {{ direction.directeurNom || 'Non assigné' }}
+              </span>
+                    </td>
+                    <td class="text-center">{{ direction.nombreServices || 0 }}</td>
+                    <td class="text-center">{{ direction.nombreCollaborateurs || 0 }}</td>
+                    <td class="actions">
+                        <button class="btn-action btn-edit" (click)="onEdit(direction)" title="Modifier">
+                            ✏️
+                        </button>
+                        <button class="btn-action btn-delete" (click)="onDelete(direction.id, direction.nom)" title="Supprimer">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredDirections.length === 0">
+                    <td colspan="6" class="empty-message">
+                        Aucune direction trouvée
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<!-- POPUP D'ENREGISTREMENT -->
-<p-dialog header="ENREGISTREMENT D'UNE DIRECTION" [(visible)]="displayDialogue" [style]="{width: '50vw'}">
-    <div class="col-12 md:col-12">
-        <form #myForm="ngForm" name="myForm" role="form" novalidate>
-            <div class="card p-fluid">
-                <div class="field">
-                    <label for="code">CODE</label>
-                    <input pInputText id="code" type="text" name="code" [(ngModel)]="newDirection.code" required minlength="1"/>
-                </div>
-                <div class="field">
-                    <label for="libelle">LIBELLE</label>
-                    <input pInputText id="libelle" type="text" name="libelle" [(ngModel)]="newDirection.libelle" required minlength="1"/>
-                </div>
-            </div>
-        </form>
-    </div>
-    <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="Annuler" icon="pi pi-times" (click)="onHidenDialogue()"
-                class="p-button-danger mr-2 mb-2"></button>
-        <button pButton pRipple type="submit" [disabled]="!myForm.valid" label="Enregistrer" icon="pi pi-save"
-                (click)="onSave()"
-                class="p-button-success mr-2 mb-2"></button>
-    </ng-template>
-</p-dialog>
-
-<!-- POPUP DE MODIFICATION -->
-<p-dialog header="MODIFICATION D'UNE DIRECTION" [(visible)]="displayDialogueModification" [style]="{width: '50vw'}">
-    <div class="col-12 md:col-12">
-        <form #myFormModif="ngForm" name="myFormModif" role="form" novalidate>
-            <div class="card p-fluid">
-                <div class="field">
-                    <label for="codeModifier">CODE</label>
-                    <input pInputText id="codeModifier" type="text" name="codeModifier"
-                           [(ngModel)]="selectedDirection.code" required minlength="1"/>
-                </div>
-                <div class="field">
-                    <label for="libelleModifier">LIBELLE</label>
-                    <input pInputText id="libelleModifier" type="text" name="libelleModifier"
-                           [(ngModel)]="selectedDirection.libelle" required minlength="1"/>
-                </div>
-            </div>
-        </form>
-    </div>
-    <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="Annuler" icon="pi pi-times" (click)="onHidenDialogueModif()"
-                class="p-button-danger mr-2 mb-2"></button>
-        <button pButton pRipple type="submit" [disabled]="!myFormModif.valid" label="Enregistrer" icon="pi pi-save"
-                (click)="updateDirection()"
-                class="p-button-success mr-2 mb-2"></button>
-    </ng-template>
-</p-dialog>
-
-<!-- POPUP DETAILS -->
-<p-dialog header="DÉTAILS D'UNE DIRECTION" [(visible)]="displayDialogueDetail" [style]="{width: '50vw'}">
-    <div class="col-12 md:col-12">
-        <div class="col-12 md:col-12">
-            <div>
-                <h5>
-                    <span style="color: black;">CODE :  </span>
-                    <span [ngStyle]="{ color: 'blue' }">{{ selectedDirection?.code }}</span>
-                </h5>
-            </div>
-            <div>
-                <h5>
-                    <span style="color: black;">LIBELLE :  </span>
-                    <span [ngStyle]="{ color: 'blue' }">{{ selectedDirection?.libelle }}</span>
-                </h5>
-            </div>
-        </div>
-    </div>
-    <ng-template pTemplate="footer">
-        <button pButton pRipple type="button" label="Fermer" icon="pi pi-times"
-                (click)="displayDialogueDetail = false"
-                class="p-button-danger mr-2 mb-2"></button>
-    </ng-template>
-</p-dialog>
-
-<p-toast></p-toast>
-<p-confirmPopup [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'"></p-confirmPopup>

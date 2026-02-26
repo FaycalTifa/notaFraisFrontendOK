@@ -3,7 +3,7 @@ import {environment} from '../../../../environments/environment';
 import {getServiceIdentifier, IService} from '../../models/service/service';
 import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ServiceEntite} from '../../models/entities/entities';
+import {ServiceEntity, ServiceResponse} from '../../models/entities/entities';
 
 export type EntityResponseType = HttpResponse<IService>;
 export type EntityArrayResponseType = HttpResponse<IService[]>;
@@ -16,27 +16,27 @@ export class ServiceService {
 
     constructor(private http: HttpClient) { }
 
-    createService(service: ServiceEntite): Observable<ServiceEntite> {
-        return this.http.post<ServiceEntite>(this.apiUrl, service);
+    createService(service: ServiceEntity): Observable<ServiceEntity> {
+        return this.http.post<ServiceEntity>(this.apiUrl, service);
     }
 
-    updateService(id: number, service: ServiceEntite): Observable<ServiceEntite> {
-        return this.http.put<ServiceEntite>(`${this.apiUrl}/${id}`, service);
+    updateService(id: number, service: ServiceEntity): Observable<ServiceEntity> {
+        return this.http.put<ServiceEntity>(`${this.apiUrl}/${id}`, service);
     }
 
     deleteService(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    getAllServices(): Observable<ServiceEntite[]> {
-        return this.http.get<ServiceEntite[]>(this.apiUrl);
+    getAllServices(): Observable<ServiceResponse[]> {
+        return this.http.get<ServiceResponse[]>(this.apiUrl);
     }
 
-    getServiceById(id: number): Observable<ServiceEntite> {
-        return this.http.get<ServiceEntite>(`${this.apiUrl}/${id}`);
+    getServiceById(id: number): Observable<ServiceEntity> {
+        return this.http.get<ServiceEntity>(`${this.apiUrl}/${id}`);
     }
 
-    getServicesByDirection(directionId: number): Observable<ServiceEntite[]> {
-        return this.http.get<ServiceEntite[]>(`${this.apiUrl}/direction/${directionId}`);
+    getServicesByDirection(directionId: number): Observable<ServiceEntity[]> {
+        return this.http.get<ServiceEntity[]>(`${this.apiUrl}/direction/${directionId}`);
     }
 }

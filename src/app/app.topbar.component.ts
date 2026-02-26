@@ -7,6 +7,7 @@ import {KeycloakService} from 'keycloak-angular';
 import {HttpResponse} from '@angular/common/http';
 import isOnline from 'is-online';
 import {LoginService} from './pages/services/login/login.service';
+import { AuthService } from './pages/services/auth/auth.service';
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
@@ -24,11 +25,12 @@ import {LoginService} from './pages/services/login/login.service';
     ]
 })
 export class AppTopBarComponent implements OnInit {
-    constructor(
+   /* constructor(
                 public confirmationService: ConfirmationService,
                 public appMain: AppMainComponent,
                 public app: AppComponent,
-                private authService: LoginService,
+                private authServiceSS: LoginService,
+                private authService: AuthService,
                 public keycloakService: KeycloakService,
                 public messageService: MessageService,
     ) {}
@@ -51,7 +53,7 @@ export class AppTopBarComponent implements OnInit {
     IS_CHEF_PERSONNEL_ROLE = '';
     IS_ADMIN_ROLE = '';
     isLogin = false;
-    firstName = '';
+    nomComplet = '';
     lastName = '';
     userName: any;
     isCliked = false;
@@ -65,40 +67,18 @@ export class AppTopBarComponent implements OnInit {
     display = true;
 
 
-    /*
-    onSeeNotifications(need: INeed[]) : any{
-        this.needService.sawNotifications(need).subscribe((res: HttpResponse<INeed[]>) => {
-            const data = res.body;
-            data.forEach( isSawNotifications => isSawNotifications.isSaw = true)
-            console.log("external need", data);
-
-        });
-        console.log("external need", need);
-    }*/
-
-
-/*    this.entreeService.deleteAll(this.selectedentrees).subscribe((res: HttpResponse<IEntree[]>) => {
-    window.console.log(res.body);
-    this.loadAll();
-});
-    */
 
     activeItem: number;
     ngOnInit(): void {
       // this.toInitFunctions();
-        this.authService.loadUserFromStorage(); // charger au démarrage
 
-        this.authService.user$.subscribe(user => {
-            if (user) {
-                this.firstName = user.username;
-                this.lastName = user.password;
-            }
-        });
+        const user = this.authService.getCurrentUser();
 
-        const user = localStorage.getItem('username');
         if (user) {
-            this.firstName = user;
+            this.nomComplet = user.nomComplet;
+           // this.lastName = user.nom;
         }
+
     }
     networkChecked(){
         (async () => {
@@ -121,7 +101,7 @@ export class AppTopBarComponent implements OnInit {
             this.confirmationService.confirm(
                 {
                     target: event.target,
-                    message: ' Êtes-vous sûr de vouloir vous déconnecter ?' +  this.firstName,
+                    message: ' Êtes-vous sûr de vouloir vous déconnecter ?' +  this.nomComplet,
                     accept: () => {
                         this.onLogout();
                     }
@@ -140,7 +120,7 @@ export class AppTopBarComponent implements OnInit {
     getUserNameLoged(): void {
         this.keycloakUser = this.keycloakService.getUsername();
         this.keycloakService.loadUserProfile().then(profile => {
-          this.firstName = profile.firstName;
+          this.nomComplet = profile.firstName;
           this.lastName = profile.lastName;
            // console.log(profile['attributes']); //gives you array of all attributes of user, extract what you need
         });
@@ -155,70 +135,60 @@ export class AppTopBarComponent implements OnInit {
         this.canActivate();
         this.networkChecked();
     }
-    // model: MegaMenuItem[] = [
-    //     {
-    //         label: 'UI KIT',
-    //         items: [
-    //             [
-    //                 {
-    //                     label: 'UI KIT 1',
-    //                     items: [
-    //                         { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
-    //                         { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
-    //                         { label: 'Float Label', icon: 'pi pi-fw pi-bookmark', routerLink: ['/uikit/floatlabel'] },
-    //                         { label: 'Button', icon: 'pi pi-fw pi-mobile', routerLink: ['/uikit/button'] },
-    //                         { label: 'File', icon: 'pi pi-fw pi-file', routerLink: ['/uikit/file'] }
-    //                     ]
-    //                 }
-    //             ],
-    //             [
-    //                 {
-    //                     label: 'UI KIT 2',
-    //                     items: [
-    //                         { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
-    //                         { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/uikit/list'] },
-    //                         { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/uikit/tree'] },
-    //                         { label: 'Panel', icon: 'pi pi-fw pi-tablet', routerLink: ['/uikit/panel'] },
-    //                         { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/uikit/charts'] }
-    //                     ]
-    //                 }
-    //             ],
-    //             [
-    //                 {
-    //                     label: 'UI KIT 3',
-    //                     items: [
-    //                         { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/uikit/overlay'] },
-    //                         { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/uikit/media'] },
-    //                         { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/uikit/menu'] },
-    //                         { label: 'Message', icon: 'pi pi-fw pi-comment', routerLink: ['/uikit/message'] },
-    //                         { label: 'Misc', icon: 'pi pi-fw pi-circle-off', routerLink: ['/uikit/misc'] }
-    //                     ]
-    //                 }
-    //             ]
-    //         ]
-    //     },
-    //     {
-    //         label: 'UTILITIES',
-    //         items: [
-    //             [
-    //                 {
-    //                     label: 'UTILITIES 1',
-    //                     items: [
-    //                         { label: 'Icons', icon: 'pi pi-fw pi-prime', routerLink: ['utilities/icons'] },
-    //                         { label: 'PrimeFlex', icon: 'pi pi-fw pi-desktop', url: 'https://www.primefaces.org/primeflex/', target: '_blank' }
-    //                     ]
-    //                 }
-    //             ],
+   
+}
+*/
 
-    //         ]
-    //     }
-    // ];
-    // @ViewChild('searchInput') searchInputViewChild: ElementRef;
-    // onSearchAnimationEnd(event: AnimationEvent) {
-    //     switch(event.toState) {
-    //         case 'visible':
-    //             this.searchInputViewChild.nativeElement.focus();
-    //         break;
-    //     }
-    // }
+    constructor(
+        public confirmationService: ConfirmationService,
+        public appMain: AppMainComponent,
+        public app: AppComponent,
+        private authService: AuthService,
+        public messageService: MessageService,
+    ) {}
+
+    // Propriétés
+    nomComplet = '';
+    isCliked = false;
+    allNeedsSendedByChefServiceToDgLenght = 0;
+    IS_DG_ROLE = '';
+
+    ngOnInit(): void {
+        // Récupérer l'utilisateur connecté
+        const user = this.authService.getCurrentUser();
+
+        if (user) {
+            // Adapter selon la structure de votre LoginResponse
+            this.nomComplet = user.nomComplet || user.email || 'Utilisateur';
+        }
+    }
+
+    /**
+     * Méthode UNIQUE de déconnexion avec confirmation
+     */
+    // app.topbar.component.ts
+
+    testLogout(): void {
+        console.log('TEST - Déconnexion directe');
+        this.authService.logout();
+    }
+    logout(): void {
+        console.log('1. Bouton déconnexion cliqué');
+
+
+                // Appel explicite
+                this.authService.logout();
+
+                console.log('4. Après authService.logout()');
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: 'Déconnexion réussie',
+                    life: 2000
+                });
+            }
+
+
+
 }

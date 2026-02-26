@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Agent, Direction, RegisterDTO, Section, ServiceEntite, Utilisateur} from '../../models/entities/entities';
-import {LoginService} from '../../services/login/login.service';
-import {Router} from '@angular/router';
-import {MessageService} from 'primeng/api';
-import {HierarchieService} from '../../services/Hierarchie/hierarchie.service';
+
 
 @Component({
   selector: 'app-create-user',
@@ -11,8 +7,11 @@ import {HierarchieService} from '../../services/Hierarchie/hierarchie.service';
   styleUrls: ['./create-user.component.scss']
 })
 export class CreateUserComponent implements OnInit {
+    ngOnInit(): void {
+        throw new Error('Method not implemented.');
+    }
 
-    registerDTO: RegisterDTO = {
+   /* registerDTO: RegisterDTO = {
         username: '',
         prenom: '',
         nom: '',
@@ -268,5 +267,5 @@ export class CreateUserComponent implements OnInit {
                 });
             }
         });
-    }
+    }*/
 }

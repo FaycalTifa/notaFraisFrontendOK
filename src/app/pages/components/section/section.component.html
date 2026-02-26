@@ -1,97 +1,140 @@
-<div class="p-grid p-fluid">
-    <div class="p-col-12">
-        <div class="card">
-            <h5>Gestion des Sections</h5>
+<div class="section-container">
+    <!-- En-tête -->
+    <div class="header">
+        <h1>Gestion des Sections</h1>
+        <button class="btn-add" (click)="onAdd()" [disabled]="showForm">
+            <span class="icon">➕</span> Nouvelle section
+        </button>
+    </div>
 
-            <p-toolbar>
-                <div class="p-toolbar-group-left">
-                    <button pButton type="button" icon="pi pi-plus" label="Ajouter"
-                            class="p-button-success mr-2" (click)="showAddDialog()"></button>
+    <!-- Messages -->
+    <div *ngIf="successMessage" class="alert success">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert error">{{ errorMessage }}</div>
+
+    <!-- Formulaire -->
+    <div *ngIf="showForm" class="form-section">
+        <div class="form-header">
+            <h2>{{ isEditing ? 'Modifier' : 'Nouvelle' }} section</h2>
+        </div>
+
+        <form [formGroup]="sectionForm" (ngSubmit)="onSubmit()" class="section-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Code <span class="required">*</span></label>
+                    <input type="text" formControlName="code" placeholder="Ex: SEC001"
+                           [class.is-invalid]="f['code'].touched && f['code'].invalid"/>
+                    <div *ngIf="f['code'].touched && f['code'].invalid" class="error-message">
+                        <small *ngIf="f['code'].errors?.['required']">Code requis</small>
+                        <small *ngIf="f['code'].errors?.['maxlength']">Max 50 caractères</small>
+                    </div>
                 </div>
-            </p-toolbar>
 
-            <p-table [value]="sections" [paginator]="true" [rows]="10">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Code</th>
-                        <th>Libellé</th>
-                        <th>Service</th>
-                        <th>Direction</th>
-                        <th>Actions</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-section>
-                    <tr>
-                        <td>{{section.code}}</td>
-                        <td>{{section.libelle}}</td>
-                        <td>{{getServiceLibelle(section)}}</td> <!-- Méthode utilitaire -->
-                        <td>{{getDirectionLibelle(section)}}</td> <!-- Méthode utilitaire -->
-                        <td>
-                            <button pButton type="button" icon="pi pi-pencil"
-                                    class="p-button-warning mr-2"
-                                    (click)="showEditDialog(section)"></button>
-                            <button pButton type="button" icon="pi pi-trash"
-                                    class="p-button-danger"
-                                    (click)="confirmDelete(section)"></button>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
+                <div class="form-group">
+                    <label>Nom <span class="required">*</span></label>
+                    <input type="text" formControlName="nom" placeholder="Nom de la section"
+                           [class.is-invalid]="f['nom'].touched && f['nom'].invalid"/>
+                    <div *ngIf="f['nom'].touched && f['nom'].invalid" class="error-message">
+                        <small *ngIf="f['nom'].errors?.['required']">Nom requis</small>
+                        <small *ngIf="f['nom'].errors?.['maxlength']">Max 100 caractères</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Service <span class="required">*</span></label>
+                <select formControlName="serviceId" [class.is-invalid]="f['serviceId'].touched && f['serviceId'].invalid">
+                    <option [value]="null">Sélectionner un service</option>
+                    <option *ngFor="let s of services" [value]="s.id">{{ s.nom }} ({{ s.directionNom }})</option>
+                </select>
+                <div *ngIf="f['serviceId'].touched && f['serviceId'].invalid" class="error-message">
+                    <small *ngIf="f['serviceId'].errors?.['required']">Service requis</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea formControlName="description" rows="3" placeholder="Description de la section..."
+                          [class.is-invalid]="f['description'].touched && f['description'].invalid"></textarea>
+                <div *ngIf="f['description'].touched && f['description'].invalid" class="error-message">
+                    <small *ngIf="f['description'].errors?.['maxlength']">Max 500 caractères</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" (click)="onCancel()">Annuler</button>
+                <button type="submit" class="btn-submit" [disabled]="sectionForm.invalid || submitting">
+                    {{ submitting ? 'Enregistrement...' : (isEditing ? 'Mettre à jour' : 'Créer') }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-section">
+        <div class="search-bar">
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
+                   placeholder="Rechercher par code, nom, service..." class="search-input"/>
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <div class="service-filters">
+            <button class="filter-btn" [class.active]="!selectedServiceId"
+                    (click)="filterByService(null)">Tous</button>
+            <button *ngFor="let s of services" class="filter-btn"
+                    [class.active]="selectedServiceId === s.id"
+                    (click)="filterByService(s.id)" [title]="s.nom">
+                {{ s.code }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Chargement des sections...</p>
+    </div>
+
+    <!-- Tableau -->
+    <div *ngIf="!loading" class="table-section">
+        <div class="table-header">
+            <span class="count">{{ filteredSections.length }} section(s)</span>
+        </div>
+
+        <div class="table-container">
+            <table class="section-table">
+                <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Nom</th>
+                    <th>Service</th>
+                    <th>Direction</th>
+                    <th>Chef de section</th>
+                    <th>Collaborateurs</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let section of filteredSections">
+                    <td><span class="badge">{{ section.code }}</span></td>
+                    <td>{{ section.nom }}</td>
+                    <td>{{ section.serviceNom }}</td>
+                    <td>{{ getServiceName(section.serviceId) | slice:0:20 }}...</td>
+                    <td>
+              <span class="chef-badge" [class.not-assigned]="!section.chefSectionNom">
+                {{ section.chefSectionNom || 'Non assigné' }}
+              </span>
+                    </td>
+                    <td class="text-center">{{ section.nombreCollaborateurs || 0 }}</td>
+                    <td class="actions">
+                        <button class="btn-action btn-edit" (click)="onEdit(section)" title="Modifier">✏️</button>
+                        <button class="btn-action btn-delete" (click)="onDelete(section.id, section.nom)" title="Supprimer">🗑️</button>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredSections.length === 0">
+                    <td colspan="7" class="empty-message">Aucune section trouvée</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<!-- Dialog Ajout -->
-<p-dialog header="Nouvelle Section" [(visible)]="displayDialog" [style]="{width: '450px'}">
-    <div class="p-fluid">
-        <div class="p-field">
-            <label for="code">Code</label>
-            <input id="code" type="text" pInputText [(ngModel)]="newSection.code">
-        </div>
-        <div class="p-field">
-            <label for="libelle">Libellé</label>
-            <input id="libelle" type="text" pInputText [(ngModel)]="newSection.libelle">
-        </div>
-        <div class="p-field">
-            <label for="service">Service</label>
-            <p-dropdown [options]="services" [(ngModel)]="newSection.serviceId"
-                        optionLabel="libelle" optionValue="id" placeholder="Sélectionnez un service">
-            </p-dropdown>
-        </div>
-    </div>
-    <ng-template pTemplate="footer">
-        <button pButton type="button" label="Annuler" icon="pi pi-times"
-                class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton type="button" label="Enregistrer" icon="pi pi-check"
-                class="p-button-success" (click)="createSection()"></button>
-    </ng-template>
-</p-dialog>
-
-<!-- Dialog Modification -->
-<p-dialog header="Modifier Section" [(visible)]="displayEditDialog" [style]="{width: '450px'}">
-    <div class="p-fluid">
-        <div class="p-field">
-            <label for="editCode">Code</label>
-            <input id="editCode" type="text" pInputText [(ngModel)]="selectedSection.code">
-        </div>
-        <div class="p-field">
-            <label for="editLibelle">Libellé</label>
-            <input id="editLibelle" type="text" pInputText [(ngModel)]="selectedSection.libelle">
-        </div>
-        <div class="p-field">
-            <label for="editService">Service</label>
-            <p-dropdown [options]="services" [(ngModel)]="selectedSection.serviceId"
-                        optionLabel="libelle" optionValue="id" placeholder="Sélectionnez un service">
-            </p-dropdown>
-        </div>
-    </div>
-    <ng-template pTemplate="footer">
-        <button pButton type="button" label="Annuler" icon="pi pi-times"
-                class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton type="button" label="Enregistrer" icon="pi pi-check"
-                class="p-button-success" (click)="updateSection()"></button>
-    </ng-template>
-</p-dialog>
-
-<p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>

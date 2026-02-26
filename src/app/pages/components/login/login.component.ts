@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import {LoginService} from '../../services/login/login.service';
-import {Utilisateur} from '../../models/entities/entities';
-import {MessageService} from 'primeng/api';
-import {BehaviorSubject} from 'rxjs';
+import {Collaborateur, LoginRequest, Utilisateur} from '../../models/entities/entities';
+import {FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth/auth.service';
+import { NotificationService } from '../../services/notification/notification.service';
+import { Role } from '../../models/enum/role';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -13,38 +15,77 @@ import {BehaviorSubject} from 'rxjs';
 export class LoginComponent implements OnInit {
 
 
+    credentials: LoginRequest = {
+        email: '',
+        password: ''
+    };
     loading = false;
-    currentUserName = '';
-    private _user = new BehaviorSubject<any>(null);
-    user$ = this._user.asObservable();
-    utilisateur?: Utilisateur = {};
+
     constructor(
-        private authService: LoginService,
-        private messageService: MessageService,
-        private router: Router) {}
-  ngOnInit(): void {
+        private authService: AuthService,
+        private router: Router,
+        private messageService: MessageService
+    ) {}
 
-  }
+    ngOnInit(): void {
 
-    successAlert(): void {
-        this.messageService.add({severity: 'success', summary: 'Opération réussie!'});
     }
-    login() {
-        this.authService.login(this.utilisateur.username, this.utilisateur.password)
-            .subscribe({
-                next: (res) => {
-                    console.log('✅ Login réussi', res);
-                    localStorage.setItem('username', res.user.username);
-                    this.currentUserName = res.user.username; // ou prenom, selon ce que tu veux
-                    // Si tu veux, mettre à jour les variables globales
-                    this.authService.setUser(res.user);
-                    this.successAlert();
-                    this.router.navigate(['/parametre/services']);
-                },
-                error: (err) => {
-                    console.error('Erreur login', err);
-                    alert('Identifiants incorrects');
-                }
+
+    // ✅ SUPPRIMEZ complètement cette méthode qui cause l'erreur
+    // ngOnInit(): void {
+    //     throw new Error('Method not implemented.');
+    // }
+
+    onLogin(): void {
+        // Validation
+        if (!this.credentials.email || !this.credentials.password) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: 'Veuillez remplir tous les champs'
             });
+            return;
+        }
+
+        console.log('🔄 Tentative de connexion pour:', this.credentials.email);
+        this.loading = true;
+
+        this.authService.login(this.credentials).subscribe({
+            next: (response) => {
+                console.log('✅ Connexion réussie:', response);
+                this.loading = false;
+
+                // Redirection selon le rôle
+                if (response.role === 'ADMIN') {
+                    this.router.navigate(['/dashboard']);
+                } else {
+                    this.router.navigate(['/dashboard']);
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: `Bienvenue ${response.nomComplet}`
+                });
+            },
+            error: (error) => {
+                console.error('❌ Erreur de connexion:', error);
+                this.loading = false;
+
+                let errorMessage = 'Email ou mot de passe incorrect';
+
+                if (error.error && typeof error.error === 'string') {
+                    errorMessage = error.error;
+                } else if (error.error && error.error.message) {
+                    errorMessage = error.error.message;
+                }
+
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: errorMessage
+                });
+            }
+        });
     }
 }

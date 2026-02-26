@@ -1,0 +1,26 @@
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 4px 8px rgba(0,0,0,0.02);
+}
+
+:host ::ng-deep .p-toolbar {
+  padding: 1rem;
+  background: #f8f9fa;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--secondary-color); }
+.text-500 { color: #6c757d; }
+.font-medium { font-weight: 500; }

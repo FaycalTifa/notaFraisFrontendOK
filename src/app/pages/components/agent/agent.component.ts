@@ -11,7 +11,11 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 })
 export class AgentComponent implements OnInit {
 
-    agents: Agent[] = [];
+    ngOnInit(): void {
+       
+    }
+
+    /*agents: Agent[] = [];
     sections: Section[] = [];
     displayDialog = false;
     displayEditDialog = false;
@@ -25,11 +29,7 @@ export class AgentComponent implements OnInit {
         private confirmationService: ConfirmationService
     ) { }
 
-    ngOnInit(): void {
-        this.loadAgents();
-        this.loadSections();
-    }
-
+   
     loadAgents(): void {
         this.agentService.getAllAgents().subscribe(
             (agents) => {
@@ -187,5 +187,5 @@ export class AgentComponent implements OnInit {
             }
         );
     }
-
+*/
 }

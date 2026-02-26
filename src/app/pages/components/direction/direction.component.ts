@@ -1,9 +1,10 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Table} from 'primeng/table';
-import {Direction} from '../../models/entities/entities';
+import {Direction, DirectionResponse} from '../../models/entities/entities';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {DirectionService} from '../../services/Direction/direction.service';
 import {HttpResponse} from '@angular/common/http';
+import {FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-direction',
@@ -12,165 +13,176 @@ import {HttpResponse} from '@angular/common/http';
 })
 export class DirectionComponent implements OnInit {
 
+
+    // États
+    directions: DirectionResponse[] = [];
+    filteredDirections: DirectionResponse[] = [];
     loading = false;
-    @ViewChild('dt') table: Table;
-    @ViewChild('filter') filter: ElementRef;
-    directions: Direction[] = [];
-    displayDialogue = false;
-    displayDialogueModification = false;
-    displayDialogueDetail = false;
+    searchTerm = '';
 
-    // Objet pour le formulaire d'ajout
-    newDirection: Direction = {
-        code: '',
-        libelle: '',
-    };
+    // Formulaire
+    directionForm: FormGroup;
+    isEditing = false;
+    currentDirectionId?: number;
+    showForm = false;
+    submitting = false;
 
-    // Objet pour le formulaire de modification
-    selectedDirection: Direction = {
-        id: undefined,
-        code: '',
-        libelle: '',
-    };
+    // Messages
+    successMessage = '';
+    errorMessage = '';
 
     constructor(
-        private messageService: MessageService,
-        protected directionService: DirectionService,
-        private confirmationService: ConfirmationService) {
+        private directionService: DirectionService,
+        private fb: FormBuilder
+    ) {
+        this.initForm();
     }
 
     ngOnInit(): void {
-        this.getAllDirections();
+        this.loadDirections();
     }
 
-    clear(table: Table) {
-        table.clear();
-        this.filter.nativeElement.value = '';
+    // Initialisation du formulaire
+    private initForm(): void {
+        this.directionForm = this.fb.group({
+            code: ['', [Validators.required, Validators.maxLength(50)]],
+            nom: ['', [Validators.required, Validators.maxLength(100)]],
+            description: ['', Validators.maxLength(500)]
+        });
     }
 
-    // Dans votre composant
-    getAllDirections(): void {
-        this.directionService.getAllDirection().subscribe({
-            next: (directions) => {
-                this.directions = directions;
-                console.log('Directions chargées:', directions);
+    // Charger les directions
+    loadDirections(): void {
+        console.log('------LIST---------');
+        this.loading = true;
+        this.directionService.getAllDirections().subscribe({
+            next: (data) => {
+                this.directions = data;
+                this.applyFilter();
+                this.loading = false;
             },
             error: (error) => {
-                console.error('Erreur chargement directions:', error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Erreur',
-                    detail: 'Erreur lors du chargement des directions'
-                });
+                console.error('Erreur lors du chargement', error);
+                this.errorMessage = 'Erreur lors du chargement des directions';
+                this.loading = false;
             }
         });
     }
 
-    successAlert(): void {
-        this.messageService.add({severity: 'success', summary: 'Opération réussie!'});
+    // Appliquer le filtre de recherche
+    applyFilter(): void {
+        if (!this.searchTerm) {
+            this.filteredDirections = this.directions;
+        } else {
+            const term = this.searchTerm.toLowerCase();
+            this.filteredDirections = this.directions.filter(d =>
+                d.nom.toLowerCase().includes(term) ||
+                d.code.toLowerCase().includes(term) ||
+                (d.directeurNom && d.directeurNom.toLowerCase().includes(term))
+            );
+        }
     }
 
-    errorAlert(message: string): void {
-        this.messageService.add({severity: 'error', summary: 'Erreur', detail: message});
+    // Afficher le formulaire d'ajout
+    onAdd(): void {
+        this.resetForm();
+        this.isEditing = false;
+        this.showForm = true;
     }
 
-    onDisplayDialogue(): void {
-        this.newDirection = { code: '', libelle: '' }; // Réinitialise le formulaire
-        this.displayDialogue = true;
+    // Afficher le formulaire d'édition
+    onEdit(direction: DirectionResponse): void {
+        this.isEditing = true;
+        this.currentDirectionId = direction.id;
+        this.directionForm.patchValue({
+            code: direction.code,
+            nom: direction.nom,
+            description: direction.description
+        });
+        this.showForm = true;
     }
 
-    onDisplayDialogueModif(direction: Direction): void {
-        console.log('Direction à modifier:', direction);
+    // Annuler le formulaire
+    onCancel(): void {
+        this.resetForm();
+        this.showForm = false;
+        this.isEditing = false;
+        this.currentDirectionId = undefined;
+    }
 
-        if (!direction.id) {
-            this.errorAlert('ID de la direction non défini');
+    // Réinitialiser le formulaire
+    private resetForm(): void {
+        this.directionForm.reset();
+        this.successMessage = '';
+        this.errorMessage = '';
+    }
+
+    // Soumettre le formulaire
+    onSubmit(): void {
+        if (this.directionForm.invalid) {
+            Object.keys(this.directionForm.controls).forEach(key => {
+                this.directionForm.get(key)?.markAsTouched();
+            });
             return;
         }
 
-        // Crée une copie de l'objet pour éviter les références
-        this.selectedDirection = { ...direction };
-        this.displayDialogueModification = true;
-    }
+        this.submitting = true;
+        const direction: Direction = this.directionForm.value;
 
-    onHidenDialogue(): void {
-        this.displayDialogue = false;
-        this.displayDialogueModification = false;
-        this.displayDialogueDetail = false;
-    }
-
-    onDisplayDialoguDetail(direction: Direction) {
-        this.selectedDirection = { ...direction };
-        this.displayDialogueDetail = true;
-    }
-
-    onHidenDialogueModif(): void {
-        this.displayDialogueModification = false;
-    }
-
-    onSave(): void {
-        this.directionService.createDirection(this.newDirection).subscribe(
-            resp => {
-                if (resp) {
-                    this.onHidenDialogue();
-                    this.successAlert();
-                    this.getAllDirections();
+        if (this.isEditing && this.currentDirectionId) {
+            // Mode édition
+            this.directionService.updateDirection(this.currentDirectionId, direction).subscribe({
+                next: (updated) => {
+                    this.successMessage = 'Direction mise à jour avec succès';
+                    this.loadDirections();
+                    this.onCancel();
+                    this.submitting = false;
+                    setTimeout(() => this.successMessage = '', 3000);
+                },
+                error: (error) => {
+                    console.error('Erreur mise à jour', error);
+                    this.errorMessage = 'Erreur lors de la mise à jour';
+                    this.submitting = false;
                 }
-            },
-            error => {
-                console.error('Erreur lors de la création de la direction', error);
-                this.errorAlert('Erreur lors de la création');
-            }
-        );
+            });
+        } else {
+            // Mode création
+            this.directionService.createDirection(direction).subscribe({
+                next: (created) => {
+                    this.successMessage = 'Direction créée avec succès';
+                    this.loadDirections();
+                    this.onCancel();
+                    this.submitting = false;
+                    setTimeout(() => this.successMessage = '', 3000);
+                },
+                error: (error) => {
+                    console.error('Erreur création', error);
+                    this.errorMessage = 'Erreur lors de la création';
+                    this.submitting = false;
+                }
+            });
+        }
     }
 
-    updateDirection(): void {
-        console.log('Mise à jour de la direction:', this.selectedDirection);
-        if (!this.selectedDirection.id) {
-            this.errorAlert('ID de la direction non défini');
-            return;
+    // Supprimer une direction
+    onDelete(id: number, nom: string): void {
+        if (confirm(`Êtes-vous sûr de vouloir supprimer la direction "${nom}" ?`)) {
+            this.directionService.deleteDirection(id).subscribe({
+                next: () => {
+                    this.successMessage = 'Direction supprimée avec succès';
+                    this.loadDirections();
+                    setTimeout(() => this.successMessage = '', 3000);
+                },
+                error: (error) => {
+                    console.error('Erreur suppression', error);
+                    this.errorMessage = 'Erreur lors de la suppression';
+                }
+            });
         }
-        this.directionService.updateDirection(this.selectedDirection.id, this.selectedDirection).subscribe(
-            response => {
-                console.log('Direction mise à jour avec succès', response);
-                this.successAlert();
-                this.getAllDirections();
-                this.onHidenDialogueModif();
-            },
-            error => {
-                console.error('Erreur lors de la mise à jour de la direction:', error);
-                this.errorAlert('Erreur lors de la mise à jour');
-            }
-        );
     }
 
-    deleteDirection(direction: Direction): void {
-        console.log('Suppression de la direction:', direction);
-
-        if (!direction.id) {
-            this.errorAlert('ID de la direction non défini');
-            return;
-        }
-        this.confirmationService.confirm({
-            target: event.target,
-            message: 'Êtes-vous sûr de vouloir supprimer ' + direction.libelle + ' ?',
-            header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.directionService.deleteDirection(direction.id, direction).subscribe(
-                    response => {
-                        console.log('Direction supprimée avec succès', response);
-                        this.successAlert();
-                        this.getAllDirections();
-                    },
-                    error => {
-                        console.error('Erreur lors de la suppression de la direction:', error);
-                        this.errorAlert('Erreur lors de la suppression');
-                    }
-                );
-            },
-            reject: () => {
-                // Action annulée
-            }
-        });
+    // Getters pour accéder facilement aux champs du formulaire
+    get f() {
+        return this.directionForm.controls;
     }
 }

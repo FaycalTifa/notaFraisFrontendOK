@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Direction} from '../../models/entities/entities';
+import {Direction, DirectionResponse} from '../../models/entities/entities';
 import {tap} from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 export type EntityResponseType = HttpResponse<Direction>;
 export type EntityArrayResponseType = HttpResponse<Direction[]>;
 
@@ -11,25 +12,35 @@ export type EntityArrayResponseType = HttpResponse<Direction[]>;
 })
 export class DirectionService {
 
-    private apiUrl = 'http://localhost:8080/api/direction';
+    private apiUrl = `${environment.apiUrl}/direction`;
 
-    constructor(protected http: HttpClient) {
+    constructor(private http: HttpClient) {}
+
+    getAllDirections(): Observable<DirectionResponse[]> {
+        return this.http.get<DirectionResponse[]>(this.apiUrl);
     }
 
-    createDirection(direction: Direction): Observable<Direction> {
-        return this.http.post<Direction>(this.apiUrl, direction);
+    getDirectionById(id: number): Observable<DirectionResponse> {
+        return this.http.get<DirectionResponse>(`${this.apiUrl}/${id}`);
     }
 
-    updateDirection(id: number, direction: Direction): Observable<Direction> {
-        return this.http.put<Direction>(`${this.apiUrl}/update/${id}`, direction);
+    getDirectionByCode(code: string): Observable<DirectionResponse> {
+        return this.http.get<DirectionResponse>(`${this.apiUrl}/code/${code}`);
     }
 
-    deleteDirection(id: number, direction: Direction): Observable<Direction> {
-        return this.http.put<Direction>(`${this.apiUrl}/deleteAgence/${id}`, direction);
+    createDirection(direction: Direction): Observable<DirectionResponse> {
+        return this.http.post<DirectionResponse>(this.apiUrl, direction);
     }
 
-    getAllDirection(): Observable<Direction[]> {
-        return this.http.get<Direction[]>(this.apiUrl);
+    updateDirection(id: number, direction: Direction): Observable<DirectionResponse> {
+        return this.http.put<DirectionResponse>(`${this.apiUrl}/${id}`, direction);
     }
 
+    deleteDirection(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    }
+
+    assignerDirecteur(directionId: number, directeurId: number): Observable<DirectionResponse> {
+        return this.http.post<DirectionResponse>(`${this.apiUrl}/${directionId}/directeur/${directeurId}`, {});
+    }
 }

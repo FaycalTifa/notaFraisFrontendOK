@@ -4,7 +4,6 @@ import { AppMainComponent } from './app.main.component';
 import {LoginComponent} from './pages/components/login/login.component';
 import {PosteComponent} from './pages/components/poste/poste.component';
 import {ServiceComponent} from './pages/components/service/service.component';
-import {CreateUserComponent} from './pages/components/create-user/create-user.component';
 import {ServiceEntiteComponent} from './pages/components/service-entite/service-entite.component';
 import {DirectionComponent} from './pages/components/direction/direction.component';
 import {ServiceEntiteService} from './pages/services/ServiceEntite/service-entite.service';
@@ -13,28 +12,40 @@ import {SectionComponent} from './pages/components/section/section.component';
 import { InfoEntrepriseComponent } from './pages/components/info-entreprise/info-entreprise.component';
 import { AnneeExerciceComponent } from './pages/components/annee-exercice/annee-exercice.component';
 import { EvaluationComponent } from './pages/components/evaluation/evaluation.component';
+import { ListeCollaborateursComponent } from './pages/components/liste-collaborateurs/liste-collaborateurs.component';
+import { FormCollaborateurComponent } from './pages/components/form-collaborateur/form-collaborateur.component';
+import { ListeEvaluationsComponent } from './pages/components/liste-evaluations/liste-evaluations.component';
+import { FormulaireEvaluationComponent } from './pages/components/formulaire-evaluation/formulaire-evaluation.component';
+import { DashboardComponent } from './pages/components/dashboard/dashboard.component';
+import { CollaborateurEvaluationsComponentComponent } from './pages/components/collaborateur-evaluations-component/collaborateur-evaluations-component.component';
 
 @NgModule({
     imports: [
         RouterModule.forRoot([
             // route par défaut → login
-            { path: '', redirectTo: 'login', pathMatch: 'full' },
-
+            { path: '', redirectTo: 'collaborateur', pathMatch: 'full' },
             // login sans AppMainComponent (donc sans menu)
             { path: 'login', component: LoginComponent },
-            { path: 'create-users', component: CreateUserComponent },
+            { path: 'creer-collaborateur', component: FormCollaborateurComponent },
+            { path: 'List Direction', component: DirectionComponent  },
 
             // routes principales avec AppMainComponent (menu inclus)
             {
                 path: '', component: AppMainComponent,
                 children: [
-                    { path: 'parametre/services', component: ServiceEntiteComponent },
-                    { path: 'parametre/agent', component: AgentComponent },
-                    { path: 'parametre/section', component: SectionComponent },
+                    { path: 'dashboard', component: DashboardComponent },
+                    { path: 'collaborateur', component: ListeCollaborateursComponent },
+                    { path: 'liste-evaluations', component: ListeEvaluationsComponent },
+
+                    // Routes pour les évaluations (CORRIGÉES)
+                    { path: 'evaluations/nouveau', component: FormulaireEvaluationComponent },
+                    { path: 'evaluations/:id', component: FormulaireEvaluationComponent },  // ← Voir détails
+                    { path: 'mon-levaluations', component: CollaborateurEvaluationsComponentComponent },  // ← Voir détails
+                    { path: 'evaluations/editer/:id', component: FormulaireEvaluationComponent },  // ← Modifier                    { path: 'parametre/exercice', component: AnneeExerciceComponent },
+                    { path: 'form-evaluation', component: FormulaireEvaluationComponent },
                     { path: 'parametre/direction', component: DirectionComponent },
-                    { path: 'parametre/exercice', component: AnneeExerciceComponent },
-                    { path: 'parametre/evaluation', component: EvaluationComponent },
-                    { path: 'info/personnel', component: InfoEntrepriseComponent },
+                    { path: 'parametre/section', component: SectionComponent },
+                    { path: 'parametre/service', component: ServiceComponent },
                 ]
             },
 

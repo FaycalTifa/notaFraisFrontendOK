@@ -1,0 +1,84 @@
+<!-- pages/components/liste-collaborateurs/details-collaborateur.component.html -->
+<div *ngIf="collaborateur" class="p-3">
+    <div class="flex justify-content-center mb-4">
+        <div class="w-6rem h-6rem bg-primary border-circle flex align-items-center justify-content-center text-white text-3xl">
+            {{collaborateur.nom.charAt(0)}}{{collaborateur.prenoms.charAt(0)}}
+        </div>
+    </div>
+
+    <div class="text-center mb-4">
+        <h3>{{collaborateur.nomComplet}}</h3>
+        <span class="px-3 py-1 border-round font-medium text-sm" [ngClass]="getRoleClass(collaborateur.role)">
+      {{getRoleLabel(collaborateur.role)}}
+    </span>
+    </div>
+
+    <div class="grid">
+        <div class="col-6">
+            <div class="field">
+                <label class="font-bold">Matricule</label>
+                <p>{{collaborateur.matricule}}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Email</label>
+                <p>{{collaborateur.email}}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Téléphone</label>
+                <p>{{collaborateur.telephone || '-'}}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Date d'embauche</label>
+                <p>{{collaborateur.dateEmbauche | date:'dd/MM/yyyy'}}</p>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="field">
+                <label class="font-bold">Direction</label>
+                <p>{{collaborateur.direction}}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Service</label>
+                <p>{{collaborateur.service}}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Section</label>
+                <p>{{collaborateur.section || '-'}}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Poste actuel</label>
+                <p>{{collaborateur.posteActuel}}</p>
+            </div>
+        </div>
+
+        <div class="col-12" *ngIf="collaborateur.responsableN1 || collaborateur.responsableN2">
+            <h4>Hiérarchie</h4>
+            <div class="grid">
+                <div class="col-6" *ngIf="collaborateur.responsableN1">
+                    <label class="font-bold">Responsable N+1</label>
+                    <p>{{collaborateur.responsableN1}}</p>
+                </div>
+                <div class="col-6" *ngIf="collaborateur.responsableN2">
+                    <label class="font-bold">Responsable N+2</label>
+                    <p>{{collaborateur.responsableN2}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="field">
+                <label class="font-bold">Statut</label>
+                <p>
+                    <i [class]="collaborateur.actif !== false ? 'pi pi-check-circle text-green-500' : 'pi pi-times-circle text-red-500'"></i>
+                    {{collaborateur.actif !== false ? 'Actif' : 'Inactif'}}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-content-end mt-3">
+        <button pButton label="Fermer" icon="pi pi-times"
+                class="p-button-outlined" (click)="close()"></button>
+    </div>
+</div>

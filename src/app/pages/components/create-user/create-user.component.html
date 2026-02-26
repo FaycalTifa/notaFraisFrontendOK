@@ -1,3 +1,4 @@
+<!--
 <div class="grid align-items-center justify-content-center h-screen">
     <div class="col-12 md:col-8">
         <p-card header="Connexion" class="shadow-3 border-round-xl">
@@ -8,7 +9,7 @@
             <h5>Création d'Utilisateur</h5>
 
             <div class="p-fluid grid">
-                <!-- Champs de base -->
+                &lt;!&ndash; Champs de base &ndash;&gt;
                 <div class="field col-12 md:col-6">
                     <label for="username">Username *</label>
                     <input id="username" type="text" pInputText [(ngModel)]="registerDTO.username" required>
@@ -43,7 +44,7 @@
                     <input id="confirmPassword" type="password" pInputText [(ngModel)]="registerDTO.confirmPassword" required>
                 </div>
 
-                <!-- Direction (toujours visible si rôle sélectionné) -->
+                &lt;!&ndash; Direction (toujours visible si rôle sélectionné) &ndash;&gt;
                 <div class="field col-12 md:col-6" *ngIf="registerDTO.role">
                     <label for="direction">Direction *</label>
                     <p-dropdown [options]="directions" [(ngModel)]="registerDTO.directionId"
@@ -53,7 +54,7 @@
                     </p-dropdown>
                 </div>
 
-                <!-- Service (visible pour CHEF_SERVICE, CHEF_SECTION, AGENT) -->
+                &lt;!&ndash; Service (visible pour CHEF_SERVICE, CHEF_SECTION, AGENT) &ndash;&gt;
                 <div class="field col-12 md:col-6"
                      *ngIf="registerDTO.role && ['CHEF_SERVICE', 'CHEF_SECTION', 'AGENT'].includes(registerDTO.role) && registerDTO.directionId">
                     <label for="service">Service *</label>
@@ -64,7 +65,7 @@
                     </p-dropdown>
                 </div>
 
-                <!-- Section (visible pour CHEF_SECTION, AGENT) -->
+                &lt;!&ndash; Section (visible pour CHEF_SECTION, AGENT) &ndash;&gt;
                 <div class="field col-12 md:col-6"
                      *ngIf="registerDTO.role && ['CHEF_SECTION', 'AGENT'].includes(registerDTO.role) && registerDTO.serviceId">
                     <label for="section">Section *</label>
@@ -75,7 +76,7 @@
                     </p-dropdown>
                 </div>
 
-                <!-- Agent (visible seulement pour AGENT) -->
+                &lt;!&ndash; Agent (visible seulement pour AGENT) &ndash;&gt;
                 <div class="field col-12 md:col-6"
                      *ngIf="registerDTO.role === 'AGENT' && registerDTO.sectionId">
                     <label for="agent">Agent *</label>
@@ -99,3 +100,4 @@
 </div>
 
 <p-toast></p-toast>
+-->

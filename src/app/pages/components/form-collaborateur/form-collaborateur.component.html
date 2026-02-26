@@ -1,0 +1,272 @@
+
+<div class="card">
+    <p-toast></p-toast>
+
+    <div class="flex align-items-center justify-content-between mb-4">
+        <h2>{{ isEdit ? 'Modifier' : 'Nouveau' }} collaborateur</h2>
+        <p-button
+                icon="pi pi-times"
+                styleClass="p-button-rounded p-button-outlined p-button-secondary"
+                (onClick)="cancel()">
+        </p-button>
+    </div>
+
+    <p-steps [model]="steps" [(activeIndex)]="activeStep" [readonly]="false" styleClass="mb-4"></p-steps>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="flex justify-content-center align-items-center p-5">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <form *ngIf="!loading" [formGroup]="collaborateurForm">
+        <!-- Étape 1: Informations personnelles -->
+        <div *ngIf="activeStep === 0">
+            <h3 class="mb-4">Informations personnelles</h3>
+
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Nom <span class="text-danger">*</span></label>
+                        <input
+                                pInputText
+                                formControlName="nom"
+                                [class.ng-invalid]="f['nom'].touched && f['nom'].invalid"
+                        />
+                        <small *ngIf="f['nom'].touched && f['nom'].invalid" class="text-danger">
+                            Le nom est requis
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Prénoms <span class="text-danger">*</span></label>
+                        <input
+                                pInputText
+                                formControlName="prenoms"
+                                [class.ng-invalid]="f['prenoms'].touched && f['prenoms'].invalid"
+                        />
+                        <small *ngIf="f['prenoms'].touched && f['prenoms'].invalid" class="text-danger">
+                            Les prénoms sont requis
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Matricule <span class="text-danger">*</span></label>
+                        <input
+                                pInputText
+                                formControlName="matricule"
+                                [class.ng-invalid]="f['matricule'].touched && f['matricule'].invalid"
+                        />
+                        <small *ngIf="f['matricule'].touched && f['matricule'].invalid" class="text-danger">
+                            Le matricule est requis
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Email <span class="text-danger">*</span></label>
+                        <input
+                                pInputText
+                                type="email"
+                                formControlName="email"
+                                [class.ng-invalid]="f['email'].touched && f['email'].invalid"
+                        />
+                        <small *ngIf="f['email'].touched && f['email'].invalid" class="text-danger">
+                            Email valide requis
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Téléphone</label>
+                        <input pInputText formControlName="telephone" />
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Date d'embauche</label>
+                        <p-calendar
+                                formControlName="dateEmbauche"
+                                dateFormat="dd/mm/yy"
+                                [showIcon]="true"
+                        ></p-calendar>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="field">
+                        <label>Poste actuel</label>
+                        <input pInputText formControlName="posteActuel" />
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6" *ngIf="!isEdit">
+                    <div class="field">
+                        <label>Mot de passe</label>
+                        <p-password
+                                formControlName="password"
+                                [feedback]="false"
+                                [toggleMask]="true"
+                        ></p-password>
+                        <small>Par défaut, le matricule sera utilisé si non renseigné</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Étape 2: Rôle et organisation -->
+        <div *ngIf="activeStep === 1">
+            <h3 class="mb-4">Rôle et affectation</h3>
+
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Rôle <span class="text-danger">*</span></label>
+                        <p-dropdown
+                                formControlName="role"
+                                [options]="roleOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Sélectionner un rôle"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <p-divider align="left">
+                        <span class="font-medium">Affectation</span>
+                    </p-divider>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Direction</label>
+                        <p-dropdown
+                                formControlName="directionId"
+                                [options]="directions"
+                                optionLabel="nom"
+                                optionValue="id"
+                                placeholder="Sélectionner une direction"
+                                [showClear]="true"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Service</label>
+                        <p-dropdown
+                                formControlName="serviceId"
+                                [options]="services"
+                                optionLabel="nom"
+                                optionValue="id"
+                                placeholder="Sélectionner un service"
+                                [showClear]="true"
+                                [loading]="servicesLoading"
+                        >
+                            <ng-template pTemplate="empty">
+                                <div class="p-3 text-center text-gray-500">
+                                    Aucun service disponible
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Section</label>
+                        <p-dropdown
+                                formControlName="sectionId"
+                                [options]="sections"
+                                optionLabel="nom"
+                                optionValue="id"
+                                placeholder="Sélectionner une section"
+                                [showClear]="true"
+                                [loading]="sectionsLoading"
+                        >
+                            <ng-template pTemplate="empty">
+                                <div class="p-3 text-center text-gray-500">
+                                    Aucune section disponible
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <p-divider align="left">
+                        <span class="font-medium">Hiérarchie</span>
+                    </p-divider>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field">
+                        <label>Responsable direct</label>
+                        <p-dropdown
+                                formControlName="responsableDirectId"
+                                [options]="responsables"
+                                optionLabel="label"
+                                optionValue="id"
+                                placeholder="Sélectionner un responsable"
+                                [filter]="true"
+                                [showClear]="true"
+                                [loading]="responsablesLoading"
+                        >
+                            <ng-template pTemplate="empty">
+                                <div class="p-3 text-center text-gray-500">
+                                    Aucun responsable disponible
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Boutons de navigation -->
+    <div class="flex justify-content-between mt-4">
+        <p-button
+                label="Précédent"
+                icon="pi pi-arrow-left"
+                (onClick)="prevStep()"
+                [disabled]="activeStep === 0 || loading"
+                styleClass="p-button-outlined"
+        ></p-button>
+
+        <div>
+            <p-button
+                    label="Annuler"
+                    icon="pi pi-times"
+                    (onClick)="cancel()"
+                    [disabled]="loading"
+                    styleClass="p-button-outlined p-button-secondary mr-2"
+            ></p-button>
+
+            <p-button
+                    *ngIf="activeStep < steps.length - 1"
+                    label="Suivant"
+                    icon="pi pi-arrow-right"
+                    iconPos="right"
+                    (onClick)="nextStep()"
+                    [disabled]="loading"
+            ></p-button>
+
+            <p-button
+                    *ngIf="activeStep === steps.length - 1"
+                    [label]="isEdit ? 'Mettre à jour' : 'Créer'"
+                    icon="pi pi-check"
+                    (onClick)="save()"
+                    [loading]="saving"
+                    [disabled]="collaborateurForm.invalid"
+            ></p-button>
+        </div>
+    </div>
+</div>

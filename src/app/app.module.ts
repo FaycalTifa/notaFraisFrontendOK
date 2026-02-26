@@ -105,7 +105,7 @@ import localeFr from '@angular/common/locales/fr';
 
 import {NgxPrintModule} from 'ngx-print';
 registerLocaleData(localeFr, 'fr');
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppTopBarComponent } from './app.topbar.component';
 import { LoginComponent } from './pages/components/login/login.component';
 import {ConfirmationService, MessageService} from 'primeng/api';
@@ -118,6 +118,18 @@ import { AgentComponent } from './pages/components/agent/agent.component';
 import { InfoEntrepriseComponent } from './pages/components/info-entreprise/info-entreprise.component';
 import { AnneeExerciceComponent } from './pages/components/annee-exercice/annee-exercice.component';
 import { EvaluationComponent } from './pages/components/evaluation/evaluation.component';
+import { JwtModule } from '@auth0/angular-jwt';
+import { ListeCollaborateursComponent } from './pages/components/liste-collaborateurs/liste-collaborateurs.component';
+import { FormCollaborateurComponent } from './pages/components/form-collaborateur/form-collaborateur.component';
+import { HierarchieViewComponent } from './pages/components/hierarchie-view/hierarchie-view.component';
+import { RoleLabelPipe } from './pages/pipe/RoleLabel/role-label.pipe';
+import { ListeEvaluationsComponent } from './pages/components/liste-evaluations/liste-evaluations.component';
+import { FormulaireEvaluationComponent } from './pages/components/formulaire-evaluation/formulaire-evaluation.component';
+import { AuthIntercepInterceptor } from './pages/interceptor/authInterceptor/auth-intercep.interceptor';
+import { DetailsCollaborateurComponent } from './pages/components/details-collaborateur/details-collaborateur.component';
+import { DashboardComponent } from './pages/components/dashboard/dashboard.component';
+import { RouterModule } from '@angular/router';
+import { CollaborateurEvaluationsComponentComponent } from './pages/components/collaborateur-evaluations-component/collaborateur-evaluations-component.component';
 
 FullCalendarModule.registerPlugins([
     dayGridPlugin,
@@ -143,8 +155,11 @@ FullCalendarModule.registerPlugins([
         CardModule,
         CarouselModule,
         CascadeSelectModule,
+        ReactiveFormsModule,
+        JwtModule,
         ChartModule,
         CheckboxModule,
+        RouterModule,
         ChipModule,
         ChipsModule,
         CodeHighlighterModule,
@@ -232,6 +247,15 @@ FullCalendarModule.registerPlugins([
         InfoEntrepriseComponent,
         AnneeExerciceComponent,
         EvaluationComponent,
+        ListeCollaborateursComponent,
+        FormCollaborateurComponent,
+        HierarchieViewComponent,
+        RoleLabelPipe,
+        ListeEvaluationsComponent,
+        FormulaireEvaluationComponent,
+        DetailsCollaborateurComponent,
+        DashboardComponent,
+        CollaborateurEvaluationsComponentComponent,
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},
@@ -240,11 +264,11 @@ FullCalendarModule.registerPlugins([
         ConfirmationService,
         DatePipe,
         [ { provide: LOCALE_ID, useValue: 'fr-FR' }],
-       /* {
+        {
             provide: HTTP_INTERCEPTORS,
-            useClass: AuthInterceptor,
+            useClass: AuthIntercepInterceptor, // ← Utilisez le nom exact de votre classe
             multi: true
-        },*/
+        },
         KeycloakService
     ],
     bootstrap: [AppComponent]

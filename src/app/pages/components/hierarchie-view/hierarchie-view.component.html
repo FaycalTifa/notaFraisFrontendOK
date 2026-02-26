@@ -1,0 +1,34 @@
+<!-- modules/collaborateurs/components/hierarchie-view/hierarchie-view.component.html -->
+<div class="card">
+    <p-toolbar>
+        <div class="p-toolbar-group-left">
+            <h2 class="m-0">Organigramme hiérarchique</h2>
+        </div>
+    </p-toolbar>
+
+    <div class="p-4" *ngIf="loading">
+        <div class="flex justify-content-center">
+            <p-progressSpinner></p-progressSpinner>
+        </div>
+    </div>
+
+    <div class="p-4" *ngIf="!loading">
+        <p-tree
+                [value]="hierarchyData"
+                selectionMode="single"
+                [(selection)]="selectedNode"
+                (onNodeSelect)="onNodeSelect($event)"
+                styleClass="w-full">
+
+            <ng-template let-node pTemplate="default">
+        <span class="flex align-items-center gap-2">
+          <i [class]="getNodeIcon(node)"></i>
+          <span>{{node.label}}</span>
+          <span *ngIf="node.type === 'agent'" class="text-sm text-gray-500 ml-2">
+            ({{node.data?.poste}})
+          </span>
+        </span>
+            </ng-template>
+        </p-tree>
+    </div>
+</div>

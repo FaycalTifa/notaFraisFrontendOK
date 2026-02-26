@@ -1,0 +1,2340 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.5.1",
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {},
+    "nonProjectFiles": [
+      {
+        "file": ".gitignore",
+        "hash": "2457659680817058430"
+      },
+      {
+        "file": "CHANGELOG.md",
+        "hash": "12711245136714464491"
+      },
+      {
+        "file": "README.md",
+        "hash": "1881735539445712181"
+      },
+      {
+        "file": "angular.json",
+        "hash": "271544386995680984"
+      },
+      {
+        "file": "karma.conf.js",
+        "hash": "16143157599017369296"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "5045331794024092425"
+      },
+      {
+        "file": "package.json",
+        "hash": "9249627919262060763"
+      },
+      {
+        "file": "proxy.conf.json",
+        "hash": "15916617743413655609"
+      },
+      {
+        "file": "src/app/app-routing.module.ts",
+        "hash": "14848046865408757768"
+      },
+      {
+        "file": "src/app/app.component.html",
+        "hash": "17385897758380840601"
+      },
+      {
+        "file": "src/app/app.component.spec.ts",
+        "hash": "6436985297551722461"
+      },
+      {
+        "file": "src/app/app.component.ts",
+        "hash": "13913847184580991212"
+      },
+      {
+        "file": "src/app/app.config.component.ts",
+        "hash": "15870186587379904645"
+      },
+      {
+        "file": "src/app/app.main.component.html",
+        "hash": "12907375214771237859"
+      },
+      {
+        "file": "src/app/app.main.component.ts",
+        "hash": "6217794894920346861"
+      },
+      {
+        "file": "src/app/app.menu.component.ts",
+        "hash": "14087943041704102913"
+      },
+      {
+        "file": "src/app/app.menu.service.ts",
+        "hash": "8245096055247788510"
+      },
+      {
+        "file": "src/app/app.menuitem.component.ts",
+        "hash": "4412353273924061508"
+      },
+      {
+        "file": "src/app/app.module.ts",
+        "hash": "6495588848768016229"
+      },
+      {
+        "file": "src/app/app.topbar.component.html",
+        "hash": "3007595993018297781"
+      },
+      {
+        "file": "src/app/app.topbar.component.scss",
+        "hash": "15504837811774033333"
+      },
+      {
+        "file": "src/app/app.topbar.component.ts",
+        "hash": "2490505511939215216"
+      },
+      {
+        "file": "src/app/pages/components/agent/agent.component.html",
+        "hash": "3871103205258586861"
+      },
+      {
+        "file": "src/app/pages/components/agent/agent.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/agent/agent.component.spec.ts",
+        "hash": "4016275086564230575"
+      },
+      {
+        "file": "src/app/pages/components/agent/agent.component.ts",
+        "hash": "7686874588249995324"
+      },
+      {
+        "file": "src/app/pages/components/annee-exercice/annee-exercice.component.html",
+        "hash": "17150051318128809299"
+      },
+      {
+        "file": "src/app/pages/components/annee-exercice/annee-exercice.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/annee-exercice/annee-exercice.component.spec.ts",
+        "hash": "15789544025904327141"
+      },
+      {
+        "file": "src/app/pages/components/annee-exercice/annee-exercice.component.ts",
+        "hash": "2683353909434680114"
+      },
+      {
+        "file": "src/app/pages/components/create-user/create-user.component.html",
+        "hash": "6237925846721135700"
+      },
+      {
+        "file": "src/app/pages/components/create-user/create-user.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/create-user/create-user.component.spec.ts",
+        "hash": "15667333670299906842"
+      },
+      {
+        "file": "src/app/pages/components/create-user/create-user.component.ts",
+        "hash": "15824695516939102454"
+      },
+      {
+        "file": "src/app/pages/components/direction/direction.component.html",
+        "hash": "5885562700072838765"
+      },
+      {
+        "file": "src/app/pages/components/direction/direction.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/direction/direction.component.spec.ts",
+        "hash": "7301939170414209864"
+      },
+      {
+        "file": "src/app/pages/components/direction/direction.component.ts",
+        "hash": "5042652681820473845"
+      },
+      {
+        "file": "src/app/pages/components/evaluation/evaluation.component.html",
+        "hash": "13556104400169723456"
+      },
+      {
+        "file": "src/app/pages/components/evaluation/evaluation.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/evaluation/evaluation.component.spec.ts",
+        "hash": "5054670128682851372"
+      },
+      {
+        "file": "src/app/pages/components/evaluation/evaluation.component.ts",
+        "hash": "15776399771255495522"
+      },
+      {
+        "file": "src/app/pages/components/info-entreprise/info-entreprise.component.html",
+        "hash": "10215206059585426039"
+      },
+      {
+        "file": "src/app/pages/components/info-entreprise/info-entreprise.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/info-entreprise/info-entreprise.component.spec.ts",
+        "hash": "7035758983228313264"
+      },
+      {
+        "file": "src/app/pages/components/info-entreprise/info-entreprise.component.ts",
+        "hash": "14967220657076928170"
+      },
+      {
+        "file": "src/app/pages/components/login/login.component.html",
+        "hash": "9286531963214487711"
+      },
+      {
+        "file": "src/app/pages/components/login/login.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/login/login.component.spec.ts",
+        "hash": "5626136125404630267"
+      },
+      {
+        "file": "src/app/pages/components/login/login.component.ts",
+        "hash": "4859039883762809217"
+      },
+      {
+        "file": "src/app/pages/components/poste/poste.component.html",
+        "hash": "15439373076792786058"
+      },
+      {
+        "file": "src/app/pages/components/poste/poste.component.scss",
+        "hash": "5820858710660578956"
+      },
+      {
+        "file": "src/app/pages/components/poste/poste.component.spec.ts",
+        "hash": "5797886099115891400"
+      },
+      {
+        "file": "src/app/pages/components/poste/poste.component.ts",
+        "hash": "1348081309855810993"
+      },
+      {
+        "file": "src/app/pages/components/section/section.component.html",
+        "hash": "9225217199940662851"
+      },
+      {
+        "file": "src/app/pages/components/section/section.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/section/section.component.spec.ts",
+        "hash": "10859516843931987417"
+      },
+      {
+        "file": "src/app/pages/components/section/section.component.ts",
+        "hash": "136709236098692079"
+      },
+      {
+        "file": "src/app/pages/components/service-entite/service-entite.component.html",
+        "hash": "16436617864413518503"
+      },
+      {
+        "file": "src/app/pages/components/service-entite/service-entite.component.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/app/pages/components/service-entite/service-entite.component.spec.ts",
+        "hash": "13674451663970639649"
+      },
+      {
+        "file": "src/app/pages/components/service-entite/service-entite.component.ts",
+        "hash": "13843260009034195893"
+      },
+      {
+        "file": "src/app/pages/components/service/service.component.html",
+        "hash": "17432814659691529060"
+      },
+      {
+        "file": "src/app/pages/components/service/service.component.scss",
+        "hash": "15535176473753967240"
+      },
+      {
+        "file": "src/app/pages/components/service/service.component.spec.ts",
+        "hash": "17055667510237487171"
+      },
+      {
+        "file": "src/app/pages/components/service/service.component.ts",
+        "hash": "1580723221799310274"
+      },
+      {
+        "file": "src/app/pages/guards/authGuards/auth-guards.guard.spec.ts",
+        "hash": "7925532295782272101"
+      },
+      {
+        "file": "src/app/pages/guards/authGuards/auth-guards.guard.ts",
+        "hash": "4588967629320156101"
+      },
+      {
+        "file": "src/app/pages/guards/roleGuards/role-guards.guard.spec.ts",
+        "hash": "7883777525918735223"
+      },
+      {
+        "file": "src/app/pages/guards/roleGuards/role-guards.guard.ts",
+        "hash": "3010854649946262053"
+      },
+      {
+        "file": "src/app/pages/interceptor/authInterceptor/auth-intercep.interceptor.spec.ts",
+        "hash": "4912606335877362574"
+      },
+      {
+        "file": "src/app/pages/interceptor/authInterceptor/auth-intercep.interceptor.ts",
+        "hash": "11963823618154088068"
+      },
+      {
+        "file": "src/app/pages/interceptor/error/error.interceptor.spec.ts",
+        "hash": "15789381685538536964"
+      },
+      {
+        "file": "src/app/pages/interceptor/error/error.interceptor.ts",
+        "hash": "11397004396977917251"
+      },
+      {
+        "file": "src/app/pages/interceptor/interceptor.interceptor.spec.ts",
+        "hash": "3868238540739081932"
+      },
+      {
+        "file": "src/app/pages/interceptor/interceptor.interceptor.ts",
+        "hash": "8584525758015497498"
+      },
+      {
+        "file": "src/app/pages/models/auth/auth.ts",
+        "hash": "1360136403321463176"
+      },
+      {
+        "file": "src/app/pages/models/entities/entities.ts",
+        "hash": "11706714729256986817"
+      },
+      {
+        "file": "src/app/pages/models/entities/evaluation.ts",
+        "hash": "16516625452425356261"
+      },
+      {
+        "file": "src/app/pages/models/enum/role.ts",
+        "hash": "12756548327681026445"
+      },
+      {
+        "file": "src/app/pages/models/poste/poste.spec.ts",
+        "hash": "2361261384432695509"
+      },
+      {
+        "file": "src/app/pages/models/poste/poste.ts",
+        "hash": "11395964918506192552"
+      },
+      {
+        "file": "src/app/pages/models/service/service.spec.ts",
+        "hash": "5496771395052647030"
+      },
+      {
+        "file": "src/app/pages/models/service/service.ts",
+        "hash": "6396962935394670257"
+      },
+      {
+        "file": "src/app/pages/services/Direction/direction.service.spec.ts",
+        "hash": "847546618625351213"
+      },
+      {
+        "file": "src/app/pages/services/Direction/direction.service.ts",
+        "hash": "13057552454145314792"
+      },
+      {
+        "file": "src/app/pages/services/Hierarchie/hierarchie.service.spec.ts",
+        "hash": "13333586668458899246"
+      },
+      {
+        "file": "src/app/pages/services/Hierarchie/hierarchie.service.ts",
+        "hash": "11110925945782740157"
+      },
+      {
+        "file": "src/app/pages/services/Section/section.service.spec.ts",
+        "hash": "15223508344675527353"
+      },
+      {
+        "file": "src/app/pages/services/Section/section.service.ts",
+        "hash": "16679439132716596838"
+      },
+      {
+        "file": "src/app/pages/services/ServiceEntite/service-entite.service.spec.ts",
+        "hash": "12668116993968394295"
+      },
+      {
+        "file": "src/app/pages/services/ServiceEntite/service-entite.service.ts",
+        "hash": "1219737661853857959"
+      },
+      {
+        "file": "src/app/pages/services/agentService/agent.service.spec.ts",
+        "hash": "8612404383372185819"
+      },
+      {
+        "file": "src/app/pages/services/agentService/agent.service.ts",
+        "hash": "1683398891194303210"
+      },
+      {
+        "file": "src/app/pages/services/anneeExercice/annee-exercice.service.spec.ts",
+        "hash": "1705260450281931144"
+      },
+      {
+        "file": "src/app/pages/services/anneeExercice/annee-exercice.service.ts",
+        "hash": "2530888446615086831"
+      },
+      {
+        "file": "src/app/pages/services/auth/auth.service.spec.ts",
+        "hash": "10697900076114607965"
+      },
+      {
+        "file": "src/app/pages/services/auth/auth.service.ts",
+        "hash": "11939831503018699688"
+      },
+      {
+        "file": "src/app/pages/services/collaborateur/collaborateur.service.spec.ts",
+        "hash": "17514494629435832438"
+      },
+      {
+        "file": "src/app/pages/services/collaborateur/collaborateur.service.ts",
+        "hash": "17228506072268060115"
+      },
+      {
+        "file": "src/app/pages/services/evaluation/evaluation.service.spec.ts",
+        "hash": "12815867451610751410"
+      },
+      {
+        "file": "src/app/pages/services/evaluation/evaluation.service.ts",
+        "hash": "9020063306773750037"
+      },
+      {
+        "file": "src/app/pages/services/login/login.service.spec.ts",
+        "hash": "6455698513478357297"
+      },
+      {
+        "file": "src/app/pages/services/login/login.service.ts",
+        "hash": "15290099152828443830"
+      },
+      {
+        "file": "src/app/pages/services/notification/notification.service.spec.ts",
+        "hash": "265678563929952267"
+      },
+      {
+        "file": "src/app/pages/services/notification/notification.service.ts",
+        "hash": "17386858673730385448"
+      },
+      {
+        "file": "src/app/pages/services/poste/poste.service.spec.ts",
+        "hash": "11238725524561782383"
+      },
+      {
+        "file": "src/app/pages/services/poste/poste.service.ts",
+        "hash": "3090914426547990696"
+      },
+      {
+        "file": "src/app/pages/services/service/service.service.spec.ts",
+        "hash": "5300048318946449"
+      },
+      {
+        "file": "src/app/pages/services/service/service.service.ts",
+        "hash": "14307902349656623053"
+      },
+      {
+        "file": "src/assets/css/printCss.css",
+        "hash": "13743653074138984980"
+      },
+      {
+        "file": "src/assets/css/printCssBrouillard.css",
+        "hash": "3659293314002323698"
+      },
+      {
+        "file": "src/assets/demo/badges.scss",
+        "hash": "17756867881644316169"
+      },
+      {
+        "file": "src/assets/demo/data/countries.json",
+        "hash": "10223937055948800899"
+      },
+      {
+        "file": "src/assets/demo/data/customers-large.json",
+        "hash": "16519815482210949332"
+      },
+      {
+        "file": "src/assets/demo/data/customers-medium.json",
+        "hash": "2268736392306715400"
+      },
+      {
+        "file": "src/assets/demo/data/customers-small.json",
+        "hash": "3783501927145928186"
+      },
+      {
+        "file": "src/assets/demo/data/files-lazy.json",
+        "hash": "6007270446692750900"
+      },
+      {
+        "file": "src/assets/demo/data/files.json",
+        "hash": "13357350700734288630"
+      },
+      {
+        "file": "src/assets/demo/data/filesystem-lazy.json",
+        "hash": "11874505644665667765"
+      },
+      {
+        "file": "src/assets/demo/data/filesystem.json",
+        "hash": "3439011400310198979"
+      },
+      {
+        "file": "src/assets/demo/data/icons.json",
+        "hash": "14850372803715498328"
+      },
+      {
+        "file": "src/assets/demo/data/photos.json",
+        "hash": "13212176497255767733"
+      },
+      {
+        "file": "src/assets/demo/data/products-mixed.json",
+        "hash": "8286816023652799935"
+      },
+      {
+        "file": "src/assets/demo/data/products-orders-small.json",
+        "hash": "15271312112324756784"
+      },
+      {
+        "file": "src/assets/demo/data/products-orders.json",
+        "hash": "12205827488302004151"
+      },
+      {
+        "file": "src/assets/demo/data/products-small.json",
+        "hash": "833257473757548697"
+      },
+      {
+        "file": "src/assets/demo/data/products.json",
+        "hash": "3030270838882428065"
+      },
+      {
+        "file": "src/assets/demo/data/scheduleevents.json",
+        "hash": "2873825794535882549"
+      },
+      {
+        "file": "src/assets/demo/documentation.scss",
+        "hash": "10433006596581481577"
+      },
+      {
+        "file": "src/assets/demo/flags/flag_placeholder.png",
+        "hash": "13349885107360637643"
+      },
+      {
+        "file": "src/assets/demo/flags/flags.css",
+        "hash": "13180217958472200049"
+      },
+      {
+        "file": "src/assets/demo/flags/flags_responsive.png",
+        "hash": "15136929901807486171"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/activity-1.png",
+        "hash": "1870169325602625838"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/activity-2.png",
+        "hash": "10106402801753207577"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/activity-3.png",
+        "hash": "12164345009738624529"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/amyelsner.png",
+        "hash": "17386816785045805587"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/annafali.png",
+        "hash": "12962593435245241165"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/asiyajavayant.png",
+        "hash": "1823566166237148856"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-1.png",
+        "hash": "10661941432786304004"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-10.png",
+        "hash": "3563240060400884205"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-11.png",
+        "hash": "10570668625815170267"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-12.png",
+        "hash": "13522466551889587241"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-13.png",
+        "hash": "12132233753294197865"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-14.png",
+        "hash": "16428450191291405015"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-15.png",
+        "hash": "6475541375453065723"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-16.png",
+        "hash": "3737072670234014993"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-2.png",
+        "hash": "4452912731854717140"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-3.png",
+        "hash": "14527484934475574569"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-4.png",
+        "hash": "4639924540938659277"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-5.png",
+        "hash": "11157404304398813663"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-6.png",
+        "hash": "17198874018127605678"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-7.png",
+        "hash": "12190614616018993406"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-8.png",
+        "hash": "15422566851915276690"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/avatar-9.png",
+        "hash": "9339242541567229379"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/bernardodominic.png",
+        "hash": "6204610204729077018"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/elwinsharvill.png",
+        "hash": "2889163988455816300"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/ionibowcher.png",
+        "hash": "8769978370080426421"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/ivanmagalhaes.png",
+        "hash": "10847717138904605941"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/onyamalimba.png",
+        "hash": "8482259945548111094"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/profile.jpg",
+        "hash": "11122750872834294924"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/stephenshaw.png",
+        "hash": "2299762290151446405"
+      },
+      {
+        "file": "src/assets/demo/images/avatar/xuxuefeng.png",
+        "hash": "8972496159603069881"
+      },
+      {
+        "file": "src/assets/demo/images/blocks/hero/hero-1.png",
+        "hash": "13435002475661232967"
+      },
+      {
+        "file": "src/assets/demo/images/blocks/logos/hyper.svg",
+        "hash": "2770723863992306022"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria1.jpg",
+        "hash": "3350631959534272751"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria10.jpg",
+        "hash": "14878156208442955498"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria10s.jpg",
+        "hash": "4457111929879947995"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria11.jpg",
+        "hash": "5034091091335266431"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria11s.jpg",
+        "hash": "10613084079308075553"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria12.jpg",
+        "hash": "10308529976048318639"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria12s.jpg",
+        "hash": "15663126992310273455"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria13.jpg",
+        "hash": "3760660305952928370"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria13s.jpg",
+        "hash": "16418665013400775517"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria14.jpg",
+        "hash": "5652299222489772379"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria14s.jpg",
+        "hash": "65168890848395325"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria15.jpg",
+        "hash": "2982818715095609630"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria15s.jpg",
+        "hash": "12571149397155142250"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria1s.jpg",
+        "hash": "4782115777809681457"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria2.jpg",
+        "hash": "14179371997743998646"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria2s.jpg",
+        "hash": "17854752747903383395"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria3.jpg",
+        "hash": "15328843286409758331"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria3s.jpg",
+        "hash": "7964130257200793903"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria4.jpg",
+        "hash": "468882835301853426"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria4s.jpg",
+        "hash": "13378216670603124570"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria5.jpg",
+        "hash": "14242011093995453396"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria5s.jpg",
+        "hash": "16027521136509789824"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria6.jpg",
+        "hash": "2066505049036494278"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria6s.jpg",
+        "hash": "8708912845987570083"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria7.jpg",
+        "hash": "4151972220100961973"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria7s.jpg",
+        "hash": "11283438021528782517"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria8.jpg",
+        "hash": "8666005254105599897"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria8s.jpg",
+        "hash": "14404346718020222836"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria9.jpg",
+        "hash": "9355949430193123680"
+      },
+      {
+        "file": "src/assets/demo/images/galleria/galleria9s.jpg",
+        "hash": "2253227151901110648"
+      },
+      {
+        "file": "src/assets/demo/images/product/bamboo-watch.jpg",
+        "hash": "12091931128606554982"
+      },
+      {
+        "file": "src/assets/demo/images/product/black-watch.jpg",
+        "hash": "13971782003267724442"
+      },
+      {
+        "file": "src/assets/demo/images/product/blue-band.jpg",
+        "hash": "6577291316117368392"
+      },
+      {
+        "file": "src/assets/demo/images/product/blue-t-shirt.jpg",
+        "hash": "3391951412175502406"
+      },
+      {
+        "file": "src/assets/demo/images/product/bracelet.jpg",
+        "hash": "6986588597440753739"
+      },
+      {
+        "file": "src/assets/demo/images/product/brown-purse.jpg",
+        "hash": "11158362922151006999"
+      },
+      {
+        "file": "src/assets/demo/images/product/chakra-bracelet.jpg",
+        "hash": "2263248636370888830"
+      },
+      {
+        "file": "src/assets/demo/images/product/galaxy-earrings.jpg",
+        "hash": "18105540141308349915"
+      },
+      {
+        "file": "src/assets/demo/images/product/game-controller.jpg",
+        "hash": "6241773598767971332"
+      },
+      {
+        "file": "src/assets/demo/images/product/gaming-set.jpg",
+        "hash": "17310345938399512635"
+      },
+      {
+        "file": "src/assets/demo/images/product/gold-phone-case.jpg",
+        "hash": "10310432017472187569"
+      },
+      {
+        "file": "src/assets/demo/images/product/green-earbuds.jpg",
+        "hash": "8670622180416481622"
+      },
+      {
+        "file": "src/assets/demo/images/product/green-t-shirt.jpg",
+        "hash": "11712190231302717183"
+      },
+      {
+        "file": "src/assets/demo/images/product/grey-t-shirt.jpg",
+        "hash": "5629784087334201127"
+      },
+      {
+        "file": "src/assets/demo/images/product/headphones.jpg",
+        "hash": "3492608353665307902"
+      },
+      {
+        "file": "src/assets/demo/images/product/light-green-t-shirt.jpg",
+        "hash": "3447398057264360652"
+      },
+      {
+        "file": "src/assets/demo/images/product/lime-band.jpg",
+        "hash": "9912437052909937563"
+      },
+      {
+        "file": "src/assets/demo/images/product/mini-speakers.jpg",
+        "hash": "16077146461009137426"
+      },
+      {
+        "file": "src/assets/demo/images/product/painted-phone-case.jpg",
+        "hash": "13452981336113654598"
+      },
+      {
+        "file": "src/assets/demo/images/product/pink-band.jpg",
+        "hash": "1019053065376724286"
+      },
+      {
+        "file": "src/assets/demo/images/product/pink-purse.jpg",
+        "hash": "1497311072239701677"
+      },
+      {
+        "file": "src/assets/demo/images/product/product-placeholder.svg",
+        "hash": "1143958725456785179"
+      },
+      {
+        "file": "src/assets/demo/images/product/purple-band.jpg",
+        "hash": "14848651277706958980"
+      },
+      {
+        "file": "src/assets/demo/images/product/purple-gemstone-necklace.jpg",
+        "hash": "6446363807458224170"
+      },
+      {
+        "file": "src/assets/demo/images/product/purple-t-shirt.jpg",
+        "hash": "9042566071321887730"
+      },
+      {
+        "file": "src/assets/demo/images/product/shoes.jpg",
+        "hash": "5676917273995404868"
+      },
+      {
+        "file": "src/assets/demo/images/product/sneakers.jpg",
+        "hash": "613823608821060383"
+      },
+      {
+        "file": "src/assets/demo/images/product/teal-t-shirt.jpg",
+        "hash": "9405675924634037223"
+      },
+      {
+        "file": "src/assets/demo/images/product/yellow-earbuds.jpg",
+        "hash": "9547408551260946546"
+      },
+      {
+        "file": "src/assets/demo/images/product/yoga-mat.jpg",
+        "hash": "15802420833612257160"
+      },
+      {
+        "file": "src/assets/demo/images/product/yoga-set.jpg",
+        "hash": "421130455594430884"
+      },
+      {
+        "file": "src/assets/layout/css/layout-dark.css",
+        "hash": "7112174474632775306"
+      },
+      {
+        "file": "src/assets/layout/css/layout-dark.scss",
+        "hash": "13819782205688087880"
+      },
+      {
+        "file": "src/assets/layout/css/layout-light.css",
+        "hash": "13485643879042372716"
+      },
+      {
+        "file": "src/assets/layout/css/layout-light.scss",
+        "hash": "2491191413409754862"
+      },
+      {
+        "file": "src/assets/layout/fonts/roboto-v20-latin-ext_latin-500.woff",
+        "hash": "17669631552345919670"
+      },
+      {
+        "file": "src/assets/layout/fonts/roboto-v20-latin-ext_latin-500.woff2",
+        "hash": "10236125128007164201"
+      },
+      {
+        "file": "src/assets/layout/fonts/roboto-v20-latin-ext_latin-700.woff",
+        "hash": "1589262501792557888"
+      },
+      {
+        "file": "src/assets/layout/fonts/roboto-v20-latin-ext_latin-700.woff2",
+        "hash": "8446898574737259649"
+      },
+      {
+        "file": "src/assets/layout/fonts/roboto-v20-latin-ext_latin-regular.woff",
+        "hash": "8447820771579553891"
+      },
+      {
+        "file": "src/assets/layout/fonts/roboto-v20-latin-ext_latin-regular.woff2",
+        "hash": "13862398426191697625"
+      },
+      {
+        "file": "src/assets/layout/images/401.svg",
+        "hash": "8181617245868016858"
+      },
+      {
+        "file": "src/assets/layout/images/404-2x.png",
+        "hash": "6580535741782866598"
+      },
+      {
+        "file": "src/assets/layout/images/doc/breadcrumb-doc.jpg",
+        "hash": "18247539631274264308"
+      },
+      {
+        "file": "src/assets/layout/images/doc/inlinemenu-doc.jpg",
+        "hash": "13083680892748479510"
+      },
+      {
+        "file": "src/assets/layout/images/doc/rightmenu-doc.jpg",
+        "hash": "14357594240532741066"
+      },
+      {
+        "file": "src/assets/layout/images/doc/topbar-doc.jpg",
+        "hash": "11606905642195678456"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/asset-amex.svg",
+        "hash": "16970097590085949690"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/asset-mastercard.svg",
+        "hash": "9704347580405924858"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/asset-paypal.svg",
+        "hash": "17500001564357654737"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/asset-visa.svg",
+        "hash": "15739723175538055855"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/background@2x.jpg",
+        "hash": "7301120795245356659"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/flag-us@2x.png",
+        "hash": "13259033211896441814"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/help-header@2x.jpg",
+        "hash": "13482146566540788937"
+      },
+      {
+        "file": "src/assets/layout/images/extensions/prime-logo.svg",
+        "hash": "6708356373924352943"
+      },
+      {
+        "file": "src/assets/layout/images/favicon.png",
+        "hash": "6554424674804753851"
+      },
+      {
+        "file": "src/assets/layout/images/footer-ultima-dark.svg",
+        "hash": "7747266183134836545"
+      },
+      {
+        "file": "src/assets/layout/images/footer-ultima.svg",
+        "hash": "16318396804054722072"
+      },
+      {
+        "file": "src/assets/layout/images/landing/landing-header.png",
+        "hash": "14814990836684441227"
+      },
+      {
+        "file": "src/assets/layout/images/landing/promotion.png",
+        "hash": "6860533298140030912"
+      },
+      {
+        "file": "src/assets/layout/images/logo-dark.svg",
+        "hash": "4397776843010201130"
+      },
+      {
+        "file": "src/assets/layout/images/logo-light.svg",
+        "hash": "4301992887113420428"
+      },
+      {
+        "file": "src/assets/layout/images/logo-ultima.svg",
+        "hash": "13598947535156293859"
+      },
+      {
+        "file": "src/assets/layout/images/logo.png",
+        "hash": "16153922960121400974"
+      },
+      {
+        "file": "src/assets/layout/images/logo/cropped-logo-afrik_lonnya_2-1.jpeg",
+        "hash": "16615691446915846498"
+      },
+      {
+        "file": "src/assets/layout/images/logo/uab.jpg",
+        "hash": "10901414435268949999"
+      },
+      {
+        "file": "src/assets/layout/images/logo2x.png",
+        "hash": "15725247377980093955"
+      },
+      {
+        "file": "src/assets/layout/images/pages/404-bg.jpg",
+        "hash": "17754360037681942739"
+      },
+      {
+        "file": "src/assets/layout/images/pages/404.png",
+        "hash": "11557936943933737843"
+      },
+      {
+        "file": "src/assets/layout/images/pages/accessDenied-bg.jpg",
+        "hash": "17124884182516094962"
+      },
+      {
+        "file": "src/assets/layout/images/pages/accessDenied.png",
+        "hash": "6030064647195473151"
+      },
+      {
+        "file": "src/assets/layout/images/pages/error-bg.jpg",
+        "hash": "15976092569043205449"
+      },
+      {
+        "file": "src/assets/layout/images/pages/error.png",
+        "hash": "7161995149669920385"
+      },
+      {
+        "file": "src/assets/layout/images/pages/login-bg.jpg",
+        "hash": "16359813587640536966"
+      },
+      {
+        "file": "src/assets/layout/images/timbre/footer.png",
+        "hash": "1744655318431215991"
+      },
+      {
+        "file": "src/assets/layout/images/timbre/header.png",
+        "hash": "13646913109252080505"
+      },
+      {
+        "file": "src/assets/layout/images/widgets/asset-profile.png",
+        "hash": "4998334014030627237"
+      },
+      {
+        "file": "src/assets/layout/images/widgets/feature-faq.svg",
+        "hash": "2467333842039406813"
+      },
+      {
+        "file": "src/assets/layout/images/widgets/feature-onboarding.svg",
+        "hash": "2514464912904192754"
+      },
+      {
+        "file": "src/assets/layout/images/widgets/feature-security.svg",
+        "hash": "2768556844711229422"
+      },
+      {
+        "file": "src/assets/layout/images/widgets/image-blog.jpg",
+        "hash": "7438611120212424615"
+      },
+      {
+        "file": "src/assets/layout/images/widgets/map.jpg",
+        "hash": "14941365455384686774"
+      },
+      {
+        "file": "src/assets/pages/fonts/primeicons.eot",
+        "hash": "1190901291075890824"
+      },
+      {
+        "file": "src/assets/pages/fonts/primeicons.svg",
+        "hash": "11478474043772711820"
+      },
+      {
+        "file": "src/assets/pages/fonts/primeicons.ttf",
+        "hash": "3956728468457790703"
+      },
+      {
+        "file": "src/assets/pages/fonts/primeicons.woff",
+        "hash": "4544115059093561116"
+      },
+      {
+        "file": "src/assets/pages/landing.html",
+        "hash": "15671181719019255258"
+      },
+      {
+        "file": "src/assets/pages/primeflex.min.css",
+        "hash": "8644723221067921030"
+      },
+      {
+        "file": "src/assets/pages/primeicons.css",
+        "hash": "13810352463220349460"
+      },
+      {
+        "file": "src/assets/pages/primeng.min.css",
+        "hash": "3135785168815574999"
+      },
+      {
+        "file": "src/assets/sass/_fonts.scss",
+        "hash": "202044696388455519"
+      },
+      {
+        "file": "src/assets/sass/layout/_animation.scss",
+        "hash": "7806149984328104201"
+      },
+      {
+        "file": "src/assets/sass/layout/_breadcrumb.scss",
+        "hash": "7523517718756858077"
+      },
+      {
+        "file": "src/assets/sass/layout/_config.scss",
+        "hash": "11396025382770120960"
+      },
+      {
+        "file": "src/assets/sass/layout/_dashboard.scss",
+        "hash": "13913276221647376775"
+      },
+      {
+        "file": "src/assets/sass/layout/_footer.scss",
+        "hash": "4173926256162009168"
+      },
+      {
+        "file": "src/assets/sass/layout/_help.scss",
+        "hash": "17635605983753026113"
+      },
+      {
+        "file": "src/assets/sass/layout/_invoice.scss",
+        "hash": "3140854809010080054"
+      },
+      {
+        "file": "src/assets/sass/layout/_landing.scss",
+        "hash": "3169434292785917386"
+      },
+      {
+        "file": "src/assets/sass/layout/_loader.scss",
+        "hash": "758331130304066064"
+      },
+      {
+        "file": "src/assets/sass/layout/_main.scss",
+        "hash": "10848598504837861885"
+      },
+      {
+        "file": "src/assets/sass/layout/_megamenu.scss",
+        "hash": "17520440920821607510"
+      },
+      {
+        "file": "src/assets/sass/layout/_mixins.scss",
+        "hash": "9084205692825102838"
+      },
+      {
+        "file": "src/assets/sass/layout/_pages.scss",
+        "hash": "13074475288674599317"
+      },
+      {
+        "file": "src/assets/sass/layout/_rightmenu.scss",
+        "hash": "11725214604212139624"
+      },
+      {
+        "file": "src/assets/sass/layout/_rtl.scss",
+        "hash": "1690501840793905897"
+      },
+      {
+        "file": "src/assets/sass/layout/_typography.scss",
+        "hash": "8125619671918475549"
+      },
+      {
+        "file": "src/assets/sass/layout/_utils.scss",
+        "hash": "3691227581511849733"
+      },
+      {
+        "file": "src/assets/sass/layout/_widgets.scss",
+        "hash": "9380239166899697069"
+      },
+      {
+        "file": "src/assets/sass/layout/_wizard.scss",
+        "hash": "4066072968458089345"
+      },
+      {
+        "file": "src/assets/sass/layout/core/_layout.scss",
+        "hash": "6350537780545845327"
+      },
+      {
+        "file": "src/assets/sass/layout/core/_layout_dark.scss",
+        "hash": "11785120103411436691"
+      },
+      {
+        "file": "src/assets/sass/layout/core/_layout_light.scss",
+        "hash": "9789042545120545009"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_inline_menu.scss",
+        "hash": "15845550234077558559"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu.scss",
+        "hash": "13426473707407491527"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_common.scss",
+        "hash": "12854631056140377220"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_exports.scss",
+        "hash": "3810752691582483967"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_horizontal.scss",
+        "hash": "1915391370380652908"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_overlay.scss",
+        "hash": "15204769192153863044"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_responsive.scss",
+        "hash": "446063205279604877"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_slim.scss",
+        "hash": "4680187818379131814"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_static.scss",
+        "hash": "4139492587493930153"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_menu_theme.scss",
+        "hash": "4219183798990717172"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/_rtl_menu.scss",
+        "hash": "1200949470897887541"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_bluegrey.scss",
+        "hash": "8287187355934418796"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_brown.scss",
+        "hash": "984817005314842928"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_cyan.scss",
+        "hash": "15401427064919977904"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_dark.scss",
+        "hash": "11491178865730583153"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_deeporange.scss",
+        "hash": "2575733683556614774"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_deeppurple.scss",
+        "hash": "4512817955772127015"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_green.scss",
+        "hash": "9739691372380269570"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_indigo.scss",
+        "hash": "13054384067070405887"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_light.scss",
+        "hash": "15745085724873544689"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_pink.scss",
+        "hash": "10209637029354917860"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_purple.scss",
+        "hash": "9463739867022051006"
+      },
+      {
+        "file": "src/assets/sass/layout/menu/themes/_menu_teal.scss",
+        "hash": "13437556658657813276"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/_rtl_topbar.scss",
+        "hash": "2416050775391015340"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/_topbar.scss",
+        "hash": "15283449224985439274"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/_topbar_common.scss",
+        "hash": "10636894311007998100"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/_topbar_exports.scss",
+        "hash": "3553360096940744301"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/_topbar_responsive.scss",
+        "hash": "13115674832788633159"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/_topbar_theme.scss",
+        "hash": "2375259304694057436"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_amber.scss",
+        "hash": "13979057048475272128"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_blue.scss",
+        "hash": "5920448907058109042"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_bluegrey.scss",
+        "hash": "18043315615988825036"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_brown.scss",
+        "hash": "16018374977951492715"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_cyan.scss",
+        "hash": "857278810521380684"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_dark.scss",
+        "hash": "9881713870167356443"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_deeporange.scss",
+        "hash": "12336630886318672313"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_deeppurple.scss",
+        "hash": "17676211823817179109"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_green.scss",
+        "hash": "2502852478910373814"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_grey.scss",
+        "hash": "11406613496358225436"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_indigo.scss",
+        "hash": "13759320969605236078"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_lightblue.scss",
+        "hash": "11780569689764782792"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_lightgreen.scss",
+        "hash": "13170813301128970403"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_lime.scss",
+        "hash": "7808304352530063026"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_orange.scss",
+        "hash": "12016482382088635684"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_pink.scss",
+        "hash": "14173958469843914308"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_purple.scss",
+        "hash": "4642816023562282878"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_teal.scss",
+        "hash": "13964677334076726078"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_white.scss",
+        "hash": "11668194253163306292"
+      },
+      {
+        "file": "src/assets/sass/layout/topbar/themes/_topbar_yellow.scss",
+        "hash": "813233416862743189"
+      },
+      {
+        "file": "src/assets/sass/overrides/_layout_styles.scss",
+        "hash": "7471531831887910837"
+      },
+      {
+        "file": "src/assets/sass/overrides/_layout_variables.scss",
+        "hash": "6170724329526230013"
+      },
+      {
+        "file": "src/assets/sass/overrides/_theme_styles.scss",
+        "hash": "12109168180030093141"
+      },
+      {
+        "file": "src/assets/sass/overrides/_theme_variables.scss",
+        "hash": "8230284720714551383"
+      },
+      {
+        "file": "src/assets/sass/theme/_compact.scss",
+        "hash": "7767013752515712915"
+      },
+      {
+        "file": "src/assets/sass/theme/_theme_dark.scss",
+        "hash": "14844634169052313005"
+      },
+      {
+        "file": "src/assets/sass/theme/_theme_light.scss",
+        "hash": "3452478027778899112"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/_colors.scss",
+        "hash": "8222877574164944354"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/_common.scss",
+        "hash": "14978115299932627824"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/_components.scss",
+        "hash": "16036713210261694369"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/_mixins.scss",
+        "hash": "14400837230998895899"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/button/_button.scss",
+        "hash": "8460435975397544741"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/button/_speeddial.scss",
+        "hash": "3883109657844551673"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/button/_splitbutton.scss",
+        "hash": "13061622350230363693"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_carousel.scss",
+        "hash": "10991904945729227416"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_datatable.scss",
+        "hash": "12512509983227565261"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_dataview.scss",
+        "hash": "16598084027945087303"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_filter.scss",
+        "hash": "15728211808185345813"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_fullcalendar.scss",
+        "hash": "12313916666753197371"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_orderlist.scss",
+        "hash": "17786266379627568411"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_organizationchart.scss",
+        "hash": "3023974469859597306"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_paginator.scss",
+        "hash": "4760890421835984160"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_picklist.scss",
+        "hash": "15019081464136449157"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_timeline.scss",
+        "hash": "13931863889229155823"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_tree.scss",
+        "hash": "7303068736669469254"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_treetable.scss",
+        "hash": "16403009969512763055"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/data/_virtualscroller.scss",
+        "hash": "3807447095538798344"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/file/_fileupload.scss",
+        "hash": "8041932402670743680"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_autocomplete.scss",
+        "hash": "15701839677842019436"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_calendar.scss",
+        "hash": "8093869153892379715"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_cascadeselect.scss",
+        "hash": "8234312944308384838"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_checkbox.scss",
+        "hash": "3211192213384738713"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_chips.scss",
+        "hash": "10963388911283091220"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_colorpicker.scss",
+        "hash": "9064612969076643494"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_dropdown.scss",
+        "hash": "7868263777993598458"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_editor.scss",
+        "hash": "4352464748685135673"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_inputgroup.scss",
+        "hash": "13839670490211157378"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_inputmask.scss",
+        "hash": "935266635033417475"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_inputnumber.scss",
+        "hash": "3170112596804757110"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_inputswitch.scss",
+        "hash": "13319279668245189563"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_inputtext.scss",
+        "hash": "17814955178414961617"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_listbox.scss",
+        "hash": "3155452181454708077"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_multiselect.scss",
+        "hash": "12586029389530294200"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_password.scss",
+        "hash": "10409652579280296400"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_radiobutton.scss",
+        "hash": "4335218485092066575"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_rating.scss",
+        "hash": "15260695931906002355"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_selectbutton.scss",
+        "hash": "15829427950712102552"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_slider.scss",
+        "hash": "4107312509549441808"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_togglebutton.scss",
+        "hash": "17194973729425207326"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/input/_treeselect.scss",
+        "hash": "14102089004922509447"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_breadcrumb.scss",
+        "hash": "15223266327042166195"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_contextmenu.scss",
+        "hash": "2725948688212382299"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_dock.scss",
+        "hash": "7401065724743280770"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_megamenu.scss",
+        "hash": "11773659044024493142"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_menu.scss",
+        "hash": "9709560313139828258"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_menubar.scss",
+        "hash": "10422542301189511798"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_panelmenu.scss",
+        "hash": "17937588465363956603"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_slidemenu.scss",
+        "hash": "14047219834123341855"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_steps.scss",
+        "hash": "17329899259126944476"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_tabmenu.scss",
+        "hash": "4178121474319810071"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/menu/_tieredmenu.scss",
+        "hash": "7561465014565362041"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/messages/_inlinemessage.scss",
+        "hash": "67145251342209820"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/messages/_message.scss",
+        "hash": "14247636775738456300"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/messages/_toast.scss",
+        "hash": "17524735717173869409"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_avatar.scss",
+        "hash": "4941655092443527458"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_badge.scss",
+        "hash": "12360202391461653124"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_blockui.scss",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_chip.scss",
+        "hash": "14050428634489230071"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_inplace.scss",
+        "hash": "15270949246128608210"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_progressbar.scss",
+        "hash": "4890048599442655513"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_scrolltop.scss",
+        "hash": "11233919175090806767"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_skeleton.scss",
+        "hash": "2341518338002452565"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_tag.scss",
+        "hash": "7951749632664975686"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/misc/_terminal.scss",
+        "hash": "12410502124583668060"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/multimedia/_galleria.scss",
+        "hash": "8388326461777761885"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/multimedia/_image.scss",
+        "hash": "10599461495462079690"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/overlay/_confirmpopup.scss",
+        "hash": "7683249226726695"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/overlay/_dialog.scss",
+        "hash": "1901841823958235939"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/overlay/_overlaypanel.scss",
+        "hash": "6956508569941761768"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/overlay/_sidebar.scss",
+        "hash": "10674659010749083831"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/overlay/_tooltip.scss",
+        "hash": "12122488376704862280"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_accordion.scss",
+        "hash": "16657462190460339516"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_card.scss",
+        "hash": "5996836475313793800"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_divider.scss",
+        "hash": "17321244491307309205"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_fieldset.scss",
+        "hash": "1700032339592953016"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_panel.scss",
+        "hash": "3867038357144995829"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_scrollpanel.scss",
+        "hash": "14051080152478578462"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_splitter.scss",
+        "hash": "14730599392572694052"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_tabview.scss",
+        "hash": "17989567086129056232"
+      },
+      {
+        "file": "src/assets/sass/theme/designer/components/panel/_toolbar.scss",
+        "hash": "734296493081011482"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_accordion.scss",
+        "hash": "13306778940032139371"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_autocomplete.scss",
+        "hash": "7552134659702673688"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_breadcrumb.scss",
+        "hash": "7883736974932660367"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_button.scss",
+        "hash": "11144902733584220435"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_calendar.scss",
+        "hash": "13762695436175041369"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_carousel.scss",
+        "hash": "11062457796887488000"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_cascadeselect.scss",
+        "hash": "18298547199228072079"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_checkbox.scss",
+        "hash": "2948298295265018879"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_chips.scss",
+        "hash": "17301130525826588580"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_datatable.scss",
+        "hash": "2824178922411189591"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_dropdown.scss",
+        "hash": "1808581884012717464"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_fieldset.scss",
+        "hash": "7869064473859938723"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_float_label.scss",
+        "hash": "8968454552694348859"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_fullcalendar.scss",
+        "hash": "13575664264016174094"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_galleria.scss",
+        "hash": "12732006193348817926"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_input.scss",
+        "hash": "12565496356637620773"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_inputgroup.scss",
+        "hash": "3398431951720346520"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_inputmask.scss",
+        "hash": "15155590049792455985"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_inputnumber.scss",
+        "hash": "2165367472963693272"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_inputswitch.scss",
+        "hash": "8221335539064144487"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_listbox.scss",
+        "hash": "16973317771934501747"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_megamenu.scss",
+        "hash": "4297173082751876306"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_menu.scss",
+        "hash": "17668283777416378763"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_menubar.scss",
+        "hash": "14254551879021096940"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_mixins.scss",
+        "hash": "14595718414569513163"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_multiselect.scss",
+        "hash": "3844583522015688302"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_orderlist.scss",
+        "hash": "6057488367302746871"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_overlaypanel.scss",
+        "hash": "13953207762643684484"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_paginator.scss",
+        "hash": "10203720211886739311"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_panel.scss",
+        "hash": "11647864711098695762"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_panelmenu.scss",
+        "hash": "13699712241828603660"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_picklist.scss",
+        "hash": "14966393408728146581"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_progressbar.scss",
+        "hash": "18298501163462003266"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_radiobutton.scss",
+        "hash": "7959227353445602622"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_rating.scss",
+        "hash": "5282239118066269178"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_selectbutton.scss",
+        "hash": "16746468535840461161"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_slidemenu.scss",
+        "hash": "6028279940647363985"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_slider.scss",
+        "hash": "17071601540980068927"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_steps.scss",
+        "hash": "4799606708429317022"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_tabmenu.scss",
+        "hash": "2827784715388190390"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_tabview.scss",
+        "hash": "8988013192265634008"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_tieredmenu.scss",
+        "hash": "12161271380613512572"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_timeline.scss",
+        "hash": "16551531612422735203"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_togglebutton.scss",
+        "hash": "17865378081876669275"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_toolbar.scss",
+        "hash": "6434756760461577892"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_tooltip.scss",
+        "hash": "1538315409095075349"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_tree.scss",
+        "hash": "16388121881033509224"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_treeselect.scss",
+        "hash": "3749638226009082787"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_treetable.scss",
+        "hash": "5575924611061306702"
+      },
+      {
+        "file": "src/assets/sass/theme/extensions/_vendor_extensions.scss",
+        "hash": "13414578564053873825"
+      },
+      {
+        "file": "src/assets/sass/variables/layout/_layout_common.scss",
+        "hash": "4375635050622415105"
+      },
+      {
+        "file": "src/assets/sass/variables/layout/_layout_dark.scss",
+        "hash": "2714625277377942348"
+      },
+      {
+        "file": "src/assets/sass/variables/layout/_layout_light.scss",
+        "hash": "7951992268230881722"
+      },
+      {
+        "file": "src/assets/sass/variables/theme/_theme_dark.scss",
+        "hash": "6620594699486603718"
+      },
+      {
+        "file": "src/assets/sass/variables/theme/_theme_light.scss",
+        "hash": "14585972923228159705"
+      },
+      {
+        "file": "src/assets/theme/amber/theme-dark.css",
+        "hash": "14475634750054745421"
+      },
+      {
+        "file": "src/assets/theme/amber/theme-dark.scss",
+        "hash": "15513902320493683362"
+      },
+      {
+        "file": "src/assets/theme/amber/theme-light.css",
+        "hash": "16511222622181629195"
+      },
+      {
+        "file": "src/assets/theme/amber/theme-light.scss",
+        "hash": "14837302192077625945"
+      },
+      {
+        "file": "src/assets/theme/blue/theme-dark.css",
+        "hash": "13739577174926941736"
+      },
+      {
+        "file": "src/assets/theme/blue/theme-dark.scss",
+        "hash": "16951433351341806530"
+      },
+      {
+        "file": "src/assets/theme/blue/theme-light.css",
+        "hash": "5625160855286634676"
+      },
+      {
+        "file": "src/assets/theme/blue/theme-light.scss",
+        "hash": "7719849553793197874"
+      },
+      {
+        "file": "src/assets/theme/bluegrey/theme-dark.css",
+        "hash": "57112033541660623"
+      },
+      {
+        "file": "src/assets/theme/bluegrey/theme-dark.scss",
+        "hash": "15142573087640351878"
+      },
+      {
+        "file": "src/assets/theme/bluegrey/theme-light.css",
+        "hash": "3416285068884386818"
+      },
+      {
+        "file": "src/assets/theme/bluegrey/theme-light.scss",
+        "hash": "8077379679173086153"
+      },
+      {
+        "file": "src/assets/theme/brown/theme-dark.css",
+        "hash": "5337435765111147169"
+      },
+      {
+        "file": "src/assets/theme/brown/theme-dark.scss",
+        "hash": "9392594299262434270"
+      },
+      {
+        "file": "src/assets/theme/brown/theme-light.css",
+        "hash": "2948248452283013408"
+      },
+      {
+        "file": "src/assets/theme/brown/theme-light.scss",
+        "hash": "2684500998919180998"
+      },
+      {
+        "file": "src/assets/theme/cyan/theme-dark.css",
+        "hash": "9631641572884016138"
+      },
+      {
+        "file": "src/assets/theme/cyan/theme-dark.scss",
+        "hash": "16622323575879578323"
+      },
+      {
+        "file": "src/assets/theme/cyan/theme-light.css",
+        "hash": "16375296214468358145"
+      },
+      {
+        "file": "src/assets/theme/cyan/theme-light.scss",
+        "hash": "3503762488483213996"
+      },
+      {
+        "file": "src/assets/theme/deeporange/theme-dark.css",
+        "hash": "11607015246784892409"
+      },
+      {
+        "file": "src/assets/theme/deeporange/theme-dark.scss",
+        "hash": "3431850905037349249"
+      },
+      {
+        "file": "src/assets/theme/deeporange/theme-light.css",
+        "hash": "8031956760221404502"
+      },
+      {
+        "file": "src/assets/theme/deeporange/theme-light.scss",
+        "hash": "15689167894840753971"
+      },
+      {
+        "file": "src/assets/theme/deeppurple/theme-dark.css",
+        "hash": "13334284215325691386"
+      },
+      {
+        "file": "src/assets/theme/deeppurple/theme-dark.scss",
+        "hash": "16912756848059695682"
+      },
+      {
+        "file": "src/assets/theme/deeppurple/theme-light.css",
+        "hash": "13785480431397987442"
+      },
+      {
+        "file": "src/assets/theme/deeppurple/theme-light.scss",
+        "hash": "7836063055239980229"
+      },
+      {
+        "file": "src/assets/theme/green/theme-dark.css",
+        "hash": "12316828433488609990"
+      },
+      {
+        "file": "src/assets/theme/green/theme-dark.scss",
+        "hash": "7507001435089381029"
+      },
+      {
+        "file": "src/assets/theme/green/theme-light.css",
+        "hash": "4343547317663004515"
+      },
+      {
+        "file": "src/assets/theme/green/theme-light.scss",
+        "hash": "6430878144468835367"
+      },
+      {
+        "file": "src/assets/theme/indigo/theme-dark.css",
+        "hash": "9409571995576268889"
+      },
+      {
+        "file": "src/assets/theme/indigo/theme-dark.scss",
+        "hash": "9116953156069847620"
+      },
+      {
+        "file": "src/assets/theme/indigo/theme-light.css",
+        "hash": "1295655699502862331"
+      },
+      {
+        "file": "src/assets/theme/indigo/theme-light.scss",
+        "hash": "7987511015201489726"
+      },
+      {
+        "file": "src/assets/theme/lightblue/theme-dark.css",
+        "hash": "16305057654143720405"
+      },
+      {
+        "file": "src/assets/theme/lightblue/theme-dark.scss",
+        "hash": "12161458913092253489"
+      },
+      {
+        "file": "src/assets/theme/lightblue/theme-light.css",
+        "hash": "13032178892661806830"
+      },
+      {
+        "file": "src/assets/theme/lightblue/theme-light.scss",
+        "hash": "8308278065767965411"
+      },
+      {
+        "file": "src/assets/theme/lightgreen/theme-dark.css",
+        "hash": "10184764244654757657"
+      },
+      {
+        "file": "src/assets/theme/lightgreen/theme-dark.scss",
+        "hash": "4311415121621019424"
+      },
+      {
+        "file": "src/assets/theme/lightgreen/theme-light.css",
+        "hash": "15514079191307284046"
+      },
+      {
+        "file": "src/assets/theme/lightgreen/theme-light.scss",
+        "hash": "4524744312037568620"
+      },
+      {
+        "file": "src/assets/theme/lime/theme-dark.css",
+        "hash": "15363417267343892116"
+      },
+      {
+        "file": "src/assets/theme/lime/theme-dark.scss",
+        "hash": "1254334469601302510"
+      },
+      {
+        "file": "src/assets/theme/lime/theme-light.css",
+        "hash": "1948532377373580965"
+      },
+      {
+        "file": "src/assets/theme/lime/theme-light.scss",
+        "hash": "8525342269616182207"
+      },
+      {
+        "file": "src/assets/theme/orange/theme-dark.css",
+        "hash": "2668674286962561011"
+      },
+      {
+        "file": "src/assets/theme/orange/theme-dark.scss",
+        "hash": "17619084175653096513"
+      },
+      {
+        "file": "src/assets/theme/orange/theme-light.css",
+        "hash": "5746636735074205632"
+      },
+      {
+        "file": "src/assets/theme/orange/theme-light.scss",
+        "hash": "4965085962819170390"
+      },
+      {
+        "file": "src/assets/theme/pink/theme-dark.css",
+        "hash": "9305512805903853718"
+      },
+      {
+        "file": "src/assets/theme/pink/theme-dark.scss",
+        "hash": "10635147341081496405"
+      },
+      {
+        "file": "src/assets/theme/pink/theme-light.css",
+        "hash": "6188594367972250589"
+      },
+      {
+        "file": "src/assets/theme/pink/theme-light.scss",
+        "hash": "10118112403762235142"
+      },
+      {
+        "file": "src/assets/theme/purple/theme-dark.css",
+        "hash": "15972559390370757265"
+      },
+      {
+        "file": "src/assets/theme/purple/theme-dark.scss",
+        "hash": "2322908123155613010"
+      },
+      {
+        "file": "src/assets/theme/purple/theme-light.css",
+        "hash": "5587919955793240706"
+      },
+      {
+        "file": "src/assets/theme/purple/theme-light.scss",
+        "hash": "12372489404571724360"
+      },
+      {
+        "file": "src/assets/theme/teal/theme-dark.css",
+        "hash": "2557742117139243709"
+      },
+      {
+        "file": "src/assets/theme/teal/theme-dark.scss",
+        "hash": "5176118476328338033"
+      },
+      {
+        "file": "src/assets/theme/teal/theme-light.css",
+        "hash": "12135173935911667477"
+      },
+      {
+        "file": "src/assets/theme/teal/theme-light.scss",
+        "hash": "4745190542287989668"
+      },
+      {
+        "file": "src/assets/theme/yellow/theme-dark.css",
+        "hash": "5002083118638429011"
+      },
+      {
+        "file": "src/assets/theme/yellow/theme-dark.scss",
+        "hash": "5064164007592064066"
+      },
+      {
+        "file": "src/assets/theme/yellow/theme-light.css",
+        "hash": "18195457356386427854"
+      },
+      {
+        "file": "src/assets/theme/yellow/theme-light.scss",
+        "hash": "7276571074465728624"
+      },
+      {
+        "file": "src/environments/environment.prod.ts",
+        "hash": "9187815034154981488"
+      },
+      {
+        "file": "src/environments/environment.ts",
+        "hash": "4695607400605468078"
+      },
+      {
+        "file": "src/index.html",
+        "hash": "1890263301364300969"
+      },
+      {
+        "file": "src/main.ts",
+        "hash": "16249396775588763736"
+      },
+      {
+        "file": "src/polyfills.ts",
+        "hash": "5084969472738969476"
+      },
+      {
+        "file": "src/styles.scss",
+        "hash": "13935444047898108955"
+      },
+      {
+        "file": "src/test.ts",
+        "hash": "17201038330461104505"
+      },
+      {
+        "file": "src/upload.php",
+        "hash": "4438070633954142027"
+      },
+      {
+        "file": "tsconfig.app.json",
+        "hash": "10571982987746379933"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "6192094650940015555"
+      },
+      {
+        "file": "tsconfig.spec.json",
+        "hash": "2081623934766941002"
+      },
+      {
+        "file": "tslint.json",
+        "hash": "1944033634824328667"
+      }
+    ]
+  },
+  "externalNodesHash": "16966758844940782590"
+}

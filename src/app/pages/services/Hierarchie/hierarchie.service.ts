@@ -1,35 +1,53 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Agent, Direction, Section, ServiceEntite} from '../../models/entities/entities';
+import {Agent, Collaborateur, Direction, Section, ServiceEntity} from '../../models/entities/entities';
+import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HierarchieService {
 
-    private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = `${environment.apiUrl}/collaborateurs`;
 
-    constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-    // Récupérer toutes les directions
-    getDirections(): Observable<Direction[]> {
-        return this.http.get<Direction[]>(`${this.apiUrl}/direction`);
+  getResponsablesByDirection(directionId?: number): Observable<{ id: number; label: string }[]> {
+    let url = `${this.apiUrl}/responsables`;
+    if (directionId) {
+      url += `?directionId=${directionId}`;
     }
 
-    // Récupérer les services d'une direction
-    getServicesByDirection(directionId: number): Observable<ServiceEntite[]> {
-        return this.http.get<ServiceEntite[]>(`${this.apiUrl}/services/direction/${directionId}`);
+    return this.http.get<Collaborateur[]>(url).pipe(
+        map(collaborateurs => collaborateurs.map(c => ({
+          id: c.id!,
+          label: `${c.nom} ${c.prenoms} (${c.posteActuel || 'Collaborateur'})`
+        })))
+    );
+  }
+
+  getResponsablesByService(serviceId?: number): Observable<{ id: number; label: string }[]> {
+    let url = `${this.apiUrl}/responsables/service`;
+    if (serviceId) {
+      url += `?serviceId=${serviceId}`;
     }
 
-    // Récupérer les sections d'un service
-    getSectionsByService(serviceId: number): Observable<Section[]> {
-        console.log('===== getSectionsByService ========', serviceId);
-        return this.http.get<Section[]>(`${this.apiUrl}/sections/service/${serviceId}`);
-    }
+    return this.http.get<Collaborateur[]>(url).pipe(
+        map(collaborateurs => collaborateurs.map(c => ({
+          id: c.id!,
+          label: `${c.nom} ${c.prenoms} (${c.posteActuel || 'Collaborateur'})`
+        })))
+    );
+  }
 
-    // Récupérer les agents d'une section
-    getAgentsBySection(sectionId: number): Observable<Agent[]> {
-        return this.http.get<Agent[]>(`${this.apiUrl}/agents/section/${sectionId}`);
-    }
+  getAllResponsables(): Observable<{ id: number; label: string }[]> {
+    return this.http.get<Collaborateur[]>(`${this.apiUrl}/responsables/tous`).pipe(
+        map(collaborateurs => collaborateurs.map(c => ({
+          id: c.id!,
+          label: `${c.nom} ${c.prenoms} (${c.posteActuel || 'Collaborateur'})`
+        })))
+    );
+  }
 }

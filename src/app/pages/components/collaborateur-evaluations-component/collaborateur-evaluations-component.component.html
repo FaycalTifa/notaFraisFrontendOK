@@ -1,0 +1,237 @@
+<!-- collaborateur-evaluations-component.component.html -->
+<div class="evaluations-container">
+    <!-- En-tête -->
+    <div class="header">
+        <div class="header-left">
+            <h1>Mes évaluations</h1>
+            <p class="welcome-text">
+                Bonjour <strong>{{ nomComplet }}</strong>,
+                voici l'historique de vos évaluations
+            </p>
+        </div>
+        <div class="header-right">
+            <p-button
+                    label="Rafraîchir"
+                    icon="pi pi-refresh"
+                    styleClass="p-button-outlined p-button-sm"
+                    (onClick)="loadMesEvaluations()"
+                    [loading]="loading"
+            ></p-button>
+        </div>
+    </div>
+
+    <!-- Statistiques personnelles -->
+    <div class="stats-grid" *ngIf="!loading && evaluations.length > 0">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd; color: #3498db;">
+                <i class="pi pi-file"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">{{ stats.total }}</span>
+                <span class="stat-label">Total évaluations</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fff3e0; color: #f39c12;">
+                <i class="pi pi-clock"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">{{ stats.enCours }}</span>
+                <span class="stat-label">En cours</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e8f5e9; color: #2ecc71;">
+                <i class="pi pi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">{{ stats.validees }}</span>
+                <span class="stat-label">Validées</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5; color: #9b59b6;">
+                <i class="pi pi-chart-line"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">{{ stats.moyenne.toFixed(1) || '0' }}/10</span>
+                <span class="stat-label">Moyenne</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message si aucune évaluation -->
+    <div *ngIf="!loading && evaluations.length === 0" class="empty-state">
+        <i class="pi pi-file-empty"></i>
+        <h3>Aucune évaluation</h3>
+        <p>Vous n'avez pas encore d'évaluation enregistrée.</p>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+        <p-progressSpinner></p-progressSpinner>
+        <p>Chargement de vos évaluations...</p>
+    </div>
+
+    <!-- collaborateur-evaluations-component.component.html -->
+    <div class="evaluations-container">
+        <!-- En-tête -->
+        <div class="header">
+            <div class="header-left">
+                <h1>Mes évaluations</h1>
+                <p class="welcome-text">
+                    Bonjour <strong>{{ currentUser?.prenoms }} {{ currentUser?.nom }}</strong>,
+                    voici l'historique de vos évaluations
+                </p>
+            </div>
+            <div class="header-right">
+                <p-button
+                        label="Rafraîchir"
+                        icon="pi pi-refresh"
+                        styleClass="p-button-outlined p-button-sm"
+                        (onClick)="loadMesEvaluations()"
+                        [loading]="loading"
+                ></p-button>
+            </div>
+        </div>
+
+        <!-- Statistiques personnelles -->
+        <div class="stats-grid" *ngIf="!loading && evaluations.length > 0">
+            <!-- ... vos statistiques ... -->
+        </div>
+
+        <!-- Message si aucune évaluation -->
+        <div *ngIf="!loading && evaluations.length === 0" class="empty-state">
+            <i class="pi pi-file-empty"></i>
+            <h3>Aucune évaluation</h3>
+            <p>Vous n'avez pas encore d'évaluation enregistrée.</p>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="loading-container">
+            <p-progressSpinner></p-progressSpinner>
+            <p>Chargement de vos évaluations...</p>
+        </div>
+
+        <!-- GRAPHIQUE D'ÉVOLUTION - Placé avant l'historique -->
+        <div *ngIf="!loading && evaluations.length >= 2 && chartData" class="chart-section">
+            <h3>Évolution de vos notes</h3>
+            <p-chart
+                    type="line"
+                    [data]="chartData"
+                    [options]="chartOptions"
+                    style="height: 300px; width: 100%;"
+            ></p-chart>
+
+            <!-- Légende explicative -->
+            <div class="chart-legend">
+                <small class="text-500">
+                    <i class="pi pi-info-circle mr-1"></i>
+                    Graphique montrant l'évolution de votre note finale au fil des années
+                </small>
+            </div>
+        </div>
+
+        <!-- Message si pas assez de données pour le graphique -->
+        <div *ngIf="!loading && evaluations.length === 1" class="info-message">
+            <i class="pi pi-chart-line mr-2"></i>
+            <span>Une seule évaluation trouvée. Le graphique d'évolution sera disponible après une deuxième évaluation.</span>
+        </div>
+
+        <!-- Liste des évaluations -->
+
+    </div>
+
+    <!-- Liste des évaluations -->
+    <div *ngIf="!loading && evaluations.length > 0" class="evaluations-list">
+        <h3>Historique des évaluations</h3>
+
+        <p-table
+                [value]="evaluations"
+                [paginator]="true"
+                [rows]="10"
+                styleClass="p-datatable-sm p-datatable-striped"
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Année</th>
+                    <th>Évaluateur</th>
+                    <th>Date entretien</th>
+                    <th>Note Objectifs</th>
+                    <th>Note Tenue</th>
+                    <th>Note Finale</th>
+                    <th>Statut</th>
+                    <th style="width: 5rem">Action</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-evaluation>
+                <tr>
+                    <td><span class="font-bold">{{ evaluation.annee }}</span></td>
+                    <td>{{ evaluation.evaluateurNom || 'Non assigné' }}</td>
+                    <td>{{ formatDate(evaluation.dateEntretien) }}</td>
+
+                    <!-- Note Objectifs -->
+                    <td>
+                        <span *ngIf="evaluation.noteGlobaleObjectifs != null"
+                              [style.color]="getNoteColor(evaluation.noteGlobaleObjectifs)">
+                            {{ evaluation.noteGlobaleObjectifs | number:'1.1-1' }}/10
+                        </span>
+                        <span *ngIf="evaluation.noteGlobaleObjectifs == null">-</span>
+                    </td>
+
+                    <!-- Note Tenue -->
+                    <td>
+                        <span *ngIf="evaluation.noteGlobaleTenuePoste != null"
+                              [style.color]="getNoteColor(evaluation.noteGlobaleTenuePoste)">
+                            {{ evaluation.noteGlobaleTenuePoste | number:'1.1-1' }}/10
+                        </span>
+                        <span *ngIf="evaluation.noteGlobaleTenuePoste == null">-</span>
+                    </td>
+
+                    <!-- Note Finale -->
+                    <td>
+                        <span *ngIf="evaluation.noteGlobaleFinale != null"
+                              class="font-bold"
+                              [style.color]="getNoteColor(evaluation.noteGlobaleFinale)">
+                            {{ evaluation.noteGlobaleFinale | number:'1.1-1' }}/10
+                        </span>
+                        <span *ngIf="evaluation.noteGlobaleFinale == null">-</span>
+                    </td>
+
+                    <!-- Statut -->
+                    <td>
+                        <p-tag
+                                [value]="statutLabels[evaluation.statut]"
+                                [severity]="getStatutSeverity(evaluation.statut)"
+                        ></p-tag>
+                    </td>
+
+                    <!-- Action -->
+                    <td>
+                        <p-button
+                                icon="pi pi-eye"
+                                (onClick)="viewEvaluation(evaluation.id!)"
+                                pTooltip="Voir détails"
+                                styleClass="p-button-rounded p-button-text p-button-info"
+                        ></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8" class="text-center p-4">
+                        Aucune évaluation trouvée
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        <!-- Graphique d'évolution -->
+
+    </div>
+</div>

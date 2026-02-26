@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Table } from 'primeng/table';
-import { Evaluation } from '../../models/entities/entities';
+import { Evaluation } from '../../models/entities/evaluation';
 
 @Component({
   selector: 'app-evaluation',

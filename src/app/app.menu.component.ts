@@ -42,20 +42,27 @@ export class AppMenuComponent implements OnInit {
        // this.toInitFunctions();
             this.model = [
                 {label: 'LOGIN', icon: 'pi pi-star-fill', routerLink: ['/Login']},
+
                 {
                     label: 'PARAMETRAGE', icon: 'pi pi-fw pi-star', routerLink: ['/parametre'],
                     items: [
-                        {label: 'SERVICE', icon: 'pi pi-building', routerLink: ['/parametre/services']},
-                        {label: 'SECTION', icon: 'pi pi-building', routerLink: ['/parametre/section']},
-                        {label: 'AGENT', icon: 'pi pi-building', routerLink: ['/parametre/agent' + '']},
-                        {label: 'DIRECTION', icon: 'pi pi-building', routerLink: ['/parametre/direction']},
+                        {label: 'DASHBOARD', icon: 'pi pi-star-fill', routerLink: ['/dashboard']},
+                        {label: 'COLLABORATEUR', icon: 'pi pi-building', routerLink: ['/collaborateur']},
+                        {label: 'MON EVALUATION', icon: 'pi pi-building', routerLink: ['/mon-levaluations']},
+                        {label: 'LISTE EVALUATION', icon: 'pi pi-building', routerLink: ['/liste-evaluations']},
+                        {label: 'CREER EVALUATION', icon: 'pi pi-building', routerLink: ['/form-evaluation']},
                         {label: 'LOGIN', icon: 'pi pi-star-fill', routerLink: ['parametre/Login']},
-                        {label: 'ANNEE EXERCICE ', icon: 'pi pi-star-fill', routerLink: ['parametre/exercice']},
+                      {label: 'CREER COLLABORATEUR ', icon: 'pi pi-star-fill', routerLink: ['/creer-collaborateur']},
+                      {label: 'DIRECTION ', icon: 'pi pi-star-fill', routerLink: ['/parametre/direction']},
+                      {label: 'SERVICE ', icon: 'pi pi-star-fill', routerLink: ['/parametre/service']},
+                      {label: 'SECTION ', icon: 'pi pi-star-fill', routerLink: ['/parametre/section']},
                     ]
 
                 },                {
                     label: 'EVALUATION', icon: 'pi pi-fw pi-star', routerLink: ['/parametre'],
+
                     items: [
+
                         {label: 'INFO', icon: 'pi pi-star-fill', routerLink: ['info/personnel']},
                     ]
 

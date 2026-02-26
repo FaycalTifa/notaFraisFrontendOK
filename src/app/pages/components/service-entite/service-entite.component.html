@@ -1,3 +1,4 @@
+<!--
 <div class="p-grid p-fluid">
     <div class="p-col-12">
         <div class="card">
@@ -10,7 +11,7 @@
                 </div>
             </p-toolbar>
 
-            <!-- service-entite.component.html -->
+            &lt;!&ndash; service-entite.component.html &ndash;&gt;
             <p-table [value]="services" [paginator]="true" [rows]="10">
                 <ng-template pTemplate="header">
                     <tr>
@@ -24,7 +25,7 @@
                     <tr>
                         <td>{{service.code}}</td>
                         <td>{{service.libelle}}</td>
-                        <td>{{getDirectionLibelle(service)}}</td> <!-- Utilisez la méthode -->
+                        <td>{{getDirectionLibelle(service)}}</td> &lt;!&ndash; Utilisez la méthode &ndash;&gt;
                         <td>
                             <button pButton type="button" icon="pi pi-pencil"
                                     class="p-button-warning mr-2"
@@ -40,7 +41,7 @@
     </div>
 </div>
 
-<!-- Dialog Ajout -->
+&lt;!&ndash; Dialog Ajout &ndash;&gt;
 <p-dialog header="Nouveau Service" [(visible)]="displayDialog" [style]="{width: '450px'}">
     <div class="p-fluid">
         <div class="p-field">
@@ -67,7 +68,7 @@
     </ng-template>
 </p-dialog>
 
-<!-- Dialog Modification -->
+&lt;!&ndash; Dialog Modification &ndash;&gt;
 <p-dialog header="Modifier Service" [(visible)]="displayEditDialog" [style]="{width: '450px'}">
     <div class="p-fluid">
         <div class="p-field">
@@ -96,3 +97,4 @@
 
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
+-->

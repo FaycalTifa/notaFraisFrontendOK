@@ -1,26 +1,47 @@
-<div class="grid align-items-center justify-content-center h-screen">
-    <div class="col-12 md:col-4">
-        <p-card header="Connexion" class="shadow-3 border-round-xl">
-            <div class="p-fluid">
-                <div class="field">
-                    <label for="username">Nom d'utilisateur</label>
-                    <input id="username" type="text" pInputText [(ngModel)]="utilisateur.username" placeholder="Entrer votre login" />
-                </div>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <i class="pi pi-chart-line"></i>
+            <h2>Gestion RH</h2>
+            <p>Connectez-vous à votre compte</p>
+        </div>
 
-                <div class="field">
-                    <label for="password">Mot de passe</label>
-                    <p-password id="password" [(ngModel)]="utilisateur.password" [feedback]="false" toggleMask></p-password>
-                </div>
-
-                <div class="field mt-3">
-                    <button pButton label="Se connecter"
-                            icon="pi pi-sign-in"
-                            class="p-button-primary w-full"
-                            (click)="login()"
-                            [loading]="loading"></button>
-                </div>
-                <a [routerLink]="['/create-users']">créer un utilisateurs</a>
+        <div class="login-form">
+            <div class="field">
+                <label for="email">Email</label>
+                <input
+                        id="email"
+                        type="email"
+                        pInputText
+                        [(ngModel)]="credentials.email"
+                        placeholder="Entrez votre email"
+                />
             </div>
-        </p-card>
+
+            <div class="field">
+                <label for="password">Mot de passe</label>
+                <p-password
+                        [(ngModel)]="credentials.password"
+                        [feedback]="false"
+                        [toggleMask]="true"
+                        placeholder="Entrez votre mot de passe"
+                ></p-password>
+            </div>
+
+            <p-button
+                    label="Se connecter"
+                    (onClick)="onLogin()"
+                    [loading]="loading"
+                    styleClass="w-full"
+            ></p-button>
+
+            <!-- LIEN CRÉATION DE COLLABORATEUR -->
+            <div class="signup-link">
+                <p>Pas encore de compte ?</p>
+                <a [routerLink]="['/creer-collaborateur']" class="create-account-link">
+                    Créer un collaborateur
+                </a>
+            </div>
+        </div>
     </div>
 </div>
