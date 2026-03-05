@@ -2,6 +2,8 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {AppComponent} from './app.component';
 import {AppMainComponent} from './app.main.component';
 import {Subscription} from 'rxjs';
+import { AuthService } from './pages/services/auth/auth.service';
+import { Router } from '@angular/router';
 @Component({
     selector: 'app-config',
     template: `
@@ -164,8 +166,15 @@ export class AppConfigComponent implements OnInit {
     configActive = false;
 
     isInputBackgroundChanged = false;
+    menuActive = false;
+    mobileMenuActive = false;
+    mobileTopbarActive = false;
+    rightMenuActive = false;
 
-    constructor(public appMain: AppMainComponent, public app: AppComponent) {}
+    constructor(public appMain: AppMainComponent,
+                public app: AppComponent,
+                public authService: AuthService,
+                private router: Router) {}
 
     ngOnInit() {
         this.themes = [
@@ -228,6 +237,32 @@ export class AppConfigComponent implements OnInit {
 
         this.selectedMenuTheme = this.menuThemes.find(theme => theme.name === this.menuTheme);
         this.selectedTopbarTheme = this.topbarThemes.find(theme => theme.name === this.topbarTheme);
+
+        if (!this.authService.isAuthenticated()) {
+            this.router.navigate(['/login']);
+        }
+
+    }
+
+    isStatic(): boolean {
+        return this.app.menuMode === 'static';
+    }
+
+    isOverlay(): boolean {
+        return this.app.menuMode === 'overlay';
+    }
+
+    isHorizontal(): boolean {
+        return this.app.menuMode === 'horizontal';
+    }
+
+    isSlim(): boolean {
+        return this.app.menuMode === 'slim';
+    }
+
+    onMenuClick(event: Event) {
+        // Empêcher la fermeture du menu lors du clic à l'intérieur
+        event.stopPropagation();
     }
 
     decrementScale() {

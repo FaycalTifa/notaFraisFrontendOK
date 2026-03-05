@@ -21,7 +21,9 @@ export class ListeCollaborateursComponent implements OnInit {
     collaborateurs: Collaborateur[] = [];
     loading = false;
     searchText = '';
-
+    displaySignatureDialog: boolean = false;
+    selectedSignature: string = '';
+    selectedSignatureTitle: string = '';
     // ✅ Ajouter cette constante pour les labels des rôles
     roleLabels: { [key: string]: string } = {
         'ADMIN': 'Administrateur',
@@ -52,6 +54,17 @@ export class ListeCollaborateursComponent implements OnInit {
         this.loadCollaborateurs();
     }
 
+    // Méthode pour ouvrir la signature en grand
+    openSignatureDialog(signature: string, collaborateurName: string): void {
+        this.selectedSignature = signature;
+        this.selectedSignatureTitle = `Signature de ${collaborateurName}`;
+        this.displaySignatureDialog = true;
+    }
+
+// Garder l'ancienne méthode pour compatibilité
+    viewSignature(signature: string): void {
+        this.openSignatureDialog(signature, 'Collaborateur');
+    }
     loadCollaborateurs(): void {
         this.loading = true;
         this.collaborateurService.getAllCollaborateurs().subscribe({

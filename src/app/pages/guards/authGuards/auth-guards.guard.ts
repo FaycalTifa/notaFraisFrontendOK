@@ -12,12 +12,12 @@ export class AuthGuardsGuard implements CanActivate {
         private router: Router
     ) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    canActivate(): boolean {
         if (this.authService.isAuthenticated()) {
             return true;
         }
-        // Rediriger vers login si non authentifié
-        this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+
+        this.router.navigate(['/login']);
         return false;
     }
 }

@@ -1,70 +1,1061 @@
-.card {
-  background: white;
+.evaluation-container {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // Header section
+  .header-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      color: #2c3e50;
+      font-weight: 600;
+      font-size: 1.8rem;
+    }
+  }
+
+  // Custom steps styling
+  ::ng-deep .custom-steps {
+    .p-steps {
+      .p-steps-item {
+        .p-menuitem-link {
+          background: transparent;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+
+          .p-steps-number {
+            width: 2.5rem;
+            height: 2.5rem;
+            font-weight: 600;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #6c757d;
+            transition: all 0.3s ease;
+          }
+
+          .p-steps-title {
+            margin-top: 0.5rem;
+            font-weight: 500;
+            color: #6c757d;
+          }
+        }
+
+        &.p-highlight {
+          .p-steps-number {
+            background: #3B82F6;
+            border-color: #3B82F6;
+            color: white;
+          }
+          .p-steps-title {
+            color: #3B82F6;
+            font-weight: 600;
+          }
+        }
+
+        &.p-disabled {
+          opacity: 0.6;
+        }
+      }
+    }
+  }
+
+  // Step content
+  .step-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+
+      .step-icon {
+        font-size: 2rem;
+        color: #3B82F6;
+        background: #eef2ff;
+        padding: 0.75rem;
+        border-radius: 12px;
+      }
+
+      .step-title {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  // Form fields
+  .field {
+    margin-bottom: 1.5rem;
+
+    .field-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #34495e;
+      font-size: 0.95rem;
+
+      .required-star {
+        color: #ef4444;
+        margin-left: 0.25rem;
+      }
+    }
+  }
+
+  // Info message
+  .info-message {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #0369a1;
+    margin-top: 1rem;
+
+    i {
+      font-size: 1.25rem;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  }
+
+  // Helper text
+  .helper-text {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    color: #475569;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    border-left: 4px solid #3B82F6;
+  }
+
+  // Fait marquant item
+  .fait-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+
+    input {
+      flex: 1;
+    }
+  }
+
+  // Objectif card
+  .objectif-card, .objectif-futur-card, .formation-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-color: #3B82F6;
+    }
+
+    .objectif-header, .formation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+
+      h5 {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+        background: #eef2ff;
+        padding: 0.35rem 1rem;
+        border-radius: 20px;
+        color: #3B82F6;
+      }
+    }
+  }
+
+  // Tenue du poste - Rating buttons
+  .tenue-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #3B82F6;
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+
+      .rating-btn {
+        width: 3rem;
+        height: 3rem;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #475569;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover:not(:disabled) {
+          border-color: #3B82F6;
+          color: #3B82F6;
+          transform: translateY(-2px);
+        }
+
+        &.selected {
+          background: #3B82F6;
+          border-color: #3B82F6;
+          color: white;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  // Workflow section
+  .workflow-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+
+    .workflow-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .workflow-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+
+      &.brouillon {
+        border-top: 4px solid #f59e0b;
+      }
+
+      &.en-cours {
+        border-top: 4px solid #3B82F6;
+      }
+
+      &.validee {
+        border-top: 4px solid #10b981;
+      }
+
+      &.attente {
+        border-top: 4px solid #6b7280;
+      }
+
+      .workflow-icon {
+        background: #f3f4f6;
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        i {
+          font-size: 2rem;
+          color: #4b5563;
+        }
+      }
+
+      .workflow-content {
+        flex: 1;
+
+        h3 {
+          margin: 0 0 0.75rem 0;
+          color: #1f2937;
+          font-size: 1.3rem;
+          font-weight: 600;
+        }
+
+        p {
+          color: #6b7280;
+          margin-bottom: 1.5rem;
+          line-height: 1.6;
+        }
+
+        .workflow-actions {
+          display: flex;
+          gap: 1rem;
+
+          &.two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+          }
+
+          .action-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+
+            i {
+              font-size: 2rem;
+              margin-bottom: 1rem;
+            }
+
+            h4 {
+              margin: 0 0 0.5rem 0;
+              color: #1f2937;
+            }
+
+            p {
+              font-size: 0.9rem;
+              margin-bottom: 1rem;
+            }
+
+            &.valider {
+              background: #f0fdf4;
+              i { color: #10b981; }
+            }
+
+            &.retourner {
+              background: #fffbeb;
+              i { color: #f59e0b; }
+            }
+          }
+        }
+
+        .validation-hint {
+          margin-top: 1rem;
+          font-size: 0.85rem;
+          color: #9ca3af;
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  // Navigation buttons
+  .navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-top: 2px solid #f0f0f0;
+    margin-top: 2rem;
+
+    .right-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+  }
+
+  // Statut card
+  .statut-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    i {
+      font-size: 2rem;
+      color: #3B82F6;
+    }
+
+    .statut-info {
+      h4 {
+        margin: 0 0 0.5rem 0;
+        color: #2c3e50;
+      }
+    }
+  }
+
+  // Signature cards
+  .signature-card {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+
+    &.signed {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    i:first-child {
+      font-size: 2rem;
+      color: #3B82F6;
+    }
+
+    h4 {
+      margin: 0 0 0.5rem 0;
+      color: #2c3e50;
+    }
+
+    .signed-info {
+      color: #10b981;
+
+      i {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+      }
+
+      .signature-date {
+        display: block;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .pending-info {
+      color: #f59e0b;
+
+      i {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  // Notes card
+  .notes-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+
+    h4 {
+      margin: 0 0 1.5rem 0;
+      color: #2c3e50;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+
+      .note-item {
+        text-align: center;
+
+        .note-label {
+          display: block;
+          color: #6b7280;
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .note-value {
+          display: block;
+          font-size: 2rem;
+          font-weight: 600;
+          color: #9ca3af;
+          margin-bottom: 0.25rem;
+
+          &.has-value {
+            color: #3B82F6;
+          }
+
+          &.finale {
+            font-size: 2.5rem;
+            color: #10b981;
+          }
+        }
+
+        .note-weight {
+          font-size: 0.8rem;
+          color: #9ca3af;
+        }
+
+        &.finale {
+          background: #eef2ff;
+          border-radius: 12px;
+          padding: 1rem;
+        }
+      }
+    }
+  }
+
+  // Fade in animation
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Responsive adjustments
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+
+    .workflow-card {
+      flex-direction: column;
+      padding: 1.5rem;
+
+      .workflow-actions {
+        flex-direction: column;
+
+        &.two-columns {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+
+    .notes-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem;
+    }
+
+    .signature-card {
+      margin-bottom: 1rem;
+    }
+
+    .navigation-buttons {
+      flex-direction: column;
+      gap: 1rem;
+
+      .right-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  }
+
+  // PrimeNG overrides
+  ::ng-deep {
+    .p-inputtext, .p-dropdown, .p-calendar {
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+
+      &:enabled:focus {
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      }
+    }
+
+    .p-button {
+      border-radius: 8px;
+      font-weight: 500;
+
+      &.p-button-outlined {
+        &:hover {
+          background: #f8fafc;
+        }
+      }
+
+      &.p-button-lg {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+      }
+    }
+
+    .p-tag {
+      font-size: 0.9rem;
+      padding: 0.35rem 1rem;
+    }
+  }
+}
+// Ajoutez ces styles à la fin de votre fichier SCSS existant
+
+// Timeline du workflow
+.workflow-timeline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+
+  .timeline-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+
+    &:not(:last-child):after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      z-index: 1;
+    }
+
+    .timeline-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      margin: 0 auto 0.5rem;
+      border: 2px solid white;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    &.active {
+      .timeline-dot {
+        background: white;
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+      .timeline-label {
+        color: white;
+        font-weight: 700;
+      }
+    }
+
+    .timeline-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+// Nouveaux types de workflow
+.workflow-card {
+  &.approbation {
+    border-top: 4px solid #a855f7;
+  }
+  &.validation-service {
+    border-top: 4px solid #f97316;
+  }
+  &.validation-directeur {
+    border-top: 4px solid #3B82F6;
+  }
+
+  .action-card {
+    &.approuver {
+      background: #f0fdf4;
+      i { color: #10b981; }
+    }
+    &.refuser {
+      background: #fef2f2;
+      i { color: #ef4444; }
+    }
+  }
+}
+
+// Message d'information workflow
+.info-message-workflow {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  margin-top: 1.5rem;
+  backdrop-filter: blur(10px);
+
+  i {
+    font-size: 1.5rem;
+  }
+
+  span {
+    font-size: 1.1rem;
+  }
+}
+
+// Ajoutez ces styles à la fin de votre fichier formulaire-evaluation.component.scss
+
+// Timeline du workflow
+.workflow-timeline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+
+  .timeline-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+
+    &:not(:last-child):after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      z-index: 1;
+    }
+
+    .timeline-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      margin: 0 auto 0.5rem;
+      border: 2px solid white;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    &.active {
+      .timeline-dot {
+        background: white;
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+      .timeline-label {
+        color: white;
+        font-weight: 700;
+      }
+    }
+
+    .timeline-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+// Nouveaux types de workflow
+.workflow-card {
+  &.approbation {
+    border-top: 4px solid #a855f7;
+  }
+  &.validation-service {
+    border-top: 4px solid #f97316;
+  }
+  &.validation-directeur {
+    border-top: 4px solid #3B82F6;
+  }
+
+  .action-card {
+    &.approuver {
+      background: #f0fdf4;
+      i { color: #10b981; }
+    }
+    &.refuser {
+      background: #fef2f2;
+      i { color: #ef4444; }
+    }
+  }
+}
+
+// Message d'information workflow
+.info-message-workflow {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  margin-top: 1.5rem;
+  backdrop-filter: blur(10px);
+
+  i {
+    font-size: 1.5rem;
+  }
+
+  span {
+    font-size: 1.1rem;
+  }
+}
+
+/* Correction pour l'affichage des jours du calendrier */
+.p-datepicker table td span:not(.pi) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.p-datepicker table td span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+}
+
+/* S'assurer que les icônes n'interfèrent pas */
+.p-datepicker .pi {
+  font-family: 'primeicons' !important;
+}
+
+/* Forcer l'affichage des chiffres */
+.p-datepicker table td span:not([class*="pi"]) {
+  font-family: inherit;
+}
+
+// Dans formulaire-evaluation.component.scss
+.fait-struct-card {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .fait-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+
+    h5 {
+      margin: 0;
+      color: #495057;
+      font-weight: 600;
+    }
+  }
+
+  &:hover {
+    background-color: #ffffff;
+    border-color: #ced4da;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+}
+
+// Style pour les icônes dans le dropdown
+::ng-deep .fait-type-dropdown {
+  .p-dropdown-item {
+    .pi {
+      margin-right: 0.5rem;
+      color: #6c757d;
+    }
+  }
+}
+
+// Dans formulaire-evaluation.component.scss
+::ng-deep {
+  .p-dropdown {
+    .p-dropdown-label {
+      font-size: 0.95rem;
+    }
+
+    .p-dropdown-item {
+      padding: 0.75rem 1rem;
+
+      .pi {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+      }
+
+      &:hover {
+        background-color: #f0f9ff;
+      }
+    }
+  }
+}
+
+.objectif-card {
+  background-color: #f9f9f9;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .objectif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #dee2e6;
+
+    h5 {
+      color: #495057;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+}
+
+// Dans formulaire-evaluation.component.scss
+.signature-card {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 4px 8px rgba(0,0,0,0.02);
-}
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 
-.step-content {
-  animation: fadeIn 0.3s ease-out;
-  min-height: 400px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+  &.signed {
+    border-color: #4CAF50;
+    background-color: #f1f9f1;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .signature-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+
+    i {
+      font-size: 1.5rem;
+      color: #6c757d;
+    }
+
+    h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    small {
+      margin-left: auto;
+      color: #6c757d;
+      font-style: italic;
+    }
+  }
+
+  .signature-body {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .signature-preview-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .signature-preview {
+      max-width: 200px;
+      max-height: 60px;
+      object-fit: contain;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 4px;
+      background-color: white;
+      cursor: pointer;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+    }
+  }
+
+  .signed-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4CAF50;
+    font-weight: 500;
+
+    i {
+      font-size: 1.2rem;
+    }
+  }
+
+  .pending-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ff9800;
+    background-color: #fff3e0;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+
+    i {
+      font-size: 1.2rem;
+    }
+  }
+
+  .signature-action {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 }
 
-.field {
-  margin-bottom: 1.5rem;
-}
-
-.field label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  display: block;
-  color: var(--text-color);
-}
-
-.text-danger {
-  color: #dc3545;
-}
-
-.border-1 {
-  border-width: 1px;
-  border-style: solid;
-}
-
-.surface-border {
-  border-color: var(--surface-border);
-}
-
-.border-round {
+.signature-dialog-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  background-color: #f8f9fa;
   border-radius: 8px;
-}
+  padding: 1rem;
 
-:host ::ng-deep {
-  .p-steps .p-steps-item .p-steps-number {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  .p-steps .p-steps-item.p-steps-current .p-steps-number {
-    background: var(--primary-color);
-    color: white;
-  }
-
-  .p-dropdown, .p-calendar, .p-inputnumber {
-    width: 100%;
-  }
-
-  .p-inputtext {
-    width: 100%;
+  .signature-full {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
 }

@@ -1,15 +1,17 @@
 import { Collaborateur } from "./entities";
 
 
-// evaluation.ts
+// models/entities/evaluation.ts
+
 export interface Evaluation {
+    evaluateur: any;
+    collaborateur: any;
     id?: number;
     annee: number;
     dateCreation?: Date;
     dateEntretien?: Date;
     dateValidation?: Date;
-    statut?: 'BROUILLON' | 'EN_COURS' | 'A_VALIDER' | 'VALIDEE' | 'REFUSEE';
-
+    statut?: 'BROUILLON' | 'A_APPROUVER' | 'APPROUVEE' | 'A_VALIDER_SERVICE' | 'A_VALIDER_DIRECTEUR' | 'EN_COURS' | 'VALIDEE' | 'REFUSEE';
     // Relations
     collaborateurId?: number;
     collaborateurNom?: string;
@@ -17,9 +19,10 @@ export interface Evaluation {
     evaluateurNom?: string;
 
     // Sections
-    faitsMarquants?: string[];
+    faitsMarquants?: string[];  // Gardez pour la compatibilité
+    faitsMarquantsSelection?: FaitMarquant[];  // Nouveau champ pour les faits structurés
     objectifs?: ObjectifEvaluation[];
-    noteGlobaleObjectifs?: number;  // ← Assurez-vous que c'est number, pas string
+    noteGlobaleObjectifs?: number;
 
     // Tenue du poste
     respectEngagements?: number;
@@ -30,7 +33,7 @@ export interface Evaluation {
     relationPresentation?: number;
     ponctualite?: number;
     respectReglementInterieur?: number;
-    noteGlobaleTenuePoste?: number;  // ← Assurez-vous que c'est number
+    noteGlobaleTenuePoste?: number;
 
     // Maîtrise
     niveauTechnique?: string;
@@ -45,7 +48,7 @@ export interface Evaluation {
     souhaitsFormations?: SouhaitFormation[];
 
     // Commentaires et signatures
-    noteGlobaleFinale?: number;  // ← Assurez-vous que c'est number
+    noteGlobaleFinale?: number;
     commentaireResponsable?: string;
     commentaireCollaborateur?: string;
     commentaireN2?: string;
@@ -81,37 +84,18 @@ export interface EvaluationRequest {
     commentairesMaitrise?: string;
     objectifsFuturs?: ObjectifFutur[];
     souhaitsFormations?: SouhaitFormation[];
+    faitsMarquantsSelection?: FaitMarquant[];  // Nouveau champ pour les faits structurés
+    faitsMarquantsStruct?: FaitMarquant[];
     commentaireResponsable?: string;
     commentaireCollaborateur?: string;
     commentaireN2?: string;
     commentaireN3?: string;
 }
 
-/*export interface ObjectifEvaluation {
-    id?: number;
-    libelle: string;
-    appreciationCollaborateur?: string;
-    appreciationResponsable?: string;
-    niveauAtteinte?: string;
-    cotation?: number;
-    tauxAtteinte?: number;
-}*/
-
-/*export interface ObjectifFutur {
-    id?: number;
-    libelle: string;
-    planAction?: string;
-    moyens?: string;
-    indicateursSuivi?: string;
-    type?: string;
-}*/
-
-export interface SouhaitFormation {
-    id?: number;
-    theme: string;
-    objectifs?: string;
-    resultatsAttendus?: string;
-    delaisEvaluation?: string;
+export interface FaitMarquant {
+    type: 'CHANGEMENT_POSTE' | 'MISSION_SPECIFIQUE' | 'MUTATION' | 'PROMOTION' | 'FORMATION' | 'AUTRE';
+    description?: string;
+    date?: Date;
 }
 
 export interface ObjectifEvaluation {
@@ -143,37 +127,20 @@ export interface SouhaitFormation {
 
 export const StatutLabels: { [key: string]: string } = {
     'BROUILLON': 'Brouillon',
-    'EN_COURS': 'En cours',
-    'A_SIGNER': 'À signer',
+    'A_APPROUVER': 'À approuver',
+    'APPROUVEE': 'Approuvée',
+    'A_VALIDER_SERVICE': 'À valider (Chef service)',
+    'A_VALIDER_DIRECTEUR': 'À valider (Directeur)',
     'VALIDEE': 'Validée',
-    'ARCHIVEE': 'Archivée'
+    'REFUSEE': 'Refusée'
 };
 
 export const StatutColors: { [key: string]: string } = {
-  //  'BROUILLON': 'secondary',
-    //'EN_COURS': 'info',
-   // 'A_SIGNER': 'warning',
+    'BROUILLON': 'warning',
+    'A_APPROUVER': 'info',
+    'APPROUVEE': 'success',
+    'A_VALIDER_SERVICE': 'help',
+    'A_VALIDER_DIRECTEUR': 'help',
     'VALIDEE': 'success',
-   // 'ARCHIVEE': 'danger'
+    'REFUSEE': 'danger'
 };
-
-export const NiveauAtteinteLabels: { [key: string]: string } = {
-    'EXCELLENT': 'Excellent (>100%)',
-    'BIEN': 'Bien (80-100%)',
-    'PASSABLE': 'Passable (55-75%)',
-    'INSUFFISANT': 'Insuffisant (35-50%)',
-    'FAIBLE': 'Faible (≤30%)'
-};
-
-export const NiveauMaitriseLabels: { [key: string]: string } = {
-    'DEBUTANT': 'Débutant(e)',
-    'INTERMEDIAIRE': 'Intermédiaire',
-    'CONFIRME': 'Confirmé(e)',
-    'EXPERT': 'Expert(e)'
-};
-
-export const TypeObjectifLabels: { [key: string]: string } = {
-    'ANNUEL': 'Objectif Annuel',
-    'TENUE_POSTE': 'Tenue du poste'
-};
-

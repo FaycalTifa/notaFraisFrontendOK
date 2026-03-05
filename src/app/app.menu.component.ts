@@ -3,6 +3,7 @@ import {AppComponent} from './app.component';
 import {KeycloakService} from 'keycloak-angular';
 import {ConfirmationService} from 'primeng/api';
 import {HttpResponse} from '@angular/common/http';
+import { AuthService } from './pages/services/auth/auth.service';
 
 @Component({
     selector: 'app-menu',
@@ -13,86 +14,96 @@ import {HttpResponse} from '@angular/common/http';
     `
 })
 export class AppMenuComponent implements OnInit {
-    model: any[];
+    model: any[] = [];
     isLogin = false;
-    userRole: string[] = [];
-    IS_EMPLOYE = 'IS_EMPLOYE';
-    IS_CHEF_SERVICE = 'IS_CHEF_SERVICE';
-    IS_DG = 'IS_DG';
-    IS_COMPTABILITE = 'IS_COMPTABILITE';
-    IS_PARAMETRAGE_MANAGER = 'IS_PARAMETRAGE_MANAGER';
-    IS_CHEF_PERSONNEL = 'IS_CHEF_PERSONNEL';
-    IS_CHEF_COMPTABILITE = 'IS_CHEF_COMPTABILITE';
-    IS_ADMIN = 'IS_ADMIN';
-    IS_EMPLOYE_ROLE = '';
-    IS_CHEF_SERVICE_ROLE = '';
-    IS_DG_ROLE = '';
-    IS_COMPTABILITE_ROLE = '';
-    IS_PARAMETRAGE_MANAGER_ROLE = '';
-    IS_CHEF_PERSONNEL_ROLE = '';
-    IS_CHEF_COMPTABILITE_ROLE = '';
-    IS_ADMIN_ROLE = '';
-    keycloakUser = '';
+
     constructor(
         public app: AppComponent,
         public confirmationService: ConfirmationService,
-        public keycloakService: KeycloakService,
+        public authService: AuthService
     ) {}
+
     ngOnInit() {
-       // this.toInitFunctions();
-            this.model = [
-                {label: 'LOGIN', icon: 'pi pi-star-fill', routerLink: ['/Login']},
-
-                {
-                    label: 'PARAMETRAGE', icon: 'pi pi-fw pi-star', routerLink: ['/parametre'],
-                    items: [
-                        {label: 'DASHBOARD', icon: 'pi pi-star-fill', routerLink: ['/dashboard']},
-                        {label: 'COLLABORATEUR', icon: 'pi pi-building', routerLink: ['/collaborateur']},
-                        {label: 'MON EVALUATION', icon: 'pi pi-building', routerLink: ['/mon-levaluations']},
-                        {label: 'LISTE EVALUATION', icon: 'pi pi-building', routerLink: ['/liste-evaluations']},
-                        {label: 'CREER EVALUATION', icon: 'pi pi-building', routerLink: ['/form-evaluation']},
-                        {label: 'LOGIN', icon: 'pi pi-star-fill', routerLink: ['parametre/Login']},
-                      {label: 'CREER COLLABORATEUR ', icon: 'pi pi-star-fill', routerLink: ['/creer-collaborateur']},
-                      {label: 'DIRECTION ', icon: 'pi pi-star-fill', routerLink: ['/parametre/direction']},
-                      {label: 'SERVICE ', icon: 'pi pi-star-fill', routerLink: ['/parametre/service']},
-                      {label: 'SECTION ', icon: 'pi pi-star-fill', routerLink: ['/parametre/section']},
-                    ]
-
-                },                {
-                    label: 'EVALUATION', icon: 'pi pi-fw pi-star', routerLink: ['/parametre'],
-
-                    items: [
-
-                        {label: 'INFO', icon: 'pi pi-star-fill', routerLink: ['info/personnel']},
-                    ]
-
-                },
-            ];
-
-    }
-    getUserLogedRole(): void {
-        this.userRole = this.keycloakService.getUserRoles();
-        this.IS_EMPLOYE_ROLE = this.userRole.find( role => role.startsWith(this.IS_EMPLOYE));
-        this.IS_CHEF_SERVICE_ROLE = this.userRole.find( role => role.startsWith(this.IS_CHEF_SERVICE));
-        this.IS_DG_ROLE = this.userRole.find( role => role.startsWith(this.IS_DG) );
-        this.IS_COMPTABILITE_ROLE = this.userRole.find( role => role.startsWith(this.IS_COMPTABILITE));
-        this.IS_PARAMETRAGE_MANAGER_ROLE = this.userRole.find( role => role.startsWith(this.IS_PARAMETRAGE_MANAGER));
-        this.IS_CHEF_PERSONNEL_ROLE = this.userRole.find( role => role.startsWith(this.IS_CHEF_PERSONNEL));
-        this.IS_CHEF_COMPTABILITE_ROLE = this.userRole.find( role => role.startsWith(this.IS_CHEF_COMPTABILITE));
-        this.IS_ADMIN_ROLE = this.userRole.find( role => role.startsWith(this.IS_ADMIN));
-    }
-    getUserNameLoged(): void {
-        this.keycloakUser = this.keycloakService.getUsername();
+        this.buildMenu();
     }
 
-    canActivate(): void {
-        this.isLogin = !!this.keycloakService.isLoggedIn();
-    }
-    toInitFunctions(): void {
-        this.getUserLogedRole();
-        this.getUserNameLoged();
-        this.canActivate();
-    }
+    buildMenu() {
+        // Menu de base visible par tous les utilisateurs connectés
+        const baseMenu = [
+            {
+                label: 'TABLEAU DE BORD',
+                icon: 'pi pi-fw pi-home',
+                routerLink: ['/dashboard'],
+                visible: this.authService.isAuthenticated()
+            }
+        ];
 
+        // Menu PARAMETRAGE (visible seulement pour ADMIN)
+        const parametrageMenu = {
+            label: 'PARAMÉTRAGE',
+            icon: 'pi pi-fw pi-cog',
+            visible: this.authService.isAdmin(),
+            items: [
+                {label: 'DIRECTIONS', icon: 'pi pi-sitemap', routerLink: ['/parametre/direction']},
+                {label: 'SERVICES', icon: 'pi pi-briefcase', routerLink: ['/parametre/service']},
+                {label: 'SECTIONS', icon: 'pi pi-th-large', routerLink: ['/parametre/section']},
+                {label: 'ANNÉES EXERCICE', icon: 'pi pi-calendar', routerLink: ['/parametre/exercice']}
+            ]
+        };
 
+        // Menu COLLABORATEURS (visible pour ADMIN, DIRECTEUR, CHEF_SERVICE, CHEF_SECTION)
+        const collaborateurMenu = {
+            label: 'COLLABORATEURS',
+            icon: 'pi pi-fw pi-users',
+            visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION']),
+            items: [
+                {label: 'LISTE COLLABORATEURS', icon: 'pi pi-list', routerLink: ['/collaborateur']},
+                {label: 'CRÉER COLLABORATEUR', icon: 'pi pi-user-plus', routerLink: ['/creer-collaborateur'],
+                    visible: this.authService.isAdmin()}
+            ]
+        };
+
+        // Menu ÉVALUATIONS (visible pour ADMIN, DIRECTEUR, CHEF_SERVICE, CHEF_SECTION)
+        const evaluationMenu = {
+            label: 'ÉVALUATIONS',
+            icon: 'pi pi-fw pi-star',
+            visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION']),
+            items: [
+                {label: 'LISTE ÉVALUATIONS', icon: 'pi pi-list', routerLink: ['/liste-evaluations']},
+                {label: 'CRÉER ÉVALUATION', icon: 'pi pi-plus-circle', routerLink: ['/evaluations/nouveau']},
+                {label: 'MON ÉVALUATION', icon: 'pi pi-user', routerLink: ['/mon-levaluations']}
+            ]
+        };
+
+        // Menu MES INFORMATIONS (visible pour tous)
+        const monEspaceMenu = {
+            label: 'MON ESPACE',
+            icon: 'pi pi-fw pi-user',
+            visible: this.authService.isAuthenticated(),
+            items: [
+                {label: 'MON ÉVALUATION', icon: 'pi pi-star', routerLink: ['/mon-levaluations']},
+              //  {label: 'MES INFORMATIONS', icon: 'pi pi-id-card', routerLink: ['/info/personnel']}
+            ]
+        };
+
+        // Menu ADMINISTRATION (visible seulement pour ADMIN)
+        const adminMenu = {
+            label: 'RECAP',
+            icon: 'pi pi-fw pi-shield',
+            visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION']),
+            items: [
+                {label: 'DASHBOARD', icon: 'pi pi-chart-line', routerLink: ['/dashboard']},
+            ]
+        };
+
+        // Construire le menu en fonction des rôles
+        this.model = [
+            ...baseMenu,
+            parametrageMenu,
+            collaborateurMenu,
+            evaluationMenu,
+            monEspaceMenu,
+            adminMenu
+        ].filter(item => item.visible); // Filtrer les éléments non visibles
+    }
 }

@@ -1,4 +1,4 @@
-import {RouterModule} from '@angular/router';
+import { RouterModule } from '@angular/router';
 import {NgModule} from '@angular/core';
 import { AppMainComponent } from './app.main.component';
 import {LoginComponent} from './pages/components/login/login.component';
@@ -18,38 +18,121 @@ import { ListeEvaluationsComponent } from './pages/components/liste-evaluations/
 import { FormulaireEvaluationComponent } from './pages/components/formulaire-evaluation/formulaire-evaluation.component';
 import { DashboardComponent } from './pages/components/dashboard/dashboard.component';
 import { CollaborateurEvaluationsComponentComponent } from './pages/components/collaborateur-evaluations-component/collaborateur-evaluations-component.component';
+import { RoleGuardsGuard } from './pages/guards/roleGuards/role-guards.guard';
+import { AuthGuardsGuard } from './pages/guards/authGuards/auth-guards.guard';
 
+// @ts-ignore
 @NgModule({
     imports: [
         RouterModule.forRoot([
-            // route par défaut → login
-            { path: '', redirectTo: 'collaborateur', pathMatch: 'full' },
-            // login sans AppMainComponent (donc sans menu)
+            // Route publique - login (sans menu)
             { path: 'login', component: LoginComponent },
-            { path: 'creer-collaborateur', component: FormCollaborateurComponent },
-            { path: 'List Direction', component: DirectionComponent  },
 
-            // routes principales avec AppMainComponent (menu inclus)
+            // Routes protégées avec AppMainComponent (menu inclus)
             {
                 path: '', component: AppMainComponent,
+                canActivate: [AuthGuardsGuard], // Vérifie que l'utilisateur est connecté
                 children: [
-                    { path: 'dashboard', component: DashboardComponent },
-                    { path: 'collaborateur', component: ListeCollaborateursComponent },
-                    { path: 'liste-evaluations', component: ListeEvaluationsComponent },
+                    // Dashboard - accessible à tous les utilisateurs connectés
+                    {
+                        path: 'dashboard',
+                        component: DashboardComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
+                    },
 
-                    // Routes pour les évaluations (CORRIGÉES)
-                    { path: 'evaluations/nouveau', component: FormulaireEvaluationComponent },
-                    { path: 'evaluations/:id', component: FormulaireEvaluationComponent },  // ← Voir détails
-                    { path: 'mon-levaluations', component: CollaborateurEvaluationsComponentComponent },  // ← Voir détails
-                    { path: 'evaluations/editer/:id', component: FormulaireEvaluationComponent },  // ← Modifier                    { path: 'parametre/exercice', component: AnneeExerciceComponent },
-                    { path: 'form-evaluation', component: FormulaireEvaluationComponent },
-                    { path: 'parametre/direction', component: DirectionComponent },
-                    { path: 'parametre/section', component: SectionComponent },
-                    { path: 'parametre/service', component: ServiceComponent },
+                    // Collaborateurs - accessible aux responsables
+                    {
+                        path: 'collaborateur',
+                        component: ListeCollaborateursComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                    },
+                    {
+                        path: 'creer-collaborateur',
+                        component: FormCollaborateurComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN'] } // Seul l'admin peut créer
+                    },
+
+                    // Évaluations
+                    {
+                        path: 'liste-evaluations',
+                        component: ListeEvaluationsComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                    },
+                    {
+                        path: 'evaluations/nouveau',
+                        component: FormulaireEvaluationComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                    },
+                    {
+                        path: 'evaluations/:id',
+                        component: FormulaireEvaluationComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
+                    },
+                    {
+                        path: 'evaluations/editer/:id',
+                        component: FormulaireEvaluationComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                    },
+                    {
+                        path: 'form-evaluation',
+                        component: FormulaireEvaluationComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                    },
+                    {
+                        path: 'mon-levaluations',
+                        component: CollaborateurEvaluationsComponentComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
+                    },
+
+                    // Paramétrage - accessible seulement à l'admin
+                    {
+                        path: 'parametre/direction',
+                        component: DirectionComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN'] }
+                    },
+                    {
+                        path: 'parametre/service',
+                        component: ServiceComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN'] }
+                    },
+                    {
+                        path: 'parametre/section',
+                        component: SectionComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN'] }
+                    },
+                    {
+                        path: 'parametre/exercice',
+                        component: AnneeExerciceComponent,
+                        canActivate:  [RoleGuardsGuard],
+                        data: { roles: ['ADMIN'] }
+                    },
+
+                    // Info personnel - accessible à tous
+                    {
+                        path: 'info/personnel',
+                        component: InfoEntrepriseComponent,
+                        canActivate:  [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
+                    },
+
+                    // Redirection par défaut
+                    { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
                 ]
             },
 
-            // page not found → retour login
+            // Page non trouvée → redirection vers login
             { path: '**', redirectTo: 'login' },
         ], { scrollPositionRestoration: 'enabled' })
     ],

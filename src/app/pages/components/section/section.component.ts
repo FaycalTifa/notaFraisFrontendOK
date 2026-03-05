@@ -14,10 +14,10 @@ import {FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class SectionComponent implements OnInit {
     // États
+    // États
     sections: SectionResponse[] = [];
-    sectionsData: Section[] = [];
     filteredSections: SectionResponse[] = [];
-    services: ServiceResponse[] = [];
+    services: ServiceResponse[] = [];  // ✅ Changé de sectionsData à services
     loading = false;
     searchTerm = '';
 
@@ -37,7 +37,7 @@ export class SectionComponent implements OnInit {
 
     constructor(
         private sectionService: SectionService,
-        private serviceEntityService: ServiceService,
+        private serviceService: ServiceService,  // ✅ Injecter le bon service
         private fb: FormBuilder
     ) {
         this.initForm();
@@ -53,17 +53,19 @@ export class SectionComponent implements OnInit {
             code: ['', [Validators.required, Validators.maxLength(50)]],
             nom: ['', [Validators.required, Validators.maxLength(100)]],
             description: ['', Validators.maxLength(500)],
-            serviceId: ['', Validators.required]
+            serviceId: [null, Validators.required]  // ✅ Mettre null par défaut
         });
     }
 
     loadServices(): void {
-        this.serviceEntityService.getAllServices().subscribe({
+        this.serviceService.getAllServices().subscribe({
             next: (data) => {
-                this.sectionsData = data;
+                console.log('✅ Services chargés:', data);
+                this.services = data;  // ✅ Stocker dans services
             },
             error: (error) => {
-                console.error('Erreur chargement services', error);
+                console.error('❌ Erreur chargement services', error);
+                this.errorMessage = 'Erreur lors du chargement des services';
             }
         });
     }
@@ -72,12 +74,13 @@ export class SectionComponent implements OnInit {
         this.loading = true;
         this.sectionService.getAllSections().subscribe({
             next: (data) => {
+                console.log('✅ Sections chargées:', data);
                 this.sections = data;
                 this.applyFilter();
                 this.loading = false;
             },
             error: (error) => {
-                console.error('Erreur chargement sections', error);
+                console.error('❌ Erreur chargement sections', error);
                 this.errorMessage = 'Erreur lors du chargement des sections';
                 this.loading = false;
             }
@@ -134,7 +137,12 @@ export class SectionComponent implements OnInit {
     }
 
     private resetForm(): void {
-        this.sectionForm.reset();
+        this.sectionForm.reset({
+            code: '',
+            nom: '',
+            description: '',
+            serviceId: null  // ✅ Réinitialiser avec null
+        });
         this.successMessage = '';
         this.errorMessage = '';
         this.sectionForm.get('code')?.enable();
@@ -142,9 +150,13 @@ export class SectionComponent implements OnInit {
 
     onSubmit(): void {
         if (this.sectionForm.invalid) {
+            // Marquer tous les champs comme touchés
             Object.keys(this.sectionForm.controls).forEach(key => {
                 this.sectionForm.get(key)?.markAsTouched();
             });
+
+            // Afficher un message d'erreur
+            this.errorMessage = 'Veuillez remplir tous les champs obligatoires';
             return;
         }
 
@@ -152,9 +164,12 @@ export class SectionComponent implements OnInit {
         this.sectionForm.get('code')?.enable();
         const section: Section = this.sectionForm.value;
 
+        console.log('📤 Données envoyées:', section);
+
         if (this.isEditing && this.currentSectionId) {
             this.sectionService.updateSection(this.currentSectionId, section).subscribe({
-                next: () => {
+                next: (response) => {
+                    console.log('✅ Section mise à jour:', response);
                     this.successMessage = 'Section mise à jour avec succès';
                     this.loadSections();
                     this.onCancel();
@@ -162,15 +177,16 @@ export class SectionComponent implements OnInit {
                     setTimeout(() => this.successMessage = '', 3000);
                 },
                 error: (error) => {
-                    console.error('Erreur mise à jour', error);
-                    this.errorMessage = 'Erreur lors de la mise à jour';
+                    console.error('❌ Erreur mise à jour', error);
+                    this.errorMessage = error.error?.message || 'Erreur lors de la mise à jour';
                     this.submitting = false;
                     this.sectionForm.get('code')?.disable();
                 }
             });
         } else {
             this.sectionService.createSection(section).subscribe({
-                next: () => {
+                next: (response) => {
+                    console.log('✅ Section créée:', response);
                     this.successMessage = 'Section créée avec succès';
                     this.loadSections();
                     this.onCancel();
@@ -178,8 +194,8 @@ export class SectionComponent implements OnInit {
                     setTimeout(() => this.successMessage = '', 3000);
                 },
                 error: (error) => {
-                    console.error('Erreur création', error);
-                    this.errorMessage = 'Erreur lors de la création';
+                    console.error('❌ Erreur création', error);
+                    this.errorMessage = error.error?.message || 'Erreur lors de la création';
                     this.submitting = false;
                 }
             });
@@ -195,8 +211,8 @@ export class SectionComponent implements OnInit {
                     setTimeout(() => this.successMessage = '', 3000);
                 },
                 error: (error) => {
-                    console.error('Erreur suppression', error);
-                    this.errorMessage = 'Erreur lors de la suppression';
+                    console.error('❌ Erreur suppression', error);
+                    this.errorMessage = error.error?.message || 'Erreur lors de la suppression';
                 }
             });
         }
@@ -209,7 +225,7 @@ export class SectionComponent implements OnInit {
 
     getServiceName(serviceId: number): string {
         const service = this.services.find(s => s.id === serviceId);
-        return service ? service.nom : 'Inconnu';
+        return service ? service.nom : 'Service inconnu';
     }
 
     get f() {

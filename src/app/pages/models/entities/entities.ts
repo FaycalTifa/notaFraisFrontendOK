@@ -24,9 +24,12 @@ export interface LoginResponse {
     email: string;
     nomComplet: string;
     role: string;
-    direction?: string;
-    service?: string;
-    section?: string;
+    directionId?: number;
+    directionNom?: string;
+    serviceId?: number;
+    serviceNom?: string;
+    sectionId?: number;
+    sectionNom?: string;
 }
 
 // Interface pour un collaborateur
@@ -56,6 +59,11 @@ export interface Collaborateur {
     responsableHierarchiqueId?: number;
     responsableHierarchiqueNom?: string;
 
+    // ✅ Signature - Type explicite
+    signature?: string | null;
+    signatureFilename?: string | null;
+    signatureContentType?: string | null;
+
     [key: string]: string | number | boolean | Date | undefined; // Index signature
 }
 
@@ -75,7 +83,12 @@ export interface CollaborateurRequest {
     sectionId?: number;
     responsableDirectId?: number;
 
-    [key: string]: string | number | Date | undefined; // Index signature
+    // ✅ Signature - Type explicite
+    signature?: string | null;
+    signatureFilename?: string | null;
+    signatureContentType?: string | null;
+
+    [key: string]: string | number | boolean | Date | undefined | null;
 }
 
 export interface Direction {

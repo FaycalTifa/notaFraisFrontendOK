@@ -16,15 +16,17 @@ export class RoleGuardsGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot): boolean {
         const requiredRoles = route.data['roles'] as string[];
 
+        // Si aucune rôle requis, accès autorisé
         if (!requiredRoles || requiredRoles.length === 0) {
             return true;
         }
 
-        // @ts-ignore
-        if (this.authService.hasRole(requiredRoles)) {
+        // Vérifier si l'utilisateur a au moins un des rôles requis
+        if (this.authService.hasAnyRole(requiredRoles)) {
             return true;
         }
 
+        // Rediriger vers le dashboard si pas les droits
         this.router.navigate(['/dashboard']);
         return false;
     }

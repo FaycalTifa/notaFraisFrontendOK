@@ -4,6 +4,7 @@ import { CollaborateurService } from '../../services/collaborateur/collaborateur
 import { NotificationService } from '../../services/notification/notification.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { Collaborateur, CollaborateurRequest, Direction, Section } from '../../models/entities/entities';
+// @ts-ignore
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Service } from '../../models/service/service';
@@ -31,6 +32,10 @@ export class FormCollaborateurComponent implements OnInit {
     loading = false;
     saving = false;
     activeStep = 0;
+    // Ajouter ces propriétés
+    uploadedSignature: any = null;
+    signatureFileName: string = '';
+    signatureBase64: string = '';
 
     // Options
     roleOptions = Object.entries(RoleLabels).map(([value, label]) => ({ label, value }));
@@ -122,6 +127,124 @@ export class FormCollaborateurComponent implements OnInit {
                 sectionId: null
             }, { emitEvent: false });
         });
+    }
+
+    // Méthode pour gérer l'upload de signature
+   /* onSignatureUpload(event: any): void {
+        const file = event.files[0];
+        if (file) {
+            this.signatureFileName = file.name;
+
+            // Convertir en Base64
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                this.signatureBase64 = e.target.result;
+                console.log('Signature chargée:', this.signatureFileName);
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: 'Signature chargée avec succès'
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }*/
+
+    // Dans form-collaborateur.component.ts
+
+    onSignatureUpload(event: any): void {
+        const file = event.files[0];
+        if (file) {
+            this.signatureFileName = file.name;
+
+            // Afficher un message de traitement
+            this.messageService.add({
+                severity: 'info',
+                summary: 'Traitement',
+                detail: 'Compression de la signature en cours...',
+                life: 2000
+            });
+
+            // Compresser l'image avant de l'afficher
+            this.compressAndResizeSignature(file, 300, 100, 0.7).then(compressedBase64 => {
+                this.signatureBase64 = compressedBase64;
+
+                // Calculer la réduction de taille
+                const originalSize = Math.round(file.size / 1024);
+                const compressedSize = Math.round((compressedBase64.length * 3) / 4 / 1024); // Approximation
+
+                console.log(`Signature compressée: ${originalSize}Ko -> ${compressedSize}Ko`);
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: `Signature compressée (${originalSize}Ko → ${compressedSize}Ko)`,
+                    life: 3000
+                });
+            }).catch(error => {
+                console.error('Erreur compression:', error);
+                // Fallback: conversion sans compression
+                const reader = new FileReader();
+                reader.onload = (e: any) => {
+                    this.signatureBase64 = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    /**
+     * Compresse et redimensionne une signature
+     * @param file Le fichier image
+     * @param maxWidth Largeur maximale (300px pour l'affichage)
+     * @param maxHeight Hauteur maximale (100px pour l'affichage)
+     * @param quality Qualité de compression (0.7 = 70%)
+     */
+    compressAndResizeSignature(file: File, maxWidth: number, maxHeight: number, quality: number): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e: any) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    // Créer un canvas
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculer les nouvelles dimensions pour que la signature soit lisible
+                    // mais pas trop grande
+                    const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Dessiner l'image redimensionnée
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convertir en JPEG avec qualité réduite
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressedBase64);
+                };
+                img.onerror = reject;
+            };
+            reader.onerror = reject;
+        });
+    }
+
+
+// Méthode pour supprimer la signature
+    removeSignature(): void {
+        this.uploadedSignature = null;
+        this.signatureFileName = '';
+        this.signatureBase64 = '';
     }
 
     // Chargement des directions
@@ -310,6 +433,64 @@ export class FormCollaborateurComponent implements OnInit {
 
     // Sauvegarde
     // form-collaborateur.component.ts
+  /*  save(): void {
+        if (this.collaborateurForm.invalid) {
+            Object.keys(this.collaborateurForm.controls).forEach(key => {
+                this.collaborateurForm.get(key)?.markAsTouched();
+            });
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Validation',
+                detail: 'Veuillez remplir tous les champs obligatoires'
+            });
+            return;
+        }
+
+        this.saving = true;
+        const collaborateurData = this.collaborateurForm.value;
+
+        // Pour la création, si pas de mot de passe fourni, utiliser le matricule
+        if (!this.isEdit && !collaborateurData.password) {
+            collaborateurData.password = collaborateurData.matricule;
+        }
+
+        if (this.isEdit && this.collaborateurId) {
+            // Mode édition
+            this.collaborateurService.updateCollaborateur(this.collaborateurId, collaborateurData).subscribe({
+                next: () => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: 'Collaborateur mis à jour avec succès',
+                        life: 3000
+                    });
+                    setTimeout(() => this.router.navigate(['/collaborateurs']), 1500);
+                },
+                error: (error) => {
+                    this.saving = false;
+                    this.handleError(error);
+                }
+            });
+        } else {
+            // Mode création
+            this.collaborateurService.createCollaborateur(collaborateurData).subscribe({
+                next: () => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: 'Collaborateur créé avec succès',
+                        life: 3000
+                    });
+                    setTimeout(() => this.router.navigate(['/collaborateurs']), 1500);
+                },
+                error: (error) => {
+                    this.saving = false;
+                    this.handleError(error);
+                }
+            });
+        }
+    }*/
+
     save(): void {
         if (this.collaborateurForm.invalid) {
             Object.keys(this.collaborateurForm.controls).forEach(key => {
@@ -330,6 +511,13 @@ export class FormCollaborateurComponent implements OnInit {
         if (!this.isEdit && !collaborateurData.password) {
             collaborateurData.password = collaborateurData.matricule;
         }
+
+        // ✅ AJOUTER LA SIGNATURE AUX DONNÉES
+        if (this.signatureBase64) {
+            collaborateurData.signature = this.signatureBase64;
+        }
+
+        console.log('Données envoyées:', collaborateurData);
 
         if (this.isEdit && this.collaborateurId) {
             // Mode édition

@@ -227,6 +227,71 @@
                         </p-dropdown>
                     </div>
                 </div>
+
+                <!-- Dans form-collaborateur.component.html -->
+
+                <!-- Étape 2: Rôle et organisation (ajouter la section signature) -->
+                <div *ngIf="activeStep === 1">
+                    <h3 class="mb-4">Rôle et affectation</h3>
+
+                    <div class="grid p-fluid">
+                        <!-- ... vos champs existants ... -->
+
+                        <div class="col-12">
+                            <p-divider align="left">
+                                <span class="font-medium">Signature</span>
+                            </p-divider>
+                        </div>
+
+                        <!-- Upload de signature -->
+                        <div class="col-12">
+                            <div class="field">
+                                <label>Signature du collaborateur</label>
+                                <div class="signature-upload-container">
+
+                                    <!-- Aperçu de la signature -->
+                                    <div *ngIf="signatureBase64" class="signature-preview mb-3">
+                                        <img [src]="signatureBase64" alt="Signature" class="signature-image" />
+                                        <p-button
+                                                icon="pi pi-times"
+                                                styleClass="p-button-rounded p-button-danger p-button-sm remove-signature-btn"
+                                                (onClick)="removeSignature()"
+                                        ></p-button>
+                                        <small class="block text-500">{{ signatureFileName }}</small>
+                                    </div>
+
+                                    <!-- Zone d'upload -->
+                                    <p-fileUpload
+                                            *ngIf="!signatureBase64"
+                                            name="signature"
+                                            accept="image/*"
+                                            maxFileSize="1000000"
+                                            chooseLabel="Choisir une signature"
+                                            uploadLabel="Télécharger"
+                                            cancelLabel="Annuler"
+                                            (onSelect)="onSignatureUpload($event)"
+                                            [auto]="false"
+                                            [showUploadButton]="false"
+                                            [showCancelButton]="false"
+                                            mode="advanced"
+                                    >
+                                        <ng-template pTemplate="content">
+                                            <div *ngIf="!uploadedSignature" class="p-3 text-center text-gray-500">
+                                                <i class="pi pi-cloud-upload" style="font-size: 2rem"></i>
+                                                <p>Glissez-déposez ou cliquez pour choisir une signature</p>
+                                                <small>Formats acceptés: PNG, JPG, JPEG (max 1 Mo)</small>
+                                            </div>
+                                        </ng-template>
+                                    </p-fileUpload>
+
+                                    <small class="text-500">
+                                        La signature sera utilisée pour les documents officiels
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

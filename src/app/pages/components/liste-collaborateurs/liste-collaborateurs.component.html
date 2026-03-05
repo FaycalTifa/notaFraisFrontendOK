@@ -69,6 +69,7 @@
              <!--   <th>Affectation</th>-->
                 <th pSortableColumn="role">Rôle <p-sortIcon field="role"></p-sortIcon></th>
                 <th pSortableColumn="actif">Statut <p-sortIcon field="actif"></p-sortIcon></th>
+                <th pSortableColumn="Signature">Signature <p-sortIcon field="Signature"></p-sortIcon></th>
                 <th style="width: 8rem">Actions</th>
             </tr>
         </ng-template>
@@ -106,6 +107,27 @@
                             [value]="collab.actif ? 'Actif' : 'Inactif'"
                             [severity]="collab.actif ? 'success' : 'danger'"
                     ></p-tag>
+                </td>
+                <!-- Dans liste-collaborateurs.component.html - modifier la colonne signature -->
+                <!-- Dans liste-collaborateurs.component.html - Remplacer la colonne signature -->
+                <td>
+                    <div *ngIf="collab.signature" class="signature-container">
+                        <!-- Miniature cliquable -->
+                        <div class="signature-wrapper" (click)="openSignatureDialog(collab.signature, collab.prenoms + ' ' + collab.nom)">
+                            <img [src]="collab.signature"
+                                 alt="Signature de {{collab.prenoms}} {{collab.nom}}"
+                                 class="signature-preview"
+                                 pTooltip="Cliquer pour agrandir"
+                                 tooltipPosition="top"/>
+                            <i class="pi pi-search-plus signature-zoom-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Message si pas de signature -->
+                    <div *ngIf="!collab.signature" class="no-signature">
+                        <i class="pi pi-image" style="font-size: 1.5rem; color: #ccc"></i>
+                        <span class="text-500">-</span>
+                    </div>
                 </td>
                 <td>
                     <div class="flex gap-1">
@@ -148,6 +170,28 @@
             </tr>
         </ng-template>
     </p-table>
+    <!-- Ajouter ce dialogue à la fin du fichier HTML -->
+    <p-dialog
+            [(visible)]="displaySignatureDialog"
+            [modal]="true"
+            [style]="{width: '500px'}"
+            [header]="selectedSignatureTitle"
+            [draggable]="false"
+            [resizable]="false">
+
+        <div class="signature-dialog-content" *ngIf="selectedSignature">
+            <img [src]="selectedSignature" alt="Signature" class="signature-full"/>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button
+                    label="Fermer"
+                    icon="pi pi-times"
+                    (onClick)="displaySignatureDialog = false"
+                    styleClass="p-button-outlined"
+            ></p-button>
+        </ng-template>
+    </p-dialog>
 </div>
 
 <p-confirmDialog></p-confirmDialog>

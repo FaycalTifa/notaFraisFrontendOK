@@ -3,7 +3,7 @@
     <div class="dashboard-header">
         <div class="header-left">
             <h1>Tableau de bord</h1>
-            <p class="welcome-text">Bonjour, <strong>{{ currentUser?.nomComplet || currentUser?.nom }}</strong> ({{ getRoleLabel(currentUser?.role) }})</p>
+            <p class="welcome-text">Bonjour, <strong>{{ currentUser?.nomComplet || currentUser?.prenoms + ' ' + currentUser?.nom }}</strong> ({{ getRoleLabel(currentUser?.role) }})</p>
         </div>
         <div class="header-right">
             <p-button
@@ -26,18 +26,8 @@
     <div *ngIf="!loading.global" class="dashboard-content">
         <!-- Statistiques principales -->
         <div class="stats-grid">
-
-            <div class="stat-card" (click)="navigateTo('/evaluations')">
-                <div class="stat-icon" style="background: #e3f2fd; color: #3498db;">
-                    <i class="pi pi-file"></i>
-                </div>
-                <div class="stat-content">
-                    <span class="stat-value">{{ stats.evaluations }}</span>
-                    <span class="stat-label">Évaluations</span>
-                </div>
-            </div>
-
-            <div class="stat-card" (click)="navigateTo('/collaborateurs')">
+            <!-- Collaborateurs -->
+            <div class="stat-card" (click)="navigateTo('/collaborateur')">
                 <div class="stat-icon" style="background: #e8f5e9; color: #2ecc71;">
                     <i class="pi pi-users"></i>
                 </div>
@@ -47,29 +37,63 @@
                 </div>
             </div>
 
+            <!-- Évaluations totales -->
+            <div class="stat-card" (click)="navigateTo('/liste-evaluations')">
+                <div class="stat-icon" style="background: #e3f2fd; color: #3498db;">
+                    <i class="pi pi-file"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ stats.evaluations }}</span>
+                    <span class="stat-label">Évaluations</span>
+                </div>
+            </div>
 
+            <!-- Brouillons -->
+            <div class="stat-card" (click)="navigateTo('/liste-evaluations')">
+                <div class="stat-icon" style="background: #fff3e0; color: #f39c12;">
+                    <i class="pi pi-pencil"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ getBrouillonCount() }}</span>
+                    <span class="stat-label">Brouillons</span>
+                </div>
+            </div>
 
-           <!-- <div class="stat-card" (click)="navigateTo('/evaluations?statut=en-cours')">
+            <!-- À approuver -->
+            <div class="stat-card" (click)="navigateTo('/liste-evaluations')">
+                <div class="stat-icon" style="background: #f3e5f5; color: #9b59b6;">
+                    <i class="pi pi-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ stats.aApprouver }}</span>
+                    <span class="stat-label">À approuver</span>
+                </div>
+            </div>
+
+            <!-- En cours -->
+            <div class="stat-card" (click)="navigateTo('/liste-evaluations')">
                 <div class="stat-icon" style="background: #fff3e0; color: #f39c12;">
                     <i class="pi pi-clock"></i>
                 </div>
                 <div class="stat-content">
-                    <span class="stat-value">{{ stats.evaluationsEnCours }}</span>
+                    <span class="stat-value">{{ getEnCoursCount() }}</span>
                     <span class="stat-label">En cours</span>
                 </div>
             </div>
 
-            <div class="stat-card" (click)="navigateTo('/evaluations?statut=validees')">
+            <!-- Validées -->
+            <div class="stat-card" (click)="navigateTo('/liste-evaluations')">
                 <div class="stat-icon" style="background: #e8f5e9; color: #2ecc71;">
                     <i class="pi pi-check-circle"></i>
                 </div>
                 <div class="stat-content">
-                    <span class="stat-value">{{ stats.evaluationsValidees }}</span>
+                    <span class="stat-value">{{ getValideesCount() }}</span>
                     <span class="stat-label">Validées</span>
                 </div>
-            </div>-->
+            </div>
 
-            <div class="stat-card" (click)="navigateTo('/directions')">
+            <!-- Directions -->
+            <div class="stat-card" (click)="navigateTo('/parametre/direction')">
                 <div class="stat-icon" style="background: #f3e5f5; color: #9b59b6;">
                     <i class="pi pi-sitemap"></i>
                 </div>
@@ -79,7 +103,8 @@
                 </div>
             </div>
 
-            <div class="stat-card" (click)="navigateTo('/services')">
+            <!-- Services -->
+            <div class="stat-card" (click)="navigateTo('/parametre/service')">
                 <div class="stat-icon" style="background: #e1f5fe; color: #03a9f4;">
                     <i class="pi pi-th-large"></i>
                 </div>
@@ -88,13 +113,25 @@
                     <span class="stat-label">Services</span>
                 </div>
             </div>
-            <div class="stat-card" (click)="navigateTo('/services')">
+
+            <!-- Sections -->
+            <div class="stat-card" (click)="navigateTo('/parametre/section')">
                 <div class="stat-icon" style="background: #e1f5fe; color: #03a9f4;">
-                    <i class="pi pi-th-large"></i>
+                    <i class="pi pi-folder"></i>
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ stats.sections }}</span>
                     <span class="stat-label">Sections</span>
+                </div>
+            </div>
+
+            <!-- Mes notes -->
+            <div class="stat-card" (click)="navigateTo('/mon-levaluations')">
+                <div class="stat-icon" style="background: #e1f5fe; color: #03a9f4;">
+                    <i class="pi pi-star"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Mes notes</span>
                 </div>
             </div>
         </div>
@@ -109,14 +146,14 @@
                             type="doughnut"
                             [data]="statutStats"
                             [options]="{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom'
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    }
                                 }
-                            }
-                        }"
+                            }"
                     ></p-chart>
                 </div>
             </div>
@@ -139,8 +176,19 @@
                         <p-button
                                 label="Voir toutes les évaluations à faire"
                                 styleClass="p-button-sm p-button-text p-0 mt-2"
-                                (onClick)="navigateTo('/evaluations/a-faire')"
+                                (onClick)="navigateTo('/liste-evaluations')"
                         ></p-button>
+                    </div>
+                </div>
+
+                <!-- À approuver -->
+                <div class="alert-item info" *ngIf="stats.aApprouver > 0">
+                    <div class="alert-icon">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <strong>{{ stats.aApprouver }} évaluation(s) à approuver</strong>
+                        <p>Des évaluations attendent votre approbation</p>
                     </div>
                 </div>
 
@@ -166,12 +214,14 @@
                                 (onClick)="navigateTo('/evaluations/nouveau')"
                         ></p-button>
                         <p-button
+                                *ngIf="currentUser?.role === 'ADMIN'"
                                 label="Nouveau collaborateur"
                                 icon="pi pi-user-plus"
                                 styleClass="p-button-info p-button-sm"
                                 (onClick)="navigateTo('/collaborateurs/nouveau')"
                         ></p-button>
                         <p-button
+                                *ngIf="currentUser?.role === 'ADMIN'"
                                 label="Nouvelle direction"
                                 icon="pi pi-sitemap"
                                 styleClass="p-button-help p-button-sm"
@@ -191,20 +241,20 @@
                         icon="pi pi-arrow-right"
                         iconPos="right"
                         styleClass="p-button-text p-button-sm"
-                        (onClick)="navigateTo('/evaluations')"
+                        (onClick)="navigateTo('/liste-evaluations')"
                 ></p-button>
             </div>
 
             <div class="recent-grid">
                 <div *ngFor="let eval of dernieresEvaluations" class="recent-card" (click)="navigateTo('/evaluations/' + eval.id)">
                     <div class="recent-header">
-                        <span class="recent-name">{{ eval.collaborateurNom }}</span>
+                        <span class="recent-name">{{ eval.collaborateurNom || 'Collaborateur' }}</span>
                         <span class="recent-badge" [class]="'badge-' + getStatutClass(eval.statut)">
-                            {{ eval.statut }}
+                            {{ getStatutLabel(eval.statut) }}
                         </span>
                     </div>
                     <div class="recent-body">
-                        <div class="recent-info">
+                        <div class="recent-info" *ngIf="eval.dateCreation">
                             <i class="pi pi-calendar"></i>
                             <span>{{ eval.dateCreation | date:'dd/MM/yyyy' }}</span>
                         </div>
@@ -214,7 +264,7 @@
                         </div>
                     </div>
                     <div class="recent-footer" *ngIf="eval.noteGlobaleFinale">
-                        <span class="recent-note">Note: {{ eval.noteGlobaleFinale }}/10</span>
+                        <span class="recent-note">Note: {{ eval.noteGlobaleFinale.toFixed(1) }}/10</span>
                     </div>
                 </div>
 
@@ -229,27 +279,27 @@
         <div class="quick-nav-section">
             <h3>Navigation rapide</h3>
             <div class="quick-nav-grid">
-                <div class="nav-card" (click)="navigateTo('/directions')">
+                <div class="nav-card" (click)="navigateTo('/parametre/direction')">
                     <i class="pi pi-sitemap"></i>
                     <span>Directions</span>
                 </div>
-                <div class="nav-card" (click)="navigateTo('/services')">
+                <div class="nav-card" (click)="navigateTo('/parametre/service')">
                     <i class="pi pi-th-large"></i>
                     <span>Services</span>
                 </div>
-                <div class="nav-card" (click)="navigateTo('/sections')">
+                <div class="nav-card" (click)="navigateTo('/parametre/section')">
                     <i class="pi pi-folder"></i>
                     <span>Sections</span>
                 </div>
-                <div class="nav-card" (click)="navigateTo('/collaborateurs')">
+                <div class="nav-card" (click)="navigateTo('/collaborateur')">
                     <i class="pi pi-users"></i>
                     <span>Collaborateurs</span>
                 </div>
-                <div class="nav-card" (click)="navigateTo('/evaluations')">
+                <div class="nav-card" (click)="navigateTo('/liste-evaluations')">
                     <i class="pi pi-file"></i>
                     <span>Évaluations</span>
                 </div>
-                <div class="nav-card" (click)="navigateTo('/profil')">
+                <div class="nav-card" (click)="navigateTo('/info/personnel')">
                     <i class="pi pi-user"></i>
                     <span>Mon profil</span>
                 </div>

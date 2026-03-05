@@ -17,9 +17,35 @@ export class CollaborateurService {
     getAllCollaborateurs(): Observable<Collaborateur[]> {
         return this.http.get<Collaborateur[]>(this.apiUrl);
     }
+    // Dans collaborateur.service.ts
+    getVisibles(): Observable<Collaborateur[]> {
+        return this.http.get<Collaborateur[]>(`${this.apiUrl}/visibles`);
+    }
+
+    getCollaborateursEvaluables1(): Observable<Collaborateur[]> {
+        console.log('✅ SERVICE: getCollaborateursEvaluables');
+        console.log('✅ {this.apiUrl}/evaluables ::::' , this.http.get<Collaborateur[]>(`${this.apiUrl}/evaluables`));
+        return this.http.get<Collaborateur[]>(`${this.apiUrl}/evaluables`);
+    }
 
     getCollaborateursEvaluables(): Observable<Collaborateur[]> {
-        return this.http.get<Collaborateur[]>(`${this.apiUrl}/evaluables`);
+        const url = `${this.apiUrl}/evaluables`;
+        console.log('📡 SERVICE: Appel à', url);
+
+        return this.http.get<Collaborateur[]>(url).pipe(
+            tap({
+                next: (data) => {
+                    console.log('📡 SERVICE: Données reçues avec succès!');
+                    console.log('📡 SERVICE: Nombre de collaborateurs:', data?.length);
+                    if (data && data.length > 0) {
+                        console.log('📡 SERVICE: Premier collaborateur:', data[0]);
+                    }
+                },
+                error: (error) => {
+                    console.error('📡 SERVICE: Erreur lors de l\'appel:', error);
+                }
+            })
+        );
     }
 
     getCollaborateurById(id: number): Observable<Collaborateur> {

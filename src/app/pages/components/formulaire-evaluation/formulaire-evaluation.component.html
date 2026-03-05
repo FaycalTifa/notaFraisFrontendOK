@@ -1,39 +1,57 @@
-<div class="card">
+<div class="evaluation-container">
     <p-toast></p-toast>
 
     <!-- En-tête avec statut -->
-    <div class="flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-content-between align-items-center mb-4 header-section">
         <div class="flex align-items-center gap-3">
-            <h2>{{ isEdit ? 'Modifier' : 'Nouvelle' }} évaluation</h2>
-            <p-tag *ngIf="isEdit" [value]="getStatutLabel()" [severity]="getStatutClass()"></p-tag>
+            <h2 class="m-0">{{ isEdit ? 'Modifier' : 'Nouvelle' }} évaluation</h2>
+            <p-tag
+                    *ngIf="isEdit"
+                    [value]="getStatutLabel()"
+                    [severity]="getStatutClass()"
+                    [rounded]="true"
+                    styleClass="px-3 py-2"
+            ></p-tag>
         </div>
         <p-button
-                label="Retour"
+                label="Retour à la liste"
                 icon="pi pi-arrow-left"
                 styleClass="p-button-outlined p-button-sm"
                 (onClick)="cancel()"
         ></p-button>
     </div>
 
-    <!-- Steps -->
-    <p-steps [model]="steps" [(activeIndex)]="activeStep" [readonly]="false" styleClass="mb-4"></p-steps>
-
     <!-- Loading -->
     <div *ngIf="loading" class="flex justify-content-center p-5">
         <p-progressSpinner></p-progressSpinner>
     </div>
 
-    <!-- Formulaire -->
+    <!-- Formulaire principal -->
     <div *ngIf="!loading">
 
+        <!-- Steps navigation -->
+        <p-steps
+                [model]="steps"
+                [(activeIndex)]="activeStep"
+                [readonly]="false"
+                styleClass="mb-4 custom-steps"
+        ></p-steps>
+
+        <!-- ============================================= -->
         <!-- ÉTAPE 1: Informations générales -->
-        <div *ngIf="activeStep === 0" class="step-content">
-            <h3 class="mb-4">Informations générales</h3>
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 0" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-info-circle step-icon"></i>
+                <h3 class="step-title">Informations générales</h3>
+            </div>
 
             <div class="grid p-fluid">
                 <div class="col-12 md:col-6">
                     <div class="field">
-                        <label>Collaborateur <span class="text-danger">*</span></label>
+                        <label class="field-label">
+                            Collaborateur <span class="required-star">*</span>
+                        </label>
                         <p-dropdown
                                 [(ngModel)]="evaluation.collaborateurId"
                                 [options]="collaborateurs"
@@ -42,13 +60,32 @@
                                 placeholder="Sélectionner un collaborateur"
                                 [filter]="true"
                                 [disabled]="isEdit || evaluation.collaborateurId > 0 || !canEdit"
-                        ></p-dropdown>
+                                styleClass="w-full custom-dropdown"
+                        >
+                            <ng-template pTemplate="selectedItem" let-selectedOption>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-user"></i>
+                                    <span>{{ selectedOption?.nomComplet }}</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="item" let-option>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-user"></i>
+                                    <div>
+                                        <div>{{ option.nomComplet }}</div>
+                                        <small class="text-500">{{ option.matricule }} - {{ option.posteActuel }}</small>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
                     <div class="field">
-                        <label>Année d'évaluation <span class="text-danger">*</span></label>
+                        <label class="field-label">
+                            Année d'évaluation <span class="required-star">*</span>
+                        </label>
                         <p-dropdown
                                 [(ngModel)]="evaluation.annee"
                                 [options]="anneeOptions"
@@ -56,180 +93,326 @@
                                 optionValue="value"
                                 placeholder="Sélectionner l'année"
                                 [disabled]="isEdit || !canEdit"
-                        ></p-dropdown>
+                                styleClass="w-full custom-dropdown"
+                        >
+                            <ng-template pTemplate="selectedItem" let-selectedOption>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-calendar"></i>
+                                    <span>{{ selectedOption?.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
                     <div class="field">
-                        <label>Date de l'entretien</label>
-                        <p-calendar
+                        <label class="field-label">Date de l'entretien</label>
+                        <!--<p-calendar
                                 [(ngModel)]="evaluation.dateEntretien"
                                 dateFormat="dd/mm/yy"
-                                [showIcon]="true"
+                                [showIcon]="false"
                                 placeholder="Sélectionner une date"
                                 [disabled]="!canEdit"
-                        ></p-calendar>
+                                styleClass="w-full"
+                                inputStyleClass="w-full"
+                                [showIcon]="false"
+                        >
+                            <ng-template pTemplate="inputIcon">
+                                <i class="pi pi-calendar"></i>
+                            </ng-template>
+                        </p-calendar>-->
+                        <p-calendar
+                                [(ngModel)]="evaluation.dateEntretien"
+                                dateFormat="dd/MM/yy"
+                                placeholder="Sélectionner une date"
+                                [disabled]="!canEdit"
+                                styleClass="w-full"
+                                inputStyleClass="w-full"
+                                [iconDisplay]="'input'"
+                                [showIcon]="false"
+                        >
+                        </p-calendar>
                     </div>
                 </div>
 
-                <div class="col-12" *ngIf="!isEdit">
-                    <p class="text-500">
-                        <i class="pi pi-info-circle mr-2"></i>
-                        L'évaluation sera créée avec le statut <strong>Brouillon</strong>
-                    </p>
-                </div>
-
-                <div class="col-12" *ngIf="isEdit">
-                    <p class="text-500">
-                        <i class="pi pi-info-circle mr-2"></i>
-                        Statut actuel: <strong>{{ getStatutLabel() }}</strong>
-                        <span *ngIf="evaluationComplete?.dateCreation"> - Créée le {{ evaluationComplete?.dateCreation | date:'dd/MM/yyyy' }}</span>
-                    </p>
+                <div class="col-12">
+                    <div class="info-message" *ngIf="!isEdit">
+                        <i class="pi pi-info-circle"></i>
+                        <span>L'évaluation sera créée avec le statut <strong>Brouillon</strong></span>
+                    </div>
+                    <div class="info-message" *ngIf="isEdit">
+                        <i class="pi pi-info-circle"></i>
+                        <span>
+                            Statut actuel: <strong>{{ getStatutLabel() }}</strong>
+                            <span *ngIf="evaluationComplete?.dateCreation"> - Créée le {{ evaluationComplete?.dateCreation | date:'dd/MM/yyyy' }}</span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 2: Faits marquants -->
-        <div *ngIf="activeStep === 1" class="step-content">
-            <h3 class="mb-4">Faits marquants de l'année</h3>
+        <!-- ============================================= -->
+        <!-- ============================================= -->
+        <!-- ÉTAPE 2: Faits marquants (NOUVELLE VERSION) -->
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 1" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-star step-icon"></i>
+                <h3 class="step-title">Faits marquants de l'année</h3>
+            </div>
 
             <div class="field">
-                <label>Liste des faits marquants</label>
-                <p class="text-500 mb-3">
+                <p class="helper-text">
                     <i class="pi pi-info-circle mr-2"></i>
-                    Ajoutez les événements importants, réalisations, changements de poste, promotions, formations...
+                    Ajoutez les événements importants de l'année écoulée
                 </p>
 
-                <div *ngFor="let fait of evaluation.faitsMarquants; let i = index" class="flex align-items-center mb-2">
-                    <input
-                            pInputText
-                            [(ngModel)]="evaluation.faitsMarquants[i]"
-                            placeholder="Fait marquant {{i+1}}"
-                            class="flex-1 mr-2"
-                            [disabled]="!canEdit"
-                    />
-                    <p-button
-                            *ngIf="canEdit"
-                            icon="pi pi-trash"
-                            styleClass="p-button-rounded p-button-text p-button-danger p-button-sm"
-                            (onClick)="removeFaitMarquant(i)"
-                    ></p-button>
+                <!-- Liste des faits marquants structurés -->
+                <div *ngFor="let fait of evaluation.faitsMarquantsStruct; let i = index; trackBy: trackByIndex"
+                     class="fait-struct-card">
+
+                    <div class="grid p-fluid">
+                        <!-- En-tête avec suppression -->
+                        <div class="col-12 fait-header">
+                            <h5>Fait marquant #{{i+1}}</h5>
+                            <p-button
+                                    *ngIf="canEdit"
+                                    icon="pi pi-trash"
+                                    styleClass="p-button-rounded p-button-text p-button-danger p-button-sm"
+                                    (onClick)="removeFaitMarquantStruct(i)"
+                            ></p-button>
+                        </div>
+
+                        <!-- Type de fait marquant -->
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="field-label">Type</label>
+                                <p-dropdown
+                                        [(ngModel)]="fait.type"
+                                        [options]="typeFaitMarquantOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Sélectionner le type"
+                                        [disabled]="!canEdit"
+                                        styleClass="w-full"
+                                >
+                                    <ng-template pTemplate="selectedItem" let-selectedOption>
+                                        <div class="flex align-items-center gap-2">
+                                            <i [class]="selectedOption.icon"></i>
+                                            <span>{{ selectedOption.label }}</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template pTemplate="item" let-option>
+                                        <div class="flex align-items-center gap-2">
+                                            <i [class]="option.icon"></i>
+                                            <span>{{ option.label }}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </div>
+
+                        <!-- Date (optionnelle) -->
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="field-label">Date (optionnelle)</label>
+                                <p-calendar
+                                        [(ngModel)]="fait.date"
+                                        dateFormat="dd/MM/yy"
+                                        placeholder="Sélectionner une date"
+                                        [disabled]="!canEdit"
+                                        styleClass="w-full"
+                                        [showIcon]="true"
+                                        iconDisplay="input"
+                                ></p-calendar>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-12 md:col-8">
+                            <div class="field">
+                                <label class="field-label">Description</label>
+                                <span class="p-input-icon-left w-full">
+                            <i class="pi pi-pencil"></i>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="fait.description"
+                                    rows="2"
+                                    placeholder="Décrivez le fait marquant..."
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Bouton d'ajout -->
                 <p-button
                         *ngIf="canEdit"
                         label="Ajouter un fait marquant"
                         icon="pi pi-plus"
                         styleClass="p-button-outlined p-button-sm mt-2"
-                        (onClick)="addFaitMarquant()"
+                        (onClick)="addFaitMarquantStruct()"
                 ></p-button>
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 3: Objectifs de l'année -->
-        <div *ngIf="activeStep === 2" class="step-content">
-            <h3 class="mb-4">Objectifs de l'année</h3>
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 2" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-target step-icon"></i>
+                <h3 class="step-title">Objectifs de l'année</h3>
+            </div>
 
             <div class="field">
-                <p class="text-500 mb-3">
+                <p class="helper-text">
                     <i class="pi pi-info-circle mr-2"></i>
                     Définissez les objectifs et leur niveau d'atteinte
                 </p>
 
-                <div *ngFor="let obj of evaluation.objectifs; let i = index" class="grid p-fluid mb-4 p-3 border-1 surface-border border-round">
-                    <div class="col-12">
-                        <div class="flex justify-content-between align-items-center">
-                            <h5>Objectif #{{i+1}}</h5>
-                            <p-button
-                                    *ngIf="canEdit"
-                                    icon="pi pi-trash"
-                                    styleClass="p-button-rounded p-button-text p-button-danger"
-                                    (onClick)="removeObjectif(i)"
-                            ></p-button>
-                        </div>
+                <div *ngFor="let obj of evaluation.objectifs; let i = index" class="objectif-card">
+                    <div class="objectif-header">
+                        <h5>Objectif #{{i+1}}</h5>
+                        <p-button
+                                *ngIf="canEdit"
+                                icon="pi pi-trash"
+                                styleClass="p-button-rounded p-button-text p-button-danger"
+                                (onClick)="removeObjectif(i)"
+                        ></p-button>
                     </div>
 
-                    <div class="col-12">
-                        <div class="field">
-                            <label>Libellé de l'objectif</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="obj.libelle"
-                                    rows="2"
-                                    placeholder="Décrire l'objectif"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                    <div class="grid p-fluid">
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="field-label">Libellé de l'objectif</label>
+                                <span class="p-input-icon-left w-full">
+                                    <i class="pi pi-pencil"></i>
+                                    <textarea
+                                            pInputTextarea
+                                            [(ngModel)]="obj.libelle"
+                                            rows="2"
+                                            placeholder="Décrire l'objectif"
+                                            class="w-full"
+                                            [disabled]="!canEdit"
+                                    ></textarea>
+                                </span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-4">
-                        <div class="field">
-                            <label>Taux d'atteinte (%)</label>
-                            <p-inputNumber
-                                    [(ngModel)]="obj.tauxAtteinte"
-                                    [min]="0"
-                                    [max]="150"
-                                    [showButtons]="true"
-                                    suffix="%"
-                                    [disabled]="!canEdit"
-                            ></p-inputNumber>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="field-label">Taux d'atteinte (%)</label>
+                                <p-dropdown
+                                        [(ngModel)]="obj.tauxAtteinte"
+                                        [options]="tauxAtteinteOptionsSimple"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Sélectionner le taux"
+                                        [disabled]="!canEdit"
+                                        styleClass="w-full"
+                                        showClear="true"
+                                >
+                                    <ng-template pTemplate="selectedItem" let-selectedOption>
+                                        <div class="flex align-items-center gap-2" *ngIf="selectedOption">
+                                            <i ></i>
+                                            <span>{{ selectedOption.label }}</span>
+                                        </div>
+                                        <span *ngIf="!selectedOption">Sélectionner le taux</span>
+                                    </ng-template>
+                                    <ng-template pTemplate="item" let-option>
+                                        <div class="flex align-items-center gap-2">
+                                            <i ></i>
+                                            <span>{{ option.label }}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-4">
-                        <div class="field">
-                            <label>Cotation /10</label>
-                            <p-inputNumber
-                                    [(ngModel)]="obj.cotation"
-                                    [min]="0"
-                                    [max]="10"
-                                    [showButtons]="true"
-                                    [disabled]="!canEdit"
-                            ></p-inputNumber>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="field-label">Cotation /10</label>
+                                <p-dropdown
+                                        [(ngModel)]="obj.cotation"
+                                        [options]="cotationOptionsSimple"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Sélectionner la note"
+                                        [disabled]="!canEdit"
+                                        styleClass="w-full"
+                                        showClear="true"
+                                >
+                                    <ng-template pTemplate="selectedItem" let-selectedOption>
+                                        <div class="flex align-items-center gap-2" *ngIf="selectedOption">
+                                            <i></i>
+                                            <span>{{  selectedOption.label }}</span>
+                                        </div>
+                                        <span *ngIf="!selectedOption">Sélectionner la note</span>
+                                    </ng-template>
+                                    <ng-template pTemplate="item" let-option>
+                                        <div class="flex align-items-center gap-2">
+                                            <i ></i>
+                                            <span>{{ option.label }}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-4">
-                        <div class="field">
-                            <label>Niveau d'atteinte</label>
-                            <p-dropdown
-                                    [(ngModel)]="obj.niveauAtteinte"
-                                    [options]="niveauAtteinteOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="Sélectionner"
-                                    [disabled]="!canEdit"
-                            ></p-dropdown>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="field-label">Niveau d'atteinte</label>
+                                <p-dropdown
+                                        [(ngModel)]="obj.niveauAtteinte"
+                                        [options]="niveauAtteinteOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Sélectionner"
+                                        [disabled]="!canEdit"
+                                        styleClass="w-full"
+                                ></p-dropdown>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Appréciation du collaborateur</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="obj.appreciationCollaborateur"
-                                    rows="2"
-                                    placeholder="Commentaire du collaborateur"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="field-label">Appréciation du collaborateur</label>
+                                <span class="p-input-icon-left w-full">
+                                    <i class="pi pi-user"></i>
+                                    <textarea
+                                            pInputTextarea
+                                            [(ngModel)]="obj.appreciationCollaborateur"
+                                            rows="2"
+                                            placeholder="Commentaire du collaborateur"
+                                            class="w-full"
+                                            [disabled]="!canEdit"
+                                    ></textarea>
+                                </span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Appréciation du responsable</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="obj.appreciationResponsable"
-                                    rows="2"
-                                    placeholder="Commentaire du responsable"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="field-label">Appréciation du responsable</label>
+                                <span class="p-input-icon-left w-full">
+                                    <i class="pi pi-briefcase"></i>
+                                    <textarea
+                                            pInputTextarea
+                                            [(ngModel)]="obj.appreciationResponsable"
+                                            rows="2"
+                                            placeholder="Commentaire du responsable"
+                                            class="w-full"
+                                            [disabled]="!canEdit"
+                                    ></textarea>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -244,133 +427,167 @@
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 4: Tenue du poste -->
-        <div *ngIf="activeStep === 3" class="step-content">
-            <h3 class="mb-4">Évaluation de la tenue du poste</h3>
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 3" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-briefcase step-icon"></i>
+                <h3 class="step-title">Évaluation de la tenue du poste</h3>
+            </div>
 
             <div class="grid p-fluid">
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Respect des engagements</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.respectEngagements"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Respect des engagements</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.respectEngagements === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.respectEngagements = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Qualité, méthodes de travail</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.qualiteMethodesTravail"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Qualité, méthodes de travail</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.qualiteMethodesTravail === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.qualiteMethodesTravail = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Capacités d'adaptation et d'organisation</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.capacitesAdaptationOrganisation"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Capacités d'adaptation et d'organisation</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.capacitesAdaptationOrganisation === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.capacitesAdaptationOrganisation = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Encadrement</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.encadrement"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Encadrement</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.encadrement === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.encadrement = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Esprit d'initiative et capacité d'innovation</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.espritInitiativeInnovation"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Esprit d'initiative et capacité d'innovation</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.espritInitiativeInnovation === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.espritInitiativeInnovation = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Relation, présentation</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.relationPresentation"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Relation, présentation</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.relationPresentation === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.relationPresentation = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Ponctualité</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.ponctualite"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Ponctualité</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.ponctualite === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.ponctualite = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-6">
-                    <div class="field">
-                        <label>Respect du règlement intérieur</label>
-                        <p-dropdown
-                                [(ngModel)]="evaluation.respectReglementInterieur"
-                                [options]="noteTenueOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                placeholder="Noter de 0 à 10"
-                                [disabled]="!canEdit"
-                        ></p-dropdown>
+                    <div class="tenue-card">
+                        <label class="field-label">Respect du règlement intérieur</label>
+                        <div class="rating-buttons">
+                            <button
+                                    *ngFor="let note of noteTenueOptions"
+                                    type="button"
+                                    class="rating-btn"
+                                    [class.selected]="evaluation.respectReglementInterieur === note.value"
+                                    [disabled]="!canEdit"
+                                    (click)="evaluation.respectReglementInterieur = note.value">
+                                {{ note.label }}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 5: Maîtrise du poste -->
-        <div *ngIf="activeStep === 4" class="step-content">
-            <h3 class="mb-4">Niveau de maîtrise du poste</h3>
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 4" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-chart-line step-icon"></i>
+                <h3 class="step-title">Niveau de maîtrise du poste</h3>
+            </div>
 
             <div class="grid p-fluid">
                 <div class="col-12 md:col-4">
                     <div class="field">
-                        <label>Compétences et connaissances techniques</label>
+                        <label class="field-label">Compétences et connaissances techniques</label>
                         <p-dropdown
                                 [(ngModel)]="evaluation.niveauTechnique"
                                 [options]="niveauOptions"
@@ -378,14 +595,21 @@
                                 optionValue="value"
                                 placeholder="Sélectionner le niveau"
                                 [disabled]="!canEdit"
-                        ></p-dropdown>
+                                styleClass="w-full"
+                        >
+                            <ng-template pTemplate="item" let-option>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-cog"></i>
+                                    <span>{{ option.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-4">
-
                     <div class="field">
-                        <label>Expérience</label>
+                        <label class="field-label">Expérience</label>
                         <p-dropdown
                                 [(ngModel)]="evaluation.niveauExperience"
                                 [options]="niveauOptions"
@@ -393,13 +617,21 @@
                                 optionValue="value"
                                 placeholder="Sélectionner le niveau"
                                 [disabled]="!canEdit"
-                        ></p-dropdown>
+                                styleClass="w-full"
+                        >
+                            <ng-template pTemplate="item" let-option>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-clock"></i>
+                                    <span>{{ option.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
                 </div>
 
                 <div class="col-12 md:col-4">
                     <div class="field">
-                        <label>Aptitude à l'encadrement</label>
+                        <label class="field-label">Aptitude à l'encadrement</label>
                         <p-dropdown
                                 [(ngModel)]="evaluation.niveauEncadrement"
                                 [options]="niveauOptions"
@@ -407,114 +639,131 @@
                                 optionValue="value"
                                 placeholder="Sélectionner le niveau"
                                 [disabled]="!canEdit"
-                        ></p-dropdown>
+                                styleClass="w-full"
+                        >
+                            <ng-template pTemplate="item" let-option>
+                                <div class="flex align-items-center gap-2">
+                                    <i class="pi pi-users"></i>
+                                    <span>{{ option.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
                     </div>
                 </div>
 
                 <div class="col-12">
                     <div class="field">
-                        <label>Commentaires sur la maîtrise</label>
-                        <textarea
-                                pInputTextarea
-                                [(ngModel)]="evaluation.commentairesMaitrise"
-                                rows="4"
-                                placeholder="Observations complémentaires..."
-                                class="w-full"
-                                [disabled]="!canEdit"
-                        ></textarea>
+                        <label class="field-label">Commentaires sur la maîtrise</label>
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-comment"></i>
+                            <textarea
+                                    pInputTextarea
+                                    [(ngModel)]="evaluation.commentairesMaitrise"
+                                    rows="4"
+                                    placeholder="Observations complémentaires..."
+                                    class="w-full"
+                                    [disabled]="!canEdit"
+                            ></textarea>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 6: Objectifs N+1 -->
-        <div *ngIf="activeStep === 5" class="step-content">
-            <h3 class="mb-4">Objectifs pour l'année N+1</h3>
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 5" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-chart-line step-icon"></i>
+                <h3 class="step-title">Objectifs pour l'année N+1</h3>
+            </div>
 
             <div class="field">
-                <p class="text-500 mb-3">
+                <p class="helper-text">
                     <i class="pi pi-info-circle mr-2"></i>
                     Définissez les objectifs pour l'année à venir
                 </p>
 
-                <div *ngFor="let obj of evaluation.objectifsFuturs; let i = index" class="grid p-fluid mb-4 p-3 border-1 surface-border border-round">
-                    <div class="col-12">
-                        <div class="flex justify-content-between align-items-center">
-                            <h5>Objectif futur #{{i+1}}</h5>
-                            <p-button
-                                    *ngIf="canEdit"
-                                    icon="pi pi-trash"
-                                    styleClass="p-button-rounded p-button-text p-button-danger"
-                                    (onClick)="removeObjectifFutur(i)"
-                            ></p-button>
-                        </div>
+                <div *ngFor="let obj of evaluation.objectifsFuturs; let i = index" class="objectif-futur-card">
+                    <div class="objectif-header">
+                        <h5>Objectif futur #{{i+1}}</h5>
+                        <p-button
+                                *ngIf="canEdit"
+                                icon="pi pi-trash"
+                                styleClass="p-button-rounded p-button-text p-button-danger"
+                                (onClick)="removeObjectifFutur(i)"
+                        ></p-button>
                     </div>
 
-                    <div class="col-12">
-                        <div class="field">
-                            <label>Libellé de l'objectif</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="obj.libelle"
-                                    rows="2"
-                                    placeholder="Décrire l'objectif"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                    <div class="grid p-fluid">
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="field-label">Libellé de l'objectif</label>
+                                <textarea
+                                        pInputTextarea
+                                        [(ngModel)]="obj.libelle"
+                                        rows="2"
+                                        placeholder="Décrire l'objectif"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                ></textarea>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Type d'objectif</label>
-                            <p-dropdown
-                                    [(ngModel)]="obj.type"
-                                    [options]="typeObjectifOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="Sélectionner le type"
-                                    [disabled]="!canEdit"
-                            ></p-dropdown>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="field-label">Type d'objectif</label>
+                                <p-dropdown
+                                        [(ngModel)]="obj.type"
+                                        [options]="typeObjectifOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Sélectionner le type"
+                                        [disabled]="!canEdit"
+                                        styleClass="w-full"
+                                ></p-dropdown>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12">
-                        <div class="field">
-                            <label>Plan d'action</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="obj.planAction"
-                                    rows="2"
-                                    placeholder="Actions à mettre en œuvre"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="field-label">Plan d'action</label>
+                                <textarea
+                                        pInputTextarea
+                                        [(ngModel)]="obj.planAction"
+                                        rows="2"
+                                        placeholder="Actions à mettre en œuvre"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                ></textarea>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Moyens</label>
-                            <input
-                                    pInputText
-                                    [(ngModel)]="obj.moyens"
-                                    placeholder="Moyens nécessaires"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            />
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="field-label">Moyens</label>
+                                <input
+                                        pInputText
+                                        [(ngModel)]="obj.moyens"
+                                        placeholder="Moyens nécessaires"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Indicateurs de suivi</label>
-                            <input
-                                    pInputText
-                                    [(ngModel)]="obj.indicateursSuivi"
-                                    placeholder="Comment mesurer l'atteinte"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            />
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="field-label">Indicateurs de suivi</label>
+                                <input
+                                        pInputText
+                                        [(ngModel)]="obj.indicateursSuivi"
+                                        placeholder="Comment mesurer l'atteinte"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -529,80 +778,85 @@
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 7: Formations -->
-        <div *ngIf="activeStep === 6" class="step-content">
-            <h3 class="mb-4">Souhaits de formation</h3>
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 6" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-graduation-cap step-icon"></i>
+                <h3 class="step-title">Souhaits de formation</h3>
+            </div>
 
             <div class="field">
-                <p class="text-500 mb-3">
+                <p class="helper-text">
                     <i class="pi pi-info-circle mr-2"></i>
                     Exprimez les besoins en formation
                 </p>
 
-                <div *ngFor="let formation of evaluation.souhaitsFormations; let i = index" class="grid p-fluid mb-4 p-3 border-1 surface-border border-round">
-                    <div class="col-12">
-                        <div class="flex justify-content-between align-items-center">
-                            <h5>Formation #{{i+1}}</h5>
-                            <p-button
-                                    *ngIf="canEdit"
-                                    icon="pi pi-trash"
-                                    styleClass="p-button-rounded p-button-text p-button-danger"
-                                    (onClick)="removeFormation(i)"
-                            ></p-button>
-                        </div>
+                <div *ngFor="let formation of evaluation.souhaitsFormations; let i = index" class="formation-card">
+                    <div class="formation-header">
+                        <h5>Formation #{{i+1}}</h5>
+                        <p-button
+                                *ngIf="canEdit"
+                                icon="pi pi-trash"
+                                styleClass="p-button-rounded p-button-text p-button-danger"
+                                (onClick)="removeFormation(i)"
+                        ></p-button>
                     </div>
 
-                    <div class="col-12">
-                        <div class="field">
-                            <label>Thème de la formation</label>
-                            <input
-                                    pInputText
-                                    [(ngModel)]="formation.theme"
-                                    placeholder="Intitulé de la formation"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            />
+                    <div class="grid p-fluid">
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="field-label">Thème de la formation</label>
+                                <input
+                                        pInputText
+                                        [(ngModel)]="formation.theme"
+                                        placeholder="Intitulé de la formation"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12">
-                        <div class="field">
-                            <label>Objectifs de la formation</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="formation.objectifs"
-                                    rows="2"
-                                    placeholder="Ce que la formation doit apporter"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="field-label">Objectifs de la formation</label>
+                                <textarea
+                                        pInputTextarea
+                                        [(ngModel)]="formation.objectifs"
+                                        rows="2"
+                                        placeholder="Ce que la formation doit apporter"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                ></textarea>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12">
-                        <div class="field">
-                            <label>Résultats attendus</label>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="formation.resultatsAttendus"
-                                    rows="2"
-                                    placeholder="Ce qui est attendu après la formation"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="field-label">Résultats attendus</label>
+                                <textarea
+                                        pInputTextarea
+                                        [(ngModel)]="formation.resultatsAttendus"
+                                        rows="2"
+                                        placeholder="Ce qui est attendu après la formation"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                ></textarea>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 md:col-6">
-                        <div class="field">
-                            <label>Délais d'évaluation</label>
-                            <input
-                                    pInputText
-                                    [(ngModel)]="formation.delaisEvaluation"
-                                    placeholder="Quand évaluer l'efficacité"
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            />
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="field-label">Délais d'évaluation</label>
+                                <input
+                                        pInputText
+                                        [(ngModel)]="formation.delaisEvaluation"
+                                        placeholder="Quand évaluer l'efficacité"
+                                        class="w-full"
+                                        [disabled]="!canEdit"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -617,203 +871,403 @@
             </div>
         </div>
 
+        <!-- ============================================= -->
         <!-- ÉTAPE 8: Validation et signature -->
-        <div *ngIf="activeStep === 7" class="step-content">
-            <h3 class="mb-4">Validation et signature</h3>
+        <!-- ============================================= -->
+        <!-- ============================================= -->
+        <!-- ÉTAPE 8: Validation et signature (MODIFIÉE) -->
+        <!-- ============================================= -->
+        <div *ngIf="activeStep === 7" class="step-content fade-in">
+            <div class="card-header">
+                <i class="pi pi-check-circle step-icon"></i>
+                <h3 class="step-title">Validation et signature</h3>
+            </div>
 
             <div class="grid">
                 <!-- Statut actuel -->
                 <div class="col-12">
-                    <p-card>
-                        <div class="flex align-items-center">
-                            <i class="pi pi-info-circle mr-2" style="font-size: 2rem; color: var(--primary-color)"></i>
-                            <div>
-                                <h4 class="mb-1">Statut actuel</h4>
-                                <p-tag [value]="getStatutLabel()" [severity]="getStatutClass()" styleClass="mr-2"></p-tag>
-                                <small class="text-500 ml-2">
-                                    Dernière mise à jour: {{ evaluationComplete?.updatedAt ? (evaluationComplete?.updatedAt | date:'dd/MM/yyyy HH:mm') : 'N/A' }}
-                                </small>
-                            </div>
+                    <div class="statut-card">
+                        <i class="pi pi-info-circle"></i>
+                        <div class="statut-info">
+                            <h4>Statut actuel</h4>
+                            <p-tag [value]="getStatutLabel()" [severity]="getStatutClass()" styleClass="px-3 py-2"></p-tag>
+                            <small *ngIf="evaluationComplete?.updatedAt" class="text-500">
+                                Dernière mise à jour: {{ evaluationComplete?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+                            </small>
                         </div>
-                    </p-card>
+                    </div>
                 </div>
 
-                <!-- Informations de signature -->
+                <!-- Signature responsable (évaluateur) -->
                 <div class="col-12 md:col-6">
-                    <p-card header="Signature responsable">
-                        <div *ngIf="evaluationComplete?.signatureResponsable" class="text-green-600">
-                            <i class="pi pi-check-circle mr-2"></i>
-                            Signé par {{ evaluationComplete?.signatureResponsable }}
-                            <div *ngIf="evaluationComplete?.dateValidation" class="text-500 text-sm">
-                                le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}
+                    <div class="signature-card" [class.signed]="evaluationComplete?.signatureResponsable || evaluateurSignature">
+                        <div class="signature-header">
+                            <i class="pi pi-briefcase"></i>
+                            <h4>Signature responsable</h4>
+                            <small>{{ evaluationComplete?.evaluateurNom }}</small>
+                        </div>
+
+                        <div class="signature-body">
+                            <!-- Aperçu de la signature -->
+                            <div *ngIf="evaluateurSignature" class="signature-preview-container">
+                                <img [src]="evaluateurSignature"
+                                     alt="Signature responsable"
+                                     class="signature-preview"
+                                     (click)="openSignatureDialog(evaluateurSignature, evaluationComplete?.evaluateurNom)"/>
+                                <p-button
+                                        icon="pi pi-search-plus"
+                                        styleClass="p-button-rounded p-button-text p-button-sm"
+                                        (onClick)="openSignatureDialog(evaluateurSignature, evaluationComplete?.evaluateurNom)"
+                                ></p-button>
+                            </div>
+
+                            <!-- Statut signature -->
+                            <div *ngIf="evaluationComplete?.signatureResponsable" class="signed-info">
+                                <i class="pi pi-check-circle"></i>
+                                <span>Signé le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</span>
+                            </div>
+
+                            <!-- Bouton pour signer -->
+                            <div *ngIf="canValidate && !evaluationComplete?.signatureResponsable && evaluateurSignature"
+                                 class="signature-action">
+                                <p-button
+                                        label="Apposer ma signature"
+                                        icon="pi pi-pencil"
+                                        styleClass="p-button-success p-button-sm"
+                                        (onClick)="signerEvaluation('responsable')"
+                                ></p-button>
+                            </div>
+
+                            <!-- Message si pas de signature disponible -->
+                            <div *ngIf="!evaluateurSignature && !evaluationComplete?.signatureResponsable" class="pending-info">
+                                <i class="pi pi-hourglass"></i>
+                                <span>Aucune signature enregistrée pour ce responsable</span>
                             </div>
                         </div>
-                        <div *ngIf="!evaluationComplete?.signatureResponsable" class="text-500">
-                            <i class="pi pi-hourglass mr-2"></i>
-                            En attente de signature responsable
-                        </div>
-                    </p-card>
+                    </div>
                 </div>
 
+                <!-- Signature collaborateur (évalué) -->
                 <div class="col-12 md:col-6">
-                    <p-card header="Signature collaborateur">
-                        <div *ngIf="evaluationComplete?.signatureCollaborateur" class="text-green-600">
-                            <i class="pi pi-check-circle mr-2"></i>
-                            Signé par {{ evaluationComplete?.signatureCollaborateur }}
-                            <div *ngIf="evaluationComplete?.dateValidation" class="text-500 text-sm">
-                                le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}
+                    <div class="signature-card" [class.signed]="evaluationComplete?.signatureCollaborateur || collaborateurSignature">
+                        <div class="signature-header">
+                            <i class="pi pi-user"></i>
+                            <h4>Signature collaborateur</h4>
+                            <small>{{ evaluationComplete?.collaborateurNom }}</small>
+                        </div>
+
+                        <div class="signature-body">
+                            <!-- Aperçu de la signature -->
+                            <div *ngIf="collaborateurSignature" class="signature-preview-container">
+                                <img [src]="collaborateurSignature"
+                                     alt="Signature collaborateur"
+                                     class="signature-preview"
+                                     (click)="openSignatureDialog(collaborateurSignature, evaluationComplete?.collaborateurNom)"/>
+                                <p-button
+                                        icon="pi pi-search-plus"
+                                        styleClass="p-button-rounded p-button-text p-button-sm"
+                                        (onClick)="openSignatureDialog(collaborateurSignature, evaluationComplete?.collaborateurNom)"
+                                ></p-button>
+                            </div>
+
+                            <!-- Statut signature -->
+                            <div *ngIf="evaluationComplete?.signatureCollaborateur" class="signed-info">
+                                <i class="pi pi-check-circle"></i>
+                                <span>Signé le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</span>
+                            </div>
+
+                            <!-- Bouton pour signer -->
+                            <div *ngIf="canApprove && !evaluationComplete?.signatureCollaborateur && collaborateurSignature"
+                                 class="signature-action">
+                                <p-button
+                                        label="Apposer ma signature"
+                                        icon="pi pi-pencil"
+                                        styleClass="p-button-success p-button-sm"
+                                        (onClick)="signerEvaluation('collaborateur')"
+                                ></p-button>
+                            </div>
+
+                            <!-- Message si pas de signature disponible -->
+                            <div *ngIf="!collaborateurSignature && !evaluationComplete?.signatureCollaborateur" class="pending-info">
+                                <i class="pi pi-hourglass"></i>
+                                <span>Aucune signature enregistrée pour ce collaborateur</span>
                             </div>
                         </div>
-                        <div *ngIf="!evaluationComplete?.signatureCollaborateur" class="text-500">
-                            <i class="pi pi-hourglass mr-2"></i>
-                            En attente de signature collaborateur
-                        </div>
-                    </p-card>
+                    </div>
                 </div>
 
                 <!-- Notes calculées -->
                 <div class="col-12">
-                    <p-card header="Notes de l'évaluation">
-                        <div class="grid">
-                            <div class="col-4 text-center">
-                                <h5>Objectifs</h5>
-                                <p class="text-xl font-bold" [class.text-primary]="evaluationComplete?.noteGlobaleObjectifs">
-                                    {{ evaluationComplete?.noteGlobaleObjectifs?.toFixed(1) || 'N/A' }}/10
-                                </p>
-                                <small class="text-500">60% de la note finale</small>
-                            </div>
-                            <div class="col-4 text-center">
-                                <h5>Tenue du poste</h5>
-                                <p class="text-xl font-bold" [class.text-primary]="evaluationComplete?.noteGlobaleTenuePoste">
-                                    {{ evaluationComplete?.noteGlobaleTenuePoste?.toFixed(1) || 'N/A' }}/10
-                                </p>
-                                <small class="text-500">40% de la note finale</small>
-                            </div>
-                            <div class="col-4 text-center">
-                                <h5>Note finale</h5>
-                                <p class="text-2xl font-bold text-primary">
-                                    {{ evaluationComplete?.noteGlobaleFinale?.toFixed(1) || 'N/A' }}/10
-                                </p>
-                            </div>
+                    <div class="notes-card">
+                        <h4>Notes de l'évaluation</h4>
+                        <div class="notes-grid">
+                            <!-- ... vos notes existantes ... -->
                         </div>
-                    </p-card>
-                </div>
-
-                <!-- Actions selon le statut et les droits -->
-                <div class="col-12" *ngIf="canSubmit || canValidate || canSign">
-                    <p-card header="Actions disponibles">
-                        <div class="flex flex-wrap gap-2">
-
-                            <p-button
-                                    *ngIf="canValidate"
-                                    label="Valider l'évaluation"
-                                    icon="pi pi-check"
-                                    styleClass="p-button-success"
-                                    (onClick)="validerEvaluation()"
-                            ></p-button>
-
-                            <p-button
-                                    *ngIf="canValidate"
-                                    label="Valider l'évaluation"
-                                    icon="pi pi-check"
-                                    styleClass="p-button-success"
-                                    (onClick)="validerEvaluation()"
-                            ></p-button>
-
-                            <p-button
-                                    *ngIf="canValidate"
-                                    label="Refuser"
-                                    icon="pi pi-times"
-                                    styleClass="p-button-danger"
-                                    (onClick)="refuserEvaluation()"
-                            ></p-button>
-
-                            <p-button
-                                    *ngIf="canSign && !evaluationComplete?.signatureResponsable"
-                                    label="Signer comme responsable"
-                                    icon="pi pi-pencil"
-                                    styleClass="p-button-help"
-                                    (onClick)="signerEvaluation(true)"
-                            ></p-button>
-
-                            <p-button
-                                    *ngIf="canSign && !evaluationComplete?.signatureCollaborateur"
-                                    label="Signer comme collaborateur"
-                                    icon="pi pi-pencil"
-                                    styleClass="p-button-info"
-                                    (onClick)="signerEvaluation(false)"
-                            ></p-button>
-                        </div>
-                    </p-card>
-                </div>
-
-                <!-- Historique des notes -->
-                <div class="col-12" *ngIf="evaluationComplete?.notesAnterieures && evaluationComplete.notesAnterieures.length > 0">
-                    <p-card header="Historique des notes">
-                        <div class="flex gap-2 flex-wrap">
-                            <p-tag
-                                    *ngFor="let note of evaluationComplete.notesAnterieures; let i = index"
-                                    [value]="note.toFixed(1)"
-                                    severity="secondary"
-                                    styleClass="mr-1"
-                            ></p-tag>
-                            <span class="text-500 ml-2">(Notes des années précédentes)</span>
-                        </div>
-                    </p-card>
-                </div>
-
-                <!-- Résumé de l'évaluation -->
-                <div class="col-12">
-                    <p-accordion>
-                        <p-accordionTab header="Voir le résumé détaillé de l'évaluation">
-                            <div class="grid">
-                                <div class="col-6">
-                                    <h5>Faits marquants ({{ evaluation.faitsMarquants?.length || 0 }})</h5>
-                                    <ul class="pl-3">
-                                        <li *ngFor="let fait of evaluation.faitsMarquants" class="mb-1">{{ fait || 'Non renseigné' }}</li>
-                                        <li *ngIf="!evaluation.faitsMarquants?.length" class="text-500">Aucun fait marquant</li>
-                                    </ul>
-                                </div>
-                                <div class="col-6">
-                                    <h5>Objectifs ({{ evaluation.objectifs?.length || 0 }})</h5>
-                                    <ul class="pl-3">
-                                        <li *ngFor="let obj of evaluation.objectifs" class="mb-1">{{ obj.libelle || 'Objectif non renseigné' }}</li>
-                                        <li *ngIf="!evaluation.objectifs?.length" class="text-500">Aucun objectif</li>
-                                    </ul>
-                                </div>
-                                <div class="col-6 mt-3">
-                                    <h5>Objectifs futurs ({{ evaluation.objectifsFuturs?.length || 0 }})</h5>
-                                    <ul class="pl-3">
-                                        <li *ngFor="let obj of evaluation.objectifsFuturs" class="mb-1">{{ obj.libelle || 'Objectif non renseigné' }}</li>
-                                        <li *ngIf="!evaluation.objectifsFuturs?.length" class="text-500">Aucun objectif futur</li>
-                                    </ul>
-                                </div>
-                                <div class="col-6 mt-3">
-                                    <h5>Formations ({{ evaluation.souhaitsFormations?.length || 0 }})</h5>
-                                    <ul class="pl-3">
-                                        <li *ngFor="let formation of evaluation.souhaitsFormations" class="mb-1">{{ formation.theme || 'Formation non renseignée' }}</li>
-                                        <li *ngIf="!evaluation.souhaitsFormations?.length" class="text-500">Aucune formation souhaitée</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </p-accordionTab>
-                    </p-accordion>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Boutons de navigation -->
-        <div class="flex justify-content-between mt-4 pt-3 border-top-1 surface-border">
+        <!-- Dialogue pour voir la signature en grand -->
+        <p-dialog
+                [(visible)]="showSignatureDialog"
+                [modal]="true"
+                [style]="{width: '600px'}"
+                [header]="signatureDialogTitle"
+                [draggable]="false"
+                [resizable]="false">
+
+            <div class="signature-dialog-content" *ngIf="selectedSignature">
+                <img [src]="selectedSignature" alt="Signature" class="signature-full"/>
+            </div>
+
+            <ng-template pTemplate="footer">
+                <p-button
+                        label="Fermer"
+                        icon="pi pi-times"
+                        (onClick)="showSignatureDialog = false"
+                        styleClass="p-button-outlined"
+                ></p-button>
+            </ng-template>
+        </p-dialog>
+        <!-- ============================================= -->
+        <!-- SECTION WORKFLOW HIÉRARCHIQUE -->
+        <!-- ============================================= -->
+        <div class="workflow-section">
+            <div class="workflow-container">
+
+                <!-- TIMELINE VISUELLE DU WORKFLOW -->
+                <div class="workflow-timeline mb-4" *ngIf="isEdit">
+                    <div class="timeline-step" [class.active]="statutActuel === 'BROUILLON'">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">Brouillon</div>
+                    </div>
+                    <div class="timeline-step" [class.active]="statutActuel === 'A_APPROUVER'">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">Approbation</div>
+                    </div>
+                    <div class="timeline-step" [class.active]="statutActuel === 'A_VALIDER_SERVICE'">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">Chef Service</div>
+                    </div>
+                    <div class="timeline-step" [class.active]="statutActuel === 'A_VALIDER_DIRECTEUR'">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">Directeur</div>
+                    </div>
+                    <div class="timeline-step" [class.active]="statutActuel === 'VALIDEE'">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">Validée</div>
+                    </div>
+                </div>
+
+                <!-- CAS 1: BROUILLON - L'évaluateur remplit -->
+                <div *ngIf="statutActuel === 'BROUILLON' && canEdit"
+                     class="workflow-card brouillon">
+                    <div class="workflow-icon">
+                        <i class="pi pi-pencil"></i>
+                    </div>
+                    <div class="workflow-content">
+                        <h3>Étape 1 : Remplir l'évaluation</h3>
+                        <p>Remplissez tous les champs de l'évaluation.</p>
+                        <div class="workflow-actions">
+                            <p-button
+                                    label="Soumettre à l'approbation"
+                                    icon="pi pi-send"
+                                    styleClass="p-button-warning p-button-lg"
+                                    (onClick)="soumettrePourApprobation()"
+                                    [disabled]="saving || !estEvaluationComplete()"
+                            ></p-button>
+                            <p-button
+                                    label="Continuer"
+                                    icon="pi pi-arrow-right"
+                                    styleClass="p-button-outlined p-button-secondary"
+                                    (onClick)="nextStep()"
+                                    [disabled]="saving"
+                            ></p-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAS 2: A_APPROUVER - Le collaborateur approuve -->
+                <div *ngIf="statutActuel === 'A_APPROUVER' && canApprove"
+                     class="workflow-card approbation">
+                    <div class="workflow-icon">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="workflow-content">
+                        <h3>Étape 2 : Votre avis sur cette évaluation</h3>
+                        <p>En tant que collaborateur évalué, vous devez approuver ou refuser cette évaluation.</p>
+
+                        <div class="field mb-4">
+                            <label for="commentaire">Votre commentaire (optionnel)</label>
+                            <textarea
+                                    id="commentaire"
+                                    pInputTextarea
+                                    [(ngModel)]="evaluation.commentaireCollaborateur"
+                                    rows="3"
+                                    placeholder="Ajoutez vos observations..."
+                                    class="w-full"
+                            ></textarea>
+                        </div>
+
+                        <div class="workflow-actions two-columns">
+                            <div class="action-card approuver">
+                                <i class="pi pi-check-circle"></i>
+                                <h4>J'approuve</h4>
+                                <p>Je suis d'accord avec cette évaluation</p>
+                                <p-button
+                                        label="Approuver"
+                                        icon="pi pi-check"
+                                        styleClass="p-button-success w-full"
+                                        (onClick)="approuverEvaluation()"
+                                        [disabled]="saving"
+                                ></p-button>
+                            </div>
+                            <div class="action-card refuser">
+                                <i class="pi pi-times-circle"></i>
+                                <h4>Je refuse</h4>
+                                <p>Je ne suis pas d'accord</p>
+                                <p-button
+                                        label="Refuser"
+                                        icon="pi pi-undo"
+                                        styleClass="p-button-warning w-full"
+                                        (onClick)="refuserEvaluation()"
+                                        [disabled]="saving"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAS 3: A_VALIDER_SERVICE - Le chef de service de l'évaluateur valide -->
+                <div *ngIf="statutActuel === 'A_VALIDER_SERVICE' && canValidate"
+                     class="workflow-card validation-service">
+                    <div class="workflow-icon">
+                        <i class="pi pi-briefcase"></i>
+                    </div>
+                    <div class="workflow-content">
+                        <h3>Validation par le chef de service</h3>
+                        <p>
+                            En tant que chef de service de <strong>{{ evaluationComplete?.evaluateurNom }}</strong>,
+                            vous devez valider cette évaluation avant qu'elle n'aille au directeur.
+                        </p>
+
+                        <div class="workflow-actions two-columns">
+                            <div class="action-card valider">
+                                <i class="pi pi-check-circle"></i>
+                                <h4>Valider</h4>
+                                <p>Transmettre au directeur</p>
+                                <p-button
+                                        label="Valider et transmettre"
+                                        icon="pi pi-arrow-right"
+                                        styleClass="p-button-success w-full"
+                                        (onClick)="validerParChefService()"
+                                        [disabled]="saving"
+                                ></p-button>
+                            </div>
+                            <div class="action-card retourner">
+                                <i class="pi pi-undo"></i>
+                                <h4>Retourner</h4>
+                                <p>Retourner pour modification</p>
+                                <p-button
+                                        label="Retourner"
+                                        icon="pi pi-undo"
+                                        styleClass="p-button-warning w-full"
+                                        (onClick)="retourPourModification()"
+                                        [disabled]="saving"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAS 4: A_VALIDER_DIRECTEUR - Le directeur de l'évaluateur valide -->
+                <div *ngIf="statutActuel === 'A_VALIDER_DIRECTEUR' && canValidate"
+                     class="workflow-card validation-directeur">
+                    <div class="workflow-icon">
+                        <i class="pi pi-star"></i>
+                    </div>
+                    <div class="workflow-content">
+                        <h3>Validation finale par le directeur</h3>
+                        <p>
+                            En tant que directeur de <strong>{{ evaluationComplete?.evaluateurNom }}</strong>,
+                            vous devez maintenant valider définitivement cette évaluation.
+                        </p>
+
+                        <div class="workflow-actions two-columns">
+                            <div class="action-card valider">
+                                <i class="pi pi-check-circle"></i>
+                                <h4>Valider</h4>
+                                <p>Valider définitivement</p>
+                                <p-button
+                                        label="Valider"
+                                        icon="pi pi-check"
+                                        styleClass="p-button-success w-full"
+                                        (onClick)="validerParDirecteur()"
+                                        [disabled]="saving"
+                                ></p-button>
+                            </div>
+                            <div class="action-card retourner">
+                                <i class="pi pi-undo"></i>
+                                <h4>Retourner</h4>
+                                <p>Retourner pour modification</p>
+                                <p-button
+                                        label="Retourner"
+                                        icon="pi pi-undo"
+                                        styleClass="p-button-warning w-full"
+                                        (onClick)="retourPourModification()"
+                                        [disabled]="saving"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAS 5: APPROUVEE (état intermédiaire) -->
+                <div *ngIf="statutActuel === 'APPROUVEE'" class="info-message-workflow">
+                    <i class="pi pi-info-circle"></i>
+                    <span>L'évaluation a été approuvée et sera automatiquement transmise au prochain validateur.</span>
+                </div>
+
+                <!-- CAS 6: VALIDEE -->
+                <div *ngIf="statutActuel === 'VALIDEE'" class="workflow-card validee">
+                    <div class="workflow-icon"><i class="pi pi-check-circle"></i></div>
+                    <div class="workflow-content">
+                        <h3>Évaluation validée !</h3>
+                        <p *ngIf="evaluationComplete?.dateValidation">Validée le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</p>
+                        <p-button label="Voir la liste" icon="pi pi-list"
+                                  styleClass="p-button-outlined" (onClick)="cancel()"></p-button>
+                    </div>
+                </div>
+
+                <!-- CAS 7: Message pour les autres cas -->
+                <div *ngIf="isEdit && !canEdit && !canSubmit && !canValidate && !canApprove && statutActuel !== 'VALIDEE'"
+                     class="info-message-workflow">
+                    <i class="pi pi-info-circle"></i>
+                    <span>Cette évaluation est en cours de traitement par un autre acteur.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- BOUTONS DE NAVIGATION (CORRIGÉS) -->
+        <!-- ============================================= -->
+        <div class="navigation-buttons">
+            <!-- Bouton Précédent -->
             <p-button
+                    *ngIf="activeStep > 0"
                     label="Précédent"
                     icon="pi pi-arrow-left"
                     (onClick)="prevStep()"
-                    [disabled]="activeStep === 0 || saving"
+                    [disabled]="saving"
                     styleClass="p-button-outlined"
             ></p-button>
 
-            <div class="flex gap-2">
-                <!-- Bouton Annuler -->
+            <!-- Espace pour équilibrer -->
+            <div *ngIf="activeStep === 0" class="flex-1"></div>
+
+            <div class="right-buttons">
+                <!-- Annuler -->
                 <p-button
                         label="Annuler"
                         icon="pi pi-times"
@@ -822,53 +1276,31 @@
                         styleClass="p-button-outlined p-button-secondary"
                 ></p-button>
 
-                <!-- Bouton Sauvegarder brouillon (toujours visible si modifiable) -->
-                <p-button
-                        *ngIf="canEdit && activeStep < steps.length - 1"
-                        label="Sauvegarder brouillon"
+                <!-- Sauvegarder -->
+              <!--  <p-button
+                        *ngIf="canEdit"
+                        label="Sauvegarder"
                         icon="pi pi-save"
                         (onClick)="saveDraft()"
                         [loading]="saving"
                         styleClass="p-button-secondary"
-                ></p-button>
+                ></p-button>-->
 
-                <!-- Bouton Sauvegarder et continuer (pour les étapes intermédiaires) -->
+                <!-- BOUTON SUIVANT (indispensable pour avancer) -->
                 <p-button
-                        *ngIf="canEdit && activeStep < steps.length - 2"
-                        label="Sauvegarder et continuer"
-                        icon="pi pi-arrow-right"
-                        iconPos="right"
-                        (onClick)="saveAndContinue()"
-                        [loading]="saving"
-                        styleClass="p-button-primary"
-                ></p-button>
-
-                <!-- Bouton Suivant simple (si déjà sauvegardé) -->
-                <p-button
-                        *ngIf="isEdit && canEdit && activeStep < steps.length - 2"
+                        *ngIf="activeStep < steps.length - 1"
                         label="Suivant"
                         icon="pi pi-arrow-right"
                         iconPos="right"
                         (onClick)="nextStep()"
                         [disabled]="saving"
-                        styleClass="p-button-outlined p-button-primary"
+                        styleClass="p-button-primary"
                 ></p-button>
 
-                <!-- Bouton pour aller à la validation (avant dernière étape) -->
-                <p-button
-                        *ngIf="activeStep === steps.length - 2"
-                        label="Aller à la validation"
-                        icon="pi pi-arrow-right"
-                        iconPos="right"
-                        (onClick)="goToStep(steps.length - 1)"
-                        [disabled]="!isEdit && !canEdit"
-                        styleClass="p-button-help"
-                ></p-button>
-
-                <!-- Bouton Terminer (dernière étape) -->
+                <!-- BOUTON TERMINER -->
                 <p-button
                         *ngIf="activeStep === steps.length - 1"
-                        [label]="isEdit ? 'Mettre à jour' : 'Créer l\'évaluation'"
+                        [label]="isEdit ? 'Mettre à jour' : 'Créer'"
                         icon="pi pi-check"
                         (onClick)="saveAndFinish()"
                         [loading]="saving"
@@ -876,11 +1308,6 @@
                         styleClass="p-button-success"
                 ></p-button>
             </div>
-        </div>
-
-        <!-- Message d'information sur les permissions -->
-        <div class="mt-3 text-center" *ngIf="!canEdit && !canSubmit && !canValidate && !canSign">
-            <p-message severity="info" text="Cette évaluation n'est pas modifiable dans son état actuel"></p-message>
         </div>
     </div>
 </div>
