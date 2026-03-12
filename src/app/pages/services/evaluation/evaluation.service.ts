@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {Evaluation, EvaluationRequest, ObjectifEvaluation, ObjectifFutur, SouhaitFormation } from '../../models/entities/evaluation';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,15 @@ export class EvaluationService {
     // ========== MÉTHODES DE BASE ==========
 
     getAllEvaluations(): Observable<Evaluation[]> {
-        return this.http.get<Evaluation[]>(this.apiUrl);
+        console.log('📡 Appel API vers:', this.apiUrl);
+        return this.http.get<Evaluation[]>(this.apiUrl).pipe(
+            tap(data => {
+                console.log('📦 Données reçues du backend:', data);
+                console.log('📦 Nombre d\'évaluations:', data.length);
+                data.forEach(e => console.log(`   - ID: ${e.id}, Statut: ${e.statut}, Collaborateur: ${e.collaborateurNom}`));
+            })
+        );
     }
-
     getEvaluationsAFaire(): Observable<Evaluation[]> {
         return this.http.get<Evaluation[]>(`${this.apiUrl}/a-faire`);
     }
@@ -58,11 +65,8 @@ export class EvaluationService {
     }
 
     // Étape 2 bis: Le collaborateur refuse
-    refuserEvaluation(evaluationId: number, motif: string): Observable<Evaluation> {
-        return this.http.post<Evaluation>(
-            `${this.apiUrl}/${evaluationId}/refuser`,
-            { motif }
-        );
+    refuserEvaluation(id: number, motif: string): Observable<Evaluation> {
+        return this.http.post<Evaluation>(`${this.apiUrl}/${id}/refuser`, { motif });
     }
 
     // Étape 3: Le chef de service valide (pour les évaluations de chef de section)
@@ -82,9 +86,19 @@ export class EvaluationService {
     }
 
     // Retour pour modification
-    retournerPourModification(evaluationId: number): Observable<Evaluation> {
-        return this.http.patch<Evaluation>(
-            `${this.apiUrl}/${evaluationId}/statut?statut=BROUILLON`,
+    // Retour pour modification - VERSION AVEC MOTIF (décommentez-la)
+    retournerPourModification(id: number, motif: string): Observable<Evaluation> {
+        console.log('📤 Envoi requête retour:', { id, motif });
+        return this.http.post<Evaluation>(
+            `${this.apiUrl}/${id}/retourner`,
+            { motif }
+        );
+    }
+
+    reactiverEvaluation(id: number): Observable<Evaluation> {
+        console.log('📤 Envoi requête réactivation:', id);
+        return this.http.post<Evaluation>(
+            `${this.apiUrl}/${id}/reactiver`,
             {}
         );
     }
@@ -113,6 +127,44 @@ export class EvaluationService {
 
     deleteEvaluation(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    }
+
+    // AJOUTER ces nouvelles méthodes pour l'export
+    exportToExcel(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/export/excel`, {
+            responseType: 'blob'
+        });
+    }
+
+    exportToPdf(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/export/pdf`, {
+            responseType: 'blob'
+        });
+    }
+
+    exportEvaluationToPdf(id: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/${id}/export/pdf`, {
+            responseType: 'blob'
+        });
+    }
+
+    exportToCsv(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/export/csv`, {
+            responseType: 'blob'
+        });
+    }
+
+    /**
+     * Annuler une évaluation
+     * @param id ID de l'évaluation
+     * @param motif Motif de l'annulation
+     */
+    annulerEvaluation(id: number, motif: string): Observable<Evaluation> {
+        console.log('📤 Envoi requête annulation:', { id, motif });
+        return this.http.post<Evaluation>(
+            `${this.apiUrl}/${id}/annuler`,
+            { motif }
+        );
     }
 
 

@@ -11,12 +11,21 @@ export interface Evaluation {
     dateCreation?: Date;
     dateEntretien?: Date;
     dateValidation?: Date;
-    statut?: 'BROUILLON' | 'A_APPROUVER' | 'APPROUVEE' | 'A_VALIDER_SERVICE' | 'A_VALIDER_DIRECTEUR' | 'EN_COURS' | 'VALIDEE' | 'REFUSEE';
+    statut?: 'BROUILLON' | 'A_APPROUVER' | 'APPROUVEE' | 'A_VALIDER_SERVICE' | 'A_VALIDER_DIRECTEUR' | 'EN_COURS' | 'VALIDEE' | 'REFUSEE' | 'ANNULEE';
     // Relations
     collaborateurId?: number;
+    dateRefus?: Date;
+    motifRefus?: string;
+    refuseParNom?: string;
     collaborateurNom?: string;
     evaluateurId?: number;
     evaluateurNom?: string;
+
+    motifAnnulation?: string;
+    dateAnnulation?: Date;
+    annulePar?: string;
+    annuleParId?: number;
+
 
     // Sections
     faitsMarquants?: string[];  // Gardez pour la compatibilité
@@ -74,11 +83,15 @@ export interface EvaluationRequest {
     qualiteMethodesTravail?: number;
     capacitesAdaptationOrganisation?: number;
     encadrement?: number;
+    motifRefus?: string;
     espritInitiativeInnovation?: number;
     relationPresentation?: number;
     ponctualite?: number;
     respectReglementInterieur?: number;
     niveauTechnique?: string;
+    dateRefus?: Date;
+    refuseParId?: number;          // ID de la personne qui a refusé
+    refuseParNom?: string;
     niveauExperience?: string;
     niveauEncadrement?: string;
     commentairesMaitrise?: string;
@@ -90,6 +103,11 @@ export interface EvaluationRequest {
     commentaireCollaborateur?: string;
     commentaireN2?: string;
     commentaireN3?: string;
+}
+
+export interface AnnulationRequest {
+    motif: string;
+    commentaire?: string;
 }
 
 export interface FaitMarquant {
@@ -132,7 +150,8 @@ export const StatutLabels: { [key: string]: string } = {
     'A_VALIDER_SERVICE': 'À valider (Chef service)',
     'A_VALIDER_DIRECTEUR': 'À valider (Directeur)',
     'VALIDEE': 'Validée',
-    'REFUSEE': 'Refusée'
+    'REFUSEE': 'Refusée',
+    'ANNULEE': 'Annulée'
 };
 
 export const StatutColors: { [key: string]: string } = {
@@ -142,5 +161,6 @@ export const StatutColors: { [key: string]: string } = {
     'A_VALIDER_SERVICE': 'help',
     'A_VALIDER_DIRECTEUR': 'help',
     'VALIDEE': 'success',
-    'REFUSEE': 'danger'
+    'REFUSEE': 'danger',
+    'ANNULEE': 'secondary'
 };

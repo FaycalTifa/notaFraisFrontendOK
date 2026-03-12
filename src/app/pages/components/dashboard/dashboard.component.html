@@ -33,7 +33,7 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ stats.collaborateurs }}</span>
-                    <span class="stat-label">Collaborateurs</span>
+                    <span class="stat-label">Mes collaborateurs</span>
                 </div>
             </div>
 
@@ -99,7 +99,7 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ stats.directions }}</span>
-                    <span class="stat-label">Directions</span>
+                    <span class="stat-label"> Toutes Directions</span>
                 </div>
             </div>
 
@@ -110,7 +110,7 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ stats.services }}</span>
-                    <span class="stat-label">Services</span>
+                    <span class="stat-label">  Toutes Services</span>
                 </div>
             </div>
 
@@ -121,7 +121,7 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">{{ stats.sections }}</span>
-                    <span class="stat-label">Sections</span>
+                    <span class="stat-label">Toutes Sections</span>
                 </div>
             </div>
 
@@ -218,14 +218,14 @@
                                 label="Nouveau collaborateur"
                                 icon="pi pi-user-plus"
                                 styleClass="p-button-info p-button-sm"
-                                (onClick)="navigateTo('/collaborateurs/nouveau')"
+                                (onClick)="navigateTo('/creer-collaborateur')"
                         ></p-button>
                         <p-button
                                 *ngIf="currentUser?.role === 'ADMIN'"
                                 label="Nouvelle direction"
                                 icon="pi pi-sitemap"
                                 styleClass="p-button-help p-button-sm"
-                                (onClick)="navigateTo('/directions/nouveau')"
+                                (onClick)="navigateTo('/parametre/direction')"
                         ></p-button>
                     </div>
                 </div>
@@ -299,7 +299,7 @@
                     <i class="pi pi-file"></i>
                     <span>Évaluations</span>
                 </div>
-                <div class="nav-card" (click)="navigateTo('/info/personnel')">
+                <div class="nav-card" (click)="navigateTo('/creer-collaborateur')">
                     <i class="pi pi-user"></i>
                     <span>Mon profil</span>
                 </div>

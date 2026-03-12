@@ -1,0 +1,45 @@
+<div class="p-4">
+    <h3 class="mb-3">{{ titre }}</h3>
+
+    <div class="field mb-4">
+        <label class="font-bold block mb-2">Motif *</label>
+        <textarea
+                pInputTextarea
+                [(ngModel)]="motif"
+                rows="4"
+                [placeholder]="placeholder"
+                class="w-full"
+                [class.ng-invalid]="submitted && !motif"
+        ></textarea>
+        <small *ngIf="submitted && !motif" class="p-error">
+            Le motif est obligatoire
+        </small>
+    </div>
+
+    <div class="field mb-4" *ngIf="afficherCommentaire">
+        <label class="font-bold block mb-2">Commentaire (optionnel)</label>
+        <textarea
+                pInputTextarea
+                [(ngModel)]="commentaire"
+                rows="2"
+                placeholder="Commentaire supplémentaire..."
+                class="w-full"
+        ></textarea>
+    </div>
+
+    <div class="flex justify-content-end gap-2">
+        <p-button
+                label="Annuler"
+                icon="pi pi-times"
+                styleClass="p-button-outlined"
+                (onClick)="annuler()"
+        ></p-button>
+        <p-button
+                [label]="actionLabel"
+                icon="pi pi-check"
+                styleClass="p-button-danger"
+                (onClick)="valider()"
+                [loading]="loading"
+        ></p-button>
+    </div>
+</div>

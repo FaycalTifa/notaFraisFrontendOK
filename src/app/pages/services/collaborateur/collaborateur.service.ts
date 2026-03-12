@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
   providedIn: 'root'
 })
 export class CollaborateurService {
+
     private apiUrl = 'http://localhost:8080/api/collaborateurs';
 
     constructor(private http: HttpClient) { }
@@ -66,5 +67,9 @@ export class CollaborateurService {
 
     rechercherCollaborateurs(search: string): Observable<Collaborateur[]> {
         return this.http.get<Collaborateur[]>(`${this.apiUrl}/recherche?search=${search}`);
+    }
+
+    changePassword(userId: number, passwordData: { currentPassword: string, newPassword: string }): Observable<any> {
+        return this.http.post(`${this.apiUrl}/${userId}/change-password`, passwordData);
     }
 }

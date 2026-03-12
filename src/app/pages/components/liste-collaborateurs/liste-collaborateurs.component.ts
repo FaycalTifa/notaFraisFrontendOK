@@ -102,7 +102,7 @@ export class ListeCollaborateursComponent implements OnInit {
     }
 
     openNew(): void {
-        this.router.navigate(['/collaborateurs/nouveau']);
+        this.router.navigate(['/creer-collaborateur']);
     }
 
     viewCollaborateur(id: number): void {

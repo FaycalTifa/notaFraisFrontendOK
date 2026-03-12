@@ -4,10 +4,13 @@ import { CollaborateurService } from '../../services/collaborateur/collaborateur
 import { AuthService } from '../../services/auth/auth.service';
 // @ts-ignore
 import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import {ConfirmationService, MessageService } from 'primeng/api';
 import {Evaluation, EvaluationRequest, FaitMarquant, } from '../../models/entities/evaluation';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { DialogService } from 'primeng/dynamicdialog';
+import { AnnulationDialogComponent } from '../annulation-dialog/annulation-dialog.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-formulaire-evaluation',
@@ -47,6 +50,12 @@ export class FormulaireEvaluationComponent implements OnInit {
     activeStep = 0;
     statutActuel: string = 'BROUILLON';
 
+    refusSubmitted: boolean = false;
+
+    showRefusDialog: boolean = false;
+    refusMotif: string = '';
+    showRefusDetails: boolean = false;
+    refusInfo: any = null;
     // Permissions
     canEdit: boolean = false;
     canSubmit: boolean = false;
@@ -58,6 +67,8 @@ export class FormulaireEvaluationComponent implements OnInit {
     collaborateurSignature: string;
     showEvaluateurSignatureDialog: boolean = false;
     showCollaborateurSignatureDialog: boolean = false;
+    motifAnnulation: string = '';
+    defaultSignature: string = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     // Propriétés pour les dialogues
     showSignatureDialog: boolean = false;
@@ -150,6 +161,9 @@ export class FormulaireEvaluationComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private messageService: MessageService,
+        private confirmationService: ConfirmationService,
+        private dialogService: DialogService,
+        private sanitizer: DomSanitizer,
         private http: HttpClient
     ) {
         this.currentUser = this.authService.getCurrentUser();
@@ -188,6 +202,26 @@ export class FormulaireEvaluationComponent implements OnInit {
         });
     }
 
+    // Dans le composant
+    onImageError(event: any): void {
+        console.error('❌ Erreur de chargement d\'image:', event);
+        const img = event.target;
+
+        // Sauvegarder l'URL qui a échoué pour déboguer
+        const failedUrl = img.src;
+        console.log('URL qui a échoué:', failedUrl?.substring(0, 100));
+
+        // Remplacer par la signature par défaut
+        img.src = this.defaultSignature;
+        img.classList.add('signature-error');
+
+        // Ajouter un tooltip pour indiquer l'erreur
+        img.setAttribute('title', 'Signature non disponible');
+
+        // Éviter les boucles infinies
+        img.onerror = null;
+    }
+
     // Ouvrir le dialogue de signature
     openSignatureDialog(signature: string, nom: string): void {
         this.selectedSignature = signature;
@@ -195,41 +229,230 @@ export class FormulaireEvaluationComponent implements OnInit {
         this.showSignatureDialog = true;
     }
 
-// Signer l'évaluation
+
+    getSafeSignature(signature: string): string {
+        if (!signature) return this.defaultSignature;
+
+        try {
+            // Nettoyer l'URL
+            let cleanSignature = signature.trim();
+
+            // Enlever le préfixe 'unsafe:' s'il existe
+            if (cleanSignature.startsWith('unsafe:')) {
+                cleanSignature = cleanSignature.replace('unsafe:', '');
+            }
+
+            // Vérifier que c'est une data URL valide
+            if (cleanSignature.startsWith('data:image')) {
+                return cleanSignature;
+            }
+
+            // Si ce n'est pas une data URL, c'est peut-être une URL relative
+            if (cleanSignature.startsWith('/') || cleanSignature.startsWith('http')) {
+                return cleanSignature;
+            }
+
+            console.warn('Format de signature non reconnu:', cleanSignature.substring(0, 50));
+            return this.defaultSignature;
+        } catch (error) {
+            console.error('Erreur traitement signature:', error);
+            return this.defaultSignature;
+        }
+    }
+
+
+// Vérifier si l'utilisateur connecté est l'évaluateur
+    isCurrentUserEvaluateur(): boolean {
+        return this.currentUser?.id === this.evaluationComplete?.evaluateur?.id;
+    }
+
+// Vérifier si l'utilisateur connecté est le collaborateur évalué
+    isCurrentUserCollaborateur(): boolean {
+        return this.currentUser?.id === this.evaluationComplete?.collaborateur?.id;
+    }
+
+// Vérifier si l'utilisateur peut signer en tant qu'évaluateur
+// Vérifier si l'utilisateur peut signer en tant qu'évaluateur
+    canSignAsEvaluateur(): boolean {
+        // L'utilisateur doit être l'évaluateur
+        const isEvaluateur = this.isCurrentUserEvaluateur();
+
+        // Le statut doit être BROUILLON (l'évaluateur peut signer à tout moment)
+        const bonStatut = this.statutActuel === 'BROUILLON';
+
+        // La signature responsable ne doit pas déjà être apposée
+        const signatureNonApposee = !this.evaluationComplete?.signatureResponsable;
+
+        // Une signature pré-enregistrée doit exister
+        const signatureDisponible = !!this.evaluateurSignature;
+
+        console.log('🔍 canSignAsEvaluateur:', {
+            isEvaluateur,
+            bonStatut,
+            signatureNonApposee,
+            signatureDisponible,
+            result: isEvaluateur && bonStatut && signatureNonApposee && signatureDisponible
+        });
+
+        return isEvaluateur && bonStatut && signatureNonApposee && signatureDisponible;
+    }
+
+// Vérifier si l'utilisateur peut signer en tant que collaborateur
+    canSignAsCollaborateur(): boolean {
+        // L'utilisateur doit être le collaborateur évalué
+        const isCollaborateur = this.isCurrentUserCollaborateur();
+
+        // Le statut doit être A_APPROUVER (le collaborateur signe lors de l'approbation)
+        const bonStatut = this.statutActuel === 'A_APPROUVER';
+
+        // La signature collaborateur ne doit pas déjà être apposée
+        const signatureNonApposee = !this.evaluationComplete?.signatureCollaborateur;
+
+        // Une signature pré-enregistrée doit exister
+        const signatureDisponible = !!this.collaborateurSignature;
+
+        console.log('🔍 canSignAsCollaborateur:', {
+            isCollaborateur,
+            bonStatut,
+            signatureNonApposee,
+            signatureDisponible,
+            result: isCollaborateur && bonStatut && signatureNonApposee && signatureDisponible
+        });
+
+        return isCollaborateur && bonStatut && signatureNonApposee && signatureDisponible;
+    }
+
+    // Méthode pour ouvrir le dialogue de refus
+    ouvrirDialogueRefus(): void {
+        this.refusMotif = '';
+        this.showRefusDialog = true;
+    }
+
+// Méthode pour confirmer le refus
+    confirmerRefus(): void {
+        this.refusSubmitted = true;
+
+        if (!this.refusMotif || this.refusMotif.trim() === '') {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Veuillez saisir le motif du refus'
+            });
+            return;
+        }
+
+        this.showRefusDialog = false;
+        this.saving = true;
+
+        this.evaluationService.refuserEvaluation(this.evaluationId!, this.refusMotif).subscribe({
+            next: (response) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: 'Évaluation refusée. Le motif a été enregistré.'
+                });
+                this.statutActuel = response.statut;
+                this.evaluationComplete = response;
+                this.saving = false;
+                this.refusSubmitted = false;
+                this.loadEvaluation(this.evaluationId!);
+            },
+            error: (error) => {
+                console.error('Erreur refus:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: 'Impossible de refuser l\'évaluation'
+                });
+                this.saving = false;
+                this.refusSubmitted = false;
+            }
+        });
+    }
+
+    annulerRefus(): void {
+        this.showRefusDialog = false;
+        this.refusMotif = '';
+        this.refusSubmitted = false;
+    }
+
+    getSignatureDate(evaluation: any): string {
+        if (evaluation?.dateValidation) {
+            // Formater la date
+            const date = new Date(evaluation.dateValidation);
+            return date.toLocaleDateString('fr-FR');
+        }
+        return 'date inconnue';
+    }
+
+
+// Dans la méthode signerEvaluation, ajouter une vérification
+
     signerEvaluation(type: 'responsable' | 'collaborateur'): void {
         if (!this.evaluationId) return;
+
+        // Vérifier que l'utilisateur a le droit de signer
+        if (type === 'responsable' && !this.canSignAsEvaluateur()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Vous n\'êtes pas autorisé à signer en tant que responsable'
+            });
+            return;
+        }
+
+        if (type === 'collaborateur' && !this.canSignAsCollaborateur()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Vous n\'êtes pas autorisé à signer en tant que collaborateur'
+            });
+            return;
+        }
 
         this.saving = true;
         const signature = type === 'responsable' ? this.evaluateurSignature : this.collaborateurSignature;
 
+        this.messageService.add({
+            severity: 'info',
+            summary: 'Confirmation',
+            detail: 'Apposition de votre signature en cours...'
+        });
+
         this.evaluationService.signerEvaluation(this.evaluationId, signature, type === 'responsable')
             .subscribe({
                 next: (response) => {
+                    console.log('✅ Signature enregistrée:', response);
+                    console.log('📅 Date validation reçue:', response.dateValidation);
+
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Succès',
-                        detail: `Signature ${type === 'responsable' ? 'responsable' : 'collaborateur'} apposée`
+                        detail: `Votre signature a été apposée avec succès`
                     });
 
-                    // Mettre à jour l'évaluation
+                    // Mettre à jour l'évaluation complète
                     this.evaluationComplete = response;
-                    this.saving = false;
 
-                    // Vérifier si les deux signatures sont présentes
-                    if (response.signatureResponsable && response.signatureCollaborateur) {
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Succès',
-                            detail: 'Évaluation complètement signée et validée !'
-                        });
+                    // Mettre à jour le statut
+                    this.statutActuel = response.statut;
+
+                    // Recharger les signatures pour être sûr
+                    if (response.evaluateur?.id) {
+                        this.loadCollaborateurSignature(response.evaluateur.id, 'evaluateur');
                     }
+                    if (response.collaborateur?.id) {
+                        this.loadCollaborateurSignature(response.collaborateur.id, 'collaborateur');
+                    }
+
+                    this.saving = false;
                 },
                 error: (error) => {
                     console.error('❌ Erreur signature:', error);
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Erreur',
-                        detail: 'Impossible d\'apposer la signature'
+                        detail: 'Impossible d\'apposer votre signature'
                     });
                     this.saving = false;
                 }
@@ -320,38 +543,7 @@ export class FormulaireEvaluationComponent implements OnInit {
         });
     }
 
-/*    loadEvaluation(id: number): void {
-        this.loading = true;
-        console.log('🔍 CHARGEMENT ÉVALUATION ID:', id);
 
-        this.evaluationService.getEvaluationById(id)
-            .pipe(finalize(() => this.loading = false))
-            .subscribe({
-                next: (data) => {
-                    console.log('✅ Évaluation chargée:', data);
-                    console.log('🔍 Faits marquants bruts:', data.faitsMarquants); // Vérifiez ce log
-
-                    this.evaluationComplete = data;
-                    this.statutActuel = data.statut || 'BROUILLON';
-
-                    // ✅ Appeler mapEvaluationData avec les données
-                    this.mapEvaluationData(data);
-
-                    // Vérifier après mapping
-                    console.log('✅ Après mapping - faitsMarquantsStruct:', this.evaluation.faitsMarquantsStruct);
-
-                    this.checkPermissions();
-                },
-                error: (error) => {
-                    console.error('❌ Erreur chargement évaluation:', error);
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Erreur',
-                        detail: 'Impossible de charger l\'évaluation'
-                    });
-                }
-            });
-    }*/
 
     // Dans loadEvaluation, après avoir chargé les données
     loadEvaluation(id: number): void {
@@ -363,12 +555,17 @@ export class FormulaireEvaluationComponent implements OnInit {
             .subscribe({
                 next: (data) => {
                     console.log('✅ Évaluation chargée:', data);
+                    console.log('📝 Signatures:', {
+                        responsable: data.signatureResponsable ? 'Présente' : 'Absente',
+                        collaborateur: data.signatureCollaborateur ? 'Présente' : 'Absente',
+                        dateValidation: data.dateValidation
+                    });
 
                     this.evaluationComplete = data;
                     this.statutActuel = data.statut || 'BROUILLON';
                     this.mapEvaluationData(data);
 
-                    // ✅ Charger les signatures des collaborateurs
+                    // Charger les signatures des collaborateurs
                     if (data.evaluateur?.id) {
                         this.loadCollaborateurSignature(data.evaluateur.id, 'evaluateur');
                     }
@@ -390,21 +587,74 @@ export class FormulaireEvaluationComponent implements OnInit {
     }
 
     // Charger la signature d'un collaborateur
+
+    // Charger la signature d'un collaborateur
+    // Dans formulaire-evaluation.component.ts
+
+// Charger la signature d'un collaborateur
     loadCollaborateurSignature(collaborateurId: number, type: 'evaluateur' | 'collaborateur'): void {
+        console.log(`📡 Chargement signature ${type} pour ID:`, collaborateurId);
+
         this.collaborateurService.getCollaborateurById(collaborateurId).subscribe({
             next: (collab) => {
+                console.log(`✅ Données collaborateur ${type} reçues:`, collab);
+                console.log(`   Signature brute:`, collab.signature ? collab.signature.substring(0, 100) + '...' : 'Aucune');
+
+                // Nettoyer la signature
+                const signature = this.getSafeSignature(collab.signature);
+
                 if (type === 'evaluateur') {
-                    this.evaluateurSignature = collab.signature || '';
-                    console.log('✅ Signature évaluateur chargée:', !!this.evaluateurSignature);
+                    this.evaluateurSignature = signature;
+                    console.log('✅ Signature évaluateur:', signature !== this.defaultSignature ? 'Valide' : 'Défaut');
                 } else {
-                    this.collaborateurSignature = collab.signature || '';
-                    console.log('✅ Signature collaborateur chargée:', !!this.collaborateurSignature);
+                    this.collaborateurSignature = signature;
+                    console.log('✅ Signature collaborateur:', signature !== this.defaultSignature ? 'Valide' : 'Défaut');
                 }
             },
             error: (error) => {
                 console.error(`❌ Erreur chargement signature ${type}:`, error);
+                if (type === 'evaluateur') {
+                    this.evaluateurSignature = this.defaultSignature;
+                } else {
+                    this.collaborateurSignature = this.defaultSignature;
+                }
             }
         });
+    }
+// Valider et nettoyer une signature
+    validateAndCleanSignature(signature: string): string {
+        if (!signature) return '';
+
+        try {
+            // Nettoyer la signature des caractères problématiques
+            let cleanSignature = signature.trim();
+
+            // Vérifier que c'est une data URL valide
+            if (!cleanSignature.startsWith('data:image')) {
+                console.warn('⚠️ Signature invalide (ne commence pas par data:image):', cleanSignature.substring(0, 30));
+
+                // Essayer de corriger le format
+                if (cleanSignature.includes('base64') && cleanSignature.includes('png')) {
+                    cleanSignature = 'data:image/png;base64,' + cleanSignature.replace(/^.*base64,?/, '');
+                } else {
+                    return '';
+                }
+            }
+
+            // Vérifier qu'il n'y a pas d'espaces ou de caractères spéciaux dans la partie base64
+            const base64Part = cleanSignature.split(',')[1];
+            if (base64Part && /[^A-Za-z0-9+/=]/.test(base64Part)) {
+                console.warn('⚠️ Signature contient des caractères invalides dans la partie base64');
+                // Nettoyer les caractères invalides
+                const cleanBase64 = base64Part.replace(/[^A-Za-z0-9+/=]/g, '');
+                cleanSignature = 'data:image/png;base64,' + cleanBase64;
+            }
+
+            return cleanSignature;
+        } catch (error) {
+            console.error('❌ Erreur validation signature:', error);
+            return '';
+        }
     }
 
     private mapEvaluationData(data: Evaluation): void {
@@ -968,11 +1218,11 @@ export class FormulaireEvaluationComponent implements OnInit {
             });
     }
 
-    retourPourModification(): void {
+    /*retourPourModification(): void {
         if (!this.evaluationId) return;
 
         this.saving = true;
-        this.evaluationService.retournerPourModification(this.evaluationId).subscribe({
+        this.evaluationService.retournerPourModification(this.evaluationId, motif).subscribe({
             next: (response) => {
                 this.messageService.add({
                     severity: 'info',
@@ -985,7 +1235,7 @@ export class FormulaireEvaluationComponent implements OnInit {
             },
             error: (error) => this.handleError(error, 'retour')
         });
-    }
+    }*/
 
     // =============================================
     // VALIDATIONS
@@ -1049,7 +1299,9 @@ export class FormulaireEvaluationComponent implements OnInit {
             'A_VALIDER_DIRECTEUR': 'help',
             'EN_COURS': 'info',
             'VALIDEE': 'success',
-            'REFUSEE': 'danger'
+            'REFUSEE': 'danger',
+            'ANNULEE': 'secondary'
+
         };
         return classes[this.statutActuel] || 'secondary';
     }
@@ -1063,13 +1315,168 @@ export class FormulaireEvaluationComponent implements OnInit {
             'A_VALIDER_DIRECTEUR': 'À valider (Dir.)',
             'EN_COURS': 'En cours',
             'VALIDEE': 'Validée',
-            'REFUSEE': 'Refusée'
+            'REFUSEE': 'Refusée',
+            'ANNULEE': 'Annulée'
         };
         return labels[this.statutActuel] || this.statutActuel;
     }
 
     peutValiderDirectement(): boolean {
         return this.currentUser?.role === 'DIRECTEUR' || this.currentUser?.role === 'ADMIN';
+    }
+
+    // Propriété pour stocker le motif d'annulation
+
+
+    /**
+     * Vérifier si l'utilisateur peut annuler
+     */
+    peutAnnuler(): boolean {
+        const user = this.currentUser;
+
+        // ADMIN peut toujours annuler
+        if (user?.role === 'ADMIN') {
+            return true;
+        }
+
+        // DIRECTEUR peut annuler seulement avant validation
+        if (user?.role === 'DIRECTEUR') {
+            return this.statutActuel !== 'VALIDEE' && this.statutActuel !== 'ANNULEE';
+        }
+
+        return false;
+    }
+
+    /**
+     * Ouvrir le dialogue d'annulation
+     */
+    openAnnulationDialog(): void {
+        const ref = this.dialogService.open(AnnulationDialogComponent, {
+            header: 'Annulation de l\'évaluation',
+            width: '500px',
+            data: {
+                titre: 'Motif d\'annulation',
+                placeholder: 'Expliquez pourquoi vous annulez cette évaluation...',
+                actionLabel: 'Annuler définitivement',
+                afficherCommentaire: this.currentUser?.role === 'ADMIN'
+            }
+        });
+
+        ref.onClose.subscribe((result: any) => {
+            if (result?.motif) {
+                this.confirmerAnnulation(result.motif, result.commentaire);
+            }
+        });
+    }
+
+    /**
+     * Confirmer l'annulation
+     */
+    confirmerAnnulation(motif: string, commentaire?: string): void {
+        if (!this.evaluationId) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: 'Aucune évaluation sélectionnée'
+            });
+            return;
+        }
+
+        this.saving = true;
+
+        this.evaluationService.annulerEvaluation(this.evaluationId, motif).subscribe({
+            next: (response) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: 'Évaluation annulée avec succès'
+                });
+
+                this.statutActuel = response.statut;
+                this.evaluationComplete = response;
+                this.saving = false;
+
+                setTimeout(() => this.router.navigate(['/liste-evaluations']), 2000);
+            },
+            error: (error) => {
+                console.error('❌ Erreur annulation:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: error.error?.message || 'Erreur lors de l\'annulation'
+                });
+                this.saving = false;
+            }
+        });
+    }
+
+    /**
+     * Ouvrir le dialogue de retour pour modification
+     */
+    openRetourDialog(): void {
+        const ref = this.dialogService.open(AnnulationDialogComponent, {
+            header: 'Retour pour modification',
+            width: '500px',
+            data: {
+                titre: 'Motif du retour',
+                placeholder: 'Expliquez ce qui doit être modifié...',
+                actionLabel: 'Retourner',
+                afficherCommentaire: true
+            }
+        });
+
+        ref.onClose.subscribe((result: any) => {
+            // ✅ Le motif vient du résultat du dialogue
+            if (result?.motif) {
+                this.confirmerRetour(result.motif); // ← ICI, result.motif est passé
+            }
+        });
+    }
+
+    /**
+     * Confirmer le retour pour modification
+     */
+    /**
+     * Confirmer le retour pour modification
+     */
+    confirmerRetour(motif: string): void { // ← motif est reçu en paramètre
+        if (!this.evaluationId) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: 'Aucune évaluation sélectionnée'
+            });
+            return;
+        }
+
+        this.saving = true;
+
+        // ✅ Utiliser le motif reçu en paramètre
+        this.evaluationService.retournerPourModification(this.evaluationId, motif).subscribe({
+            next: (response) => {
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Information',
+                    detail: 'Évaluation retournée pour modification'
+                });
+
+                this.statutActuel = response.statut;
+                this.evaluationComplete = response;
+                this.saving = false;
+                this.checkPermissions();
+
+                setTimeout(() => this.router.navigate(['/evaluations/editer', this.evaluationId]), 1500);
+            },
+            error: (error) => {
+                console.error('❌ Erreur retour:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: error.error?.message || 'Erreur lors du retour'
+                });
+                this.saving = false;
+            }
+        });
     }
 
     getActionButtonText(): string {

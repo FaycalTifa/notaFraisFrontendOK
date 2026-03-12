@@ -82,7 +82,7 @@ export class AppMenuComponent implements OnInit {
             visible: this.authService.isAuthenticated(),
             items: [
                 {label: 'MON ÉVALUATION', icon: 'pi pi-star', routerLink: ['/mon-levaluations']},
-              //  {label: 'MES INFORMATIONS', icon: 'pi pi-id-card', routerLink: ['/info/personnel']}
+                {label: 'CHANGER MOT DE PASSE', icon: 'pi pi-lock', routerLink: ['/change-mot-passe']},
             ]
         };
 

@@ -47,17 +47,36 @@
         <div class="card">
             <div class="flex justify-content-between align-items-center mb-3">
                 <h3>Historique des évaluations</h3>
-                <p-button
-                        *ngIf="authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'])"
-                        label="Nouvelle évaluation"
-                        icon="pi pi-plus"
-                        styleClass="p-button-success"
-                        (onClick)="createEvaluation()"
-                ></p-button>
+                <div class="flex gap-2">
+                    <!-- Filtre pour afficher/masquer les annulées -->
+
+                    <p-button
+                            *ngIf="authService.hasAnyRole(['ADMIN', 'DIRECTEUR'])"
+                            [label]="showCancelled ? 'Masquer les annulées' : 'Afficher les annulées'"
+                            [icon]="showCancelled ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                            styleClass="p-button-danger"
+                            (onClick)="toggleShowCancelled()"
+                    ></p-button>
+
+                    <p-button
+                            *ngIf="authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'])"
+                            label="Nouvelle évaluation"
+                            icon="pi pi-plus"
+                            styleClass="p-button-success"
+                            (onClick)="createEvaluation()"
+                    ></p-button>
+                </div>
+            </div>
+
+            <!-- Indicateur si des annulées sont masquées -->
+            <div *ngIf="!showCancelled && evaluations.length > filteredEvaluations.length" class="info-message mb-2">
+                <i class="pi pi-info-circle"></i>
+                <span>{{ evaluations.length - filteredEvaluations.length }} évaluation(s) annulée(s) sont masquées.</span>
+                <a href="javascript:void(0)" (click)="toggleShowCancelled()">Afficher</a>
             </div>
 
             <p-table
-                    [value]="evaluations"
+                    [value]="filteredEvaluations"
                     [loading]="loading"
                     [paginator]="true"
                     [rows]="10"
@@ -73,12 +92,13 @@
                         <th>Note Tenue</th>
                         <th>Note Finale</th>
                         <th>Statut</th>
+                        <th>Motif</th>
                         <th style="width: 8rem">Actions</th>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="body" let-eval>
-                    <tr>
+                    <tr [class.annulee-row]="eval.statut === 'ANNULEE'" [class.refusee-row]="eval.motifRefus">
                         <td><span class="font-bold">{{eval.annee}}</span></td>
                         <td>{{eval.collaborateurNom}}</td>
                         <td>{{eval.evaluateurNom}}</td>
@@ -86,14 +106,14 @@
                         <td>
                             <span *ngIf="eval.noteGlobaleObjectifs"
                                   [style.color]="getNoteColor(eval.noteGlobaleObjectifs)">
-                                {{eval.noteGlobaleObjectifs | number:'1.1-1'}}/10
+                                {{ formatNote(eval.noteGlobaleObjectifs) }}
                             </span>
                             <span *ngIf="!eval.noteGlobaleObjectifs">-</span>
                         </td>
                         <td>
                             <span *ngIf="eval.noteGlobaleTenuePoste"
                                   [style.color]="getNoteColor(eval.noteGlobaleTenuePoste)">
-                                {{eval.noteGlobaleTenuePoste | number:'1.1-1'}}/10
+                                {{ formatNote(eval.noteGlobaleTenuePoste) }}
                             </span>
                             <span *ngIf="!eval.noteGlobaleTenuePoste">-</span>
                         </td>
@@ -101,32 +121,104 @@
                             <span *ngIf="eval.noteGlobaleFinale"
                                   class="font-bold"
                                   [style.color]="getNoteColor(eval.noteGlobaleFinale)">
-                                {{eval.noteGlobaleFinale | number:'1.1-1'}}/10
+                                {{ formatNote(eval.noteGlobaleFinale) }}
                             </span>
                             <span *ngIf="!eval.noteGlobaleFinale">-</span>
                         </td>
                         <td>
                             <p-tag
-                                    [value]="statutLabels[eval.statut]"
+                                    [value]="statutLabels[eval.statut] || eval.statut"
                                     [severity]="getStatutSeverity(eval.statut)"
                             ></p-tag>
                         </td>
                         <td>
+                            <!-- ✅ CAS 1: Évaluation ANNULÉE -->
+                            <ng-container *ngIf="eval.statut === 'ANNULEE'">
+                                <div *ngIf="eval.motifAnnulation" class="motif-container" (click)="viewMotifDetails(eval)" style="cursor: pointer;">
+                                    <div class="flex align-items-center gap-1 text-primary">
+                                        <i class="pi pi-eye"></i>
+                                        <span class="motif-preview">
+                                            {{ eval.motifAnnulation.length > 30 ? (eval.motifAnnulation | slice:0:30) + '...' : eval.motifAnnulation }}
+                                        </span>
+                                    </div>
+                                  <!--  <div class="mt-1" style="font-size: 0.7rem; color: #6c757d;">
+                                        <i class="pi pi-user mr-1"></i>
+                                        <span>Par: <strong>{{ eval.annulePar || '?' }}</strong></span>
+                                        <span *ngIf="eval.dateAnnulation" class="ml-2">
+                                            <i class="pi pi-calendar mr-1"></i>
+                                            le {{ eval.dateAnnulation | date:'dd/MM/yyyy' }}
+                                        </span>
+                                    </div>-->
+                                </div>
+                                <div *ngIf="!eval.motifAnnulation" class="text-500">
+                                    <i class="pi pi-ban mr-1"></i>
+                                    <span>Motif non spécifié</span>
+                                </div>
+                            </ng-container>
+
+                            <!-- ✅ CAS 2: Évaluation REFUSÉE (même si statut BROUILLON) -->
+                            <ng-container *ngIf="eval.statut !== 'ANNULEE' && eval.motifRefus">
+                                <div class="motif-container" (click)="viewMotifDetails(eval)" style="cursor: pointer;" class="color:red">
+                                    <div class="flex align-items-center gap-1 text-warning">
+                                        <i class="pi pi-eye "></i>
+                                        <span class="motif-preview"  >
+                                             {{ eval.motifRefus.length > 30 ? (eval.motifRefus | slice:0:30) + '...' : eval.motifRefus }}
+                                        </span>
+                                    </div>
+                                    <!--<div class="mt-1" style="font-size: 0.7rem; color: #f39c12;">
+                                        <i class="pi pi-user mr-1"></i>
+                                        <span>Refusé par: <strong>{{ eval.refuseParNom || 'Collaborateur' }}</strong></span>
+                                        <span *ngIf="eval.dateRefus" class="ml-2">
+                                            <i class="pi pi-calendar mr-1"></i>
+                                            le {{ eval.dateRefus | date:'dd/MM/yyyy' }}
+                                        </span>
+                                    </div>-->
+                                </div>
+                            </ng-container>
+
+                            <!-- ✅ CAS 3: Autres statuts sans motif -->
+                            <span *ngIf="eval.statut !== 'ANNULEE' && !eval.motifRefus" class="text-500">-</span>
+                        </td>
+                        <td>
                             <div class="flex gap-1">
+                                <!-- Voir détails - toujours visible -->
                                 <p-button
                                         icon="pi pi-eye"
                                         (onClick)="viewEvaluation(eval.id!)"
                                         pTooltip="Voir détails"
+                                        tooltipPosition="top"
                                         styleClass="p-button-rounded p-button-text p-button-info"
                                 ></p-button>
+
+                                <!-- Modifier - seulement si non annulée et droits suffisants -->
                                 <p-button
-                                        *ngIf="eval.statut !== 'VALIDEE' && authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'])"
+                                        *ngIf="eval.statut !== 'ANNULEE' && eval.statut !== 'VALIDEE' && authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'])"
                                         icon="pi pi-pencil"
                                         (onClick)="editEvaluation(eval.id!)"
                                         pTooltip="Modifier"
+                                        tooltipPosition="top"
                                         styleClass="p-button-rounded p-button-text p-button-warning"
                                 ></p-button>
+
+                                <!-- Admin peut réactiver une évaluation annulée -->
+                                <p-button
+                                        *ngIf="eval.statut === 'ANNULEE' && authService.isAdmin()"
+                                        icon="pi pi-refresh"
+                                        (onClick)="reactiverEvaluation(eval.id!)"
+                                        pTooltip="Réactiver"
+                                        tooltipPosition="top"
+                                        styleClass="p-button-rounded p-button-text p-button-success"
+                                ></p-button>
                             </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="10" class="text-center p-4">
+                            <i class="pi pi-info-circle" style="font-size: 2rem; color: #ccc"></i>
+                            <p class="mt-2">Aucune évaluation trouvée</p>
                         </td>
                     </tr>
                 </ng-template>
@@ -134,3 +226,60 @@
         </div>
     </div>
 </div>
+
+<!-- Dialogue pour afficher le motif en grand -->
+<p-dialog
+        [(visible)]="showMotifDialog"
+        [modal]="true"
+        [style]="{width: '500px'}"
+        [header]="selectedAnnulePar ? 'Détails de l\'annulation' : 'Détails du refus'"
+        [draggable]="false"
+        [resizable]="false">
+
+    <div class="motif-detail">
+        <!-- Motif -->
+        <div class="field mb-4">
+            <label class="font-bold block mb-2">
+                <i class="pi pi-exclamation-triangle"
+                   [class.text-warning]="!selectedAnnulePar"
+                   [class.text-danger]="selectedAnnulePar"
+                   mr-1></i>
+                {{ selectedAnnulePar ? "Motif d'annulation" : "Motif du refus" }} :
+            </label>
+            <div class="motif-content p-3 border-1 surface-border border-round bg-gray-50" style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;">
+                {{ selectedMotif || 'Non spécifié' }}
+            </div>
+        </div>
+
+        <!-- Annulé/Refusé par -->
+        <div class="field mb-3">
+            <label class="font-bold block mb-2">
+                <i class="pi pi-user mr-1"></i>
+                {{ selectedAnnulePar ? "Annulé par" : "Refusé par" }} :
+            </label>
+            <div class="flex align-items-center p-2 border-1 surface-border border-round bg-gray-50">
+                <span class="font-medium">{{ selectedAnnulePar || selectedRefusePar || '?' }}</span>
+            </div>
+        </div>
+
+        <!-- Date -->
+        <div class="field mb-3" *ngIf="selectedDateAnnulation">
+            <label class="font-bold block mb-2">
+                <i class="pi pi-calendar mr-1"></i>
+                Date :
+            </label>
+            <div class="flex align-items-center p-2 border-1 surface-border border-round bg-gray-50">
+                <span>{{ selectedDateAnnulation | date:'dd/MM/yyyy' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button
+                label="Fermer"
+                icon="pi pi-times"
+                (onClick)="showMotifDialog = false"
+                styleClass="p-button-outlined"
+        ></p-button>
+    </ng-template>
+</p-dialog>

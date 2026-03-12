@@ -73,7 +73,8 @@
                                     <i class="pi pi-user"></i>
                                     <div>
                                         <div>{{ option.nomComplet }}</div>
-                                        <small class="text-500">{{ option.matricule }} - {{ option.posteActuel }}</small>
+                                        <small class="text-500">{{ option.matricule }}
+                                            - {{ option.posteActuel }}</small>
                                     </div>
                                 </div>
                             </ng-template>
@@ -108,20 +109,6 @@
                 <div class="col-12 md:col-6">
                     <div class="field">
                         <label class="field-label">Date de l'entretien</label>
-                        <!--<p-calendar
-                                [(ngModel)]="evaluation.dateEntretien"
-                                dateFormat="dd/mm/yy"
-                                [showIcon]="false"
-                                placeholder="Sélectionner une date"
-                                [disabled]="!canEdit"
-                                styleClass="w-full"
-                                inputStyleClass="w-full"
-                                [showIcon]="false"
-                        >
-                            <ng-template pTemplate="inputIcon">
-                                <i class="pi pi-calendar"></i>
-                            </ng-template>
-                        </p-calendar>-->
                         <p-calendar
                                 [(ngModel)]="evaluation.dateEntretien"
                                 dateFormat="dd/MM/yy"
@@ -151,12 +138,84 @@
                 </div>
             </div>
         </div>
+        <!-- Dans formulaire-evaluation.component.html, après le statut actuel ou dans l'étape 1 -->
+
+        <!-- Carte d'information sur le refus (visible par l'évaluateur) -->
+        <div *ngIf="evaluationComplete?.statut === 'REFUSEE' || refusInfo"
+             class="refus-card col-12">
+            <div class="refus-header">
+                <i class="pi pi-exclamation-triangle" style="color: #f39c12; font-size: 1.5rem"></i>
+                <h4>⚠️ Évaluation refusée par le collaborateur</h4>
+            </div>
+
+            <div class="refus-content">
+                <div class="refus-info">
+                    <div class="refus-item">
+                        <span class="refus-label">Refusée par :</span>
+                        <span class="refus-value">{{ refusInfo?.refusePar || evaluationComplete?.refuseParNom || 'Collaborateur' }}</span>
+                    </div>
+
+                    <div class="refus-item">
+                        <span class="refus-label">Date de refus :</span>
+                        <span class="refus-value">{{ (refusInfo?.dateRefus || evaluationComplete?.dateRefus) | date:'dd/MM/yyyy' }}</span>
+                    </div>
+
+                    <div class="refus-item">
+                        <span class="refus-label">Motif :</span>
+                        <div class="refus-value motif">
+                            <i class="pi pi-comment mr-2"></i>
+                            "{{ refusInfo?.motif || evaluationComplete?.motifRefus || evaluationComplete?.commentaireCollaborateur }}
+                            "
+                        </div>
+                    </div>
+                </div>
+
+                <div class="refus-actions">
+                    <p-button
+                            label="Voir les détails complets"
+                            icon="pi pi-search"
+                            styleClass="p-button-outlined p-button-sm p-button-warning"
+                            (onClick)="showRefusDetails = !showRefusDetails"
+                    ></p-button>
+                </div>
+
+                <!-- Détails supplémentaires avec conseils -->
+                <div *ngIf="showRefusDetails" class="refus-details">
+                    <h5>📋 Actions recommandées :</h5>
+                    <ul>
+                        <li>Prenez en compte le motif du refus ci-dessus</li>
+                        <li>Apportez les modifications nécessaires à l'évaluation</li>
+                        <li>Après correction, vous pourrez soumettre à nouveau l'évaluation</li>
+                    </ul>
+                    <p class="text-warning font-bold mt-2">
+                        <i class="pi pi-info-circle mr-1"></i>
+                        Le statut est revenu à "Brouillon" pour vous permettre de modifier.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dans l'étape 1 (Informations générales), après les champs existants -->
+        <div class="col-12" *ngIf="evaluationComplete?.statut === 'REFUSEE' || refusInfo">
+            <div class="refus-summary p-3 border-1 border-warning border-round bg-yellow-50">
+                <div class="flex align-items-center">
+                    <i class="pi pi-exclamation-triangle text-warning mr-3" style="font-size: 2rem"></i>
+                    <div>
+                        <h4 class="text-warning m-0">Évaluation refusée</h4>
+                        <p class="m-0 text-600">
+                            Cette évaluation a été refusée par le collaborateur.
+                            Motif : <strong>"{{ refusInfo?.motif || evaluationComplete?.motifRefus }}"</strong>
+                        </p>
+                        <small class="text-500">
+                            Refusé le {{ (refusInfo?.dateRefus || evaluationComplete?.dateRefus) | date:'dd/MM/yyyy' }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ============================================= -->
         <!-- ÉTAPE 2: Faits marquants -->
-        <!-- ============================================= -->
-        <!-- ============================================= -->
-        <!-- ÉTAPE 2: Faits marquants (NOUVELLE VERSION) -->
         <!-- ============================================= -->
         <div *ngIf="activeStep === 1" class="step-content fade-in">
             <div class="card-header">
@@ -177,7 +236,7 @@
                     <div class="grid p-fluid">
                         <!-- En-tête avec suppression -->
                         <div class="col-12 fait-header">
-                            <h5>Fait marquant #{{i+1}}</h5>
+                            <h5>Fait marquant #{{i + 1}}</h5>
                             <p-button
                                     *ngIf="canEdit"
                                     icon="pi pi-trash"
@@ -236,16 +295,16 @@
                             <div class="field">
                                 <label class="field-label">Description</label>
                                 <span class="p-input-icon-left w-full">
-                            <i class="pi pi-pencil"></i>
-                            <textarea
-                                    pInputTextarea
-                                    [(ngModel)]="fait.description"
-                                    rows="2"
-                                    placeholder="Décrivez le fait marquant..."
-                                    class="w-full"
-                                    [disabled]="!canEdit"
-                            ></textarea>
-                        </span>
+                                    <i class="pi pi-pencil"></i>
+                                    <textarea
+                                            pInputTextarea
+                                            [(ngModel)]="fait.description"
+                                            rows="2"
+                                            placeholder="Décrivez le fait marquant..."
+                                            class="w-full"
+                                            [disabled]="!canEdit"
+                                    ></textarea>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -279,7 +338,7 @@
 
                 <div *ngFor="let obj of evaluation.objectifs; let i = index" class="objectif-card">
                     <div class="objectif-header">
-                        <h5>Objectif #{{i+1}}</h5>
+                        <h5>Objectif #{{i + 1}}</h5>
                         <p-button
                                 *ngIf="canEdit"
                                 icon="pi pi-trash"
@@ -321,14 +380,12 @@
                                 >
                                     <ng-template pTemplate="selectedItem" let-selectedOption>
                                         <div class="flex align-items-center gap-2" *ngIf="selectedOption">
-                                            <i ></i>
                                             <span>{{ selectedOption.label }}</span>
                                         </div>
                                         <span *ngIf="!selectedOption">Sélectionner le taux</span>
                                     </ng-template>
                                     <ng-template pTemplate="item" let-option>
                                         <div class="flex align-items-center gap-2">
-                                            <i ></i>
                                             <span>{{ option.label }}</span>
                                         </div>
                                     </ng-template>
@@ -351,14 +408,12 @@
                                 >
                                     <ng-template pTemplate="selectedItem" let-selectedOption>
                                         <div class="flex align-items-center gap-2" *ngIf="selectedOption">
-                                            <i></i>
-                                            <span>{{  selectedOption.label }}</span>
+                                            <span>{{ selectedOption.label }}</span>
                                         </div>
                                         <span *ngIf="!selectedOption">Sélectionner la note</span>
                                     </ng-template>
                                     <ng-template pTemplate="item" let-option>
                                         <div class="flex align-items-center gap-2">
-                                            <i ></i>
                                             <span>{{ option.label }}</span>
                                         </div>
                                     </ng-template>
@@ -687,7 +742,7 @@
 
                 <div *ngFor="let obj of evaluation.objectifsFuturs; let i = index" class="objectif-futur-card">
                     <div class="objectif-header">
-                        <h5>Objectif futur #{{i+1}}</h5>
+                        <h5>Objectif futur #{{i + 1}}</h5>
                         <p-button
                                 *ngIf="canEdit"
                                 icon="pi pi-trash"
@@ -795,7 +850,7 @@
 
                 <div *ngFor="let formation of evaluation.souhaitsFormations; let i = index" class="formation-card">
                     <div class="formation-header">
-                        <h5>Formation #{{i+1}}</h5>
+                        <h5>Formation #{{i + 1}}</h5>
                         <p-button
                                 *ngIf="canEdit"
                                 icon="pi pi-trash"
@@ -874,9 +929,6 @@
         <!-- ============================================= -->
         <!-- ÉTAPE 8: Validation et signature -->
         <!-- ============================================= -->
-        <!-- ============================================= -->
-        <!-- ÉTAPE 8: Validation et signature (MODIFIÉE) -->
-        <!-- ============================================= -->
         <div *ngIf="activeStep === 7" class="step-content fade-in">
             <div class="card-header">
                 <i class="pi pi-check-circle step-icon"></i>
@@ -890,7 +942,8 @@
                         <i class="pi pi-info-circle"></i>
                         <div class="statut-info">
                             <h4>Statut actuel</h4>
-                            <p-tag [value]="getStatutLabel()" [severity]="getStatutClass()" styleClass="px-3 py-2"></p-tag>
+                            <p-tag [value]="getStatutLabel()" [severity]="getStatutClass()"
+                                   styleClass="px-3 py-2"></p-tag>
                             <small *ngIf="evaluationComplete?.updatedAt" class="text-500">
                                 Dernière mise à jour: {{ evaluationComplete?.updatedAt | date:'dd/MM/yyyy HH:mm' }}
                             </small>
@@ -900,48 +953,60 @@
 
                 <!-- Signature responsable (évaluateur) -->
                 <div class="col-12 md:col-6">
-                    <div class="signature-card" [class.signed]="evaluationComplete?.signatureResponsable || evaluateurSignature">
+                    <div class="signature-card"
+                         [class.signed]="evaluationComplete?.signatureResponsable"
+                         [class.current-user]="isCurrentUserEvaluateur()">
+
                         <div class="signature-header">
                             <i class="pi pi-briefcase"></i>
                             <h4>Signature responsable</h4>
                             <small>{{ evaluationComplete?.evaluateurNom }}</small>
+                            <span *ngIf="isCurrentUserEvaluateur()" class="user-badge">VOUS</span>
                         </div>
 
                         <div class="signature-body">
-                            <!-- Aperçu de la signature -->
-                            <div *ngIf="evaluateurSignature" class="signature-preview-container">
-                                <img [src]="evaluateurSignature"
+                            <!-- ✅ Zone d'affichage de la signature (TOUJOURS visible) -->
+                            <div *ngIf="evaluateurSignature" class="signature-display">
+                                <img [src]="getSafeSignature(evaluateurSignature)"
                                      alt="Signature responsable"
-                                     class="signature-preview"
-                                     (click)="openSignatureDialog(evaluateurSignature, evaluationComplete?.evaluateurNom)"/>
-                                <p-button
-                                        icon="pi pi-search-plus"
-                                        styleClass="p-button-rounded p-button-text p-button-sm"
-                                        (onClick)="openSignatureDialog(evaluateurSignature, evaluationComplete?.evaluateurNom)"
-                                ></p-button>
+                                     class="signature-image"
+                                     (click)="openSignatureDialog(evaluateurSignature, evaluationComplete?.evaluateurNom)"
+                                     (error)="onImageError($event)"
+                                     title="Cliquer pour agrandir"/>
                             </div>
 
-                            <!-- Statut signature -->
-                            <div *ngIf="evaluationComplete?.signatureResponsable" class="signed-info">
-                                <i class="pi pi-check-circle"></i>
-                                <span>Signé le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</span>
+                            <!-- Message si pas de signature du tout -->
+                            <div *ngIf="!evaluateurSignature" class="no-signature">
+                                <i class="pi pi-image"></i>
+                                <span>Aucune signature enregistrée</span>
                             </div>
 
-                            <!-- Bouton pour signer -->
-                            <div *ngIf="canValidate && !evaluationComplete?.signatureResponsable && evaluateurSignature"
-                                 class="signature-action">
-                                <p-button
-                                        label="Apposer ma signature"
-                                        icon="pi pi-pencil"
-                                        styleClass="p-button-success p-button-sm"
-                                        (onClick)="signerEvaluation('responsable')"
-                                ></p-button>
-                            </div>
+                            <!-- ✅ Zone d'action (bouton ou statut) -->
+                            <div class="signature-actions">
+                                <!-- CAS 1: Déjà signé - Afficher la date -->
+                                <div *ngIf="evaluationComplete?.signatureResponsable" class="signed-info">
+                                    <i class="pi pi-check-circle"></i>
+                                    <span>Signé le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</span>
+                                </div>
 
-                            <!-- Message si pas de signature disponible -->
-                            <div *ngIf="!evaluateurSignature && !evaluationComplete?.signatureResponsable" class="pending-info">
-                                <i class="pi pi-hourglass"></i>
-                                <span>Aucune signature enregistrée pour ce responsable</span>
+                                <!-- CAS 2: Non signé mais signature disponible - Afficher le bouton -->
+                                <div *ngIf="!evaluationComplete?.signatureResponsable && canSignAsEvaluateur()"
+                                     class="signature-action">
+                                    <p-button
+                                            label="Apposer ma signature"
+                                            icon="pi pi-pencil"
+                                            styleClass="p-button-success p-button-sm"
+                                            (onClick)="signerEvaluation('responsable')"
+                                            [disabled]="saving"
+                                    ></p-button>
+                                </div>
+
+                                <!-- CAS 3: En attente (visible par les autres utilisateurs) -->
+                                <div *ngIf="!evaluationComplete?.signatureResponsable && !canSignAsEvaluateur() && evaluateurSignature"
+                                     class="pending-info">
+                                    <i class="pi pi-hourglass"></i>
+                                    <span>En attente de signature</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -949,49 +1014,95 @@
 
                 <!-- Signature collaborateur (évalué) -->
                 <div class="col-12 md:col-6">
-                    <div class="signature-card" [class.signed]="evaluationComplete?.signatureCollaborateur || collaborateurSignature">
+                    <div class="signature-card"
+                         [class.signed]="evaluationComplete?.signatureCollaborateur"
+                         [class.current-user]="isCurrentUserCollaborateur()">
+
                         <div class="signature-header">
                             <i class="pi pi-user"></i>
                             <h4>Signature collaborateur</h4>
                             <small>{{ evaluationComplete?.collaborateurNom }}</small>
+                            <span *ngIf="isCurrentUserCollaborateur()" class="user-badge">VOUS</span>
                         </div>
 
                         <div class="signature-body">
-                            <!-- Aperçu de la signature -->
-                            <div *ngIf="collaborateurSignature" class="signature-preview-container">
-                                <img [src]="collaborateurSignature"
+                            <!-- ✅ Zone d'affichage de la signature (TOUJOURS visible) -->
+                            <div *ngIf="collaborateurSignature" class="signature-display">
+                                <img [src]="getSafeSignature(collaborateurSignature)"
                                      alt="Signature collaborateur"
-                                     class="signature-preview"
-                                     (click)="openSignatureDialog(collaborateurSignature, evaluationComplete?.collaborateurNom)"/>
-                                <p-button
-                                        icon="pi pi-search-plus"
-                                        styleClass="p-button-rounded p-button-text p-button-sm"
-                                        (onClick)="openSignatureDialog(collaborateurSignature, evaluationComplete?.collaborateurNom)"
-                                ></p-button>
+                                     class="signature-image"
+                                     (click)="openSignatureDialog(collaborateurSignature, evaluationComplete?.collaborateurNom)"
+                                     (error)="onImageError($event)"
+                                     title="Cliquer pour agrandir"/>
                             </div>
 
-                            <!-- Statut signature -->
-                            <div *ngIf="evaluationComplete?.signatureCollaborateur" class="signed-info">
-                                <i class="pi pi-check-circle"></i>
-                                <span>Signé le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</span>
+                            <!-- Message si pas de signature du tout -->
+                            <div *ngIf="!collaborateurSignature" class="no-signature">
+                                <i class="pi pi-image"></i>
+                                <span>Aucune signature enregistrée</span>
                             </div>
 
-                            <!-- Bouton pour signer -->
-                            <div *ngIf="canApprove && !evaluationComplete?.signatureCollaborateur && collaborateurSignature"
-                                 class="signature-action">
-                                <p-button
-                                        label="Apposer ma signature"
-                                        icon="pi pi-pencil"
-                                        styleClass="p-button-success p-button-sm"
-                                        (onClick)="signerEvaluation('collaborateur')"
-                                ></p-button>
-                            </div>
+                            <!-- ✅ Zone d'action (bouton ou statut) -->
+                            <!-- Zone d'action (bouton ou statut) -->
+                            <div class="signature-actions">
+                                <!-- CAS 1: Déjà signé - Afficher la date -->
+                                <div *ngIf="evaluationComplete?.signatureResponsable" class="signed-info">
+                                    <i class="pi pi-check-circle"></i>
+                                    <span>
+            Signé le
+                                        {{ evaluationComplete?.dateValidation ? (evaluationComplete?.dateValidation | date:'dd/MM/yyyy') : 'date inconnue' }}
+        </span>
+                                </div>
 
-                            <!-- Message si pas de signature disponible -->
-                            <div *ngIf="!collaborateurSignature && !evaluationComplete?.signatureCollaborateur" class="pending-info">
-                                <i class="pi pi-hourglass"></i>
-                                <span>Aucune signature enregistrée pour ce collaborateur</span>
+                                <!-- CAS 2: Non signé mais signature disponible - Afficher le bouton -->
+                                <div *ngIf="!evaluationComplete?.signatureResponsable && canSignAsEvaluateur()"
+                                     class="signature-action">
+                                    <p-button
+                                            label="Apposer ma signature"
+                                            icon="pi pi-pencil"
+                                            styleClass="p-button-success p-button-sm"
+                                            (onClick)="signerEvaluation('responsable')"
+                                            [disabled]="saving"
+                                    ></p-button>
+                                </div>
+
+                                <!-- CAS 3: En attente (visible par les autres utilisateurs) -->
+                                <div *ngIf="!evaluationComplete?.signatureResponsable && !canSignAsEvaluateur() && evaluateurSignature"
+                                     class="pending-info">
+                                    <i class="pi pi-hourglass"></i>
+                                    <span>En attente de signature</span>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline du workflow -->
+                <div class="col-12">
+                    <div class="workflow-timeline-compact">
+                        <div class="timeline-step" [class.active]="statutActuel === 'BROUILLON'">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Brouillon</div>
+                        </div>
+                        <div class="timeline-step" [class.active]="statutActuel === 'A_APPROUVER'">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Approbation</div>
+                        </div>
+                        <div class="timeline-step" [class.active]="statutActuel === 'A_VALIDER_SERVICE'">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Chef Service</div>
+                        </div>
+                        <div class="timeline-step" [class.active]="statutActuel === 'A_VALIDER_DIRECTEUR'">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Directeur</div>
+                        </div>
+                        <div class="timeline-step" [class.active]="statutActuel === 'VALIDEE'">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-label">Validée</div>
+                        </div>
+                        <div class="timeline-step" [class.active]="statutActuel === 'ANNULEE'">
+                            <div class="timeline-dot danger"></div>
+                            <div class="timeline-label">Annulée</div>
                         </div>
                     </div>
                 </div>
@@ -1001,14 +1112,28 @@
                     <div class="notes-card">
                         <h4>Notes de l'évaluation</h4>
                         <div class="notes-grid">
-                            <!-- ... vos notes existantes ... -->
+                            <div class="note-item">
+                                <span class="note-label">Objectifs</span>
+                                <span class="note-value">{{ evaluationComplete?.noteGlobaleObjectifs?.toFixed(1) || 'N/A' }}
+                                    /10</span>
+                            </div>
+                            <div class="note-item">
+                                <span class="note-label">Tenue du poste</span>
+                                <span class="note-value">{{ evaluationComplete?.noteGlobaleTenuePoste?.toFixed(1) || 'N/A' }}
+                                    /10</span>
+                            </div>
+                            <div class="note-item finale">
+                                <span class="note-label">Note finale</span>
+                                <span class="note-value finale">{{ evaluationComplete?.noteGlobaleFinale?.toFixed(1) || 'N/A' }}
+                                    /10</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Dialogue pour voir la signature en grand -->
+        <!-- Dialogue pour voir la signature en grand (UN SEUL) -->
         <p-dialog
                 [(visible)]="showSignatureDialog"
                 [modal]="true"
@@ -1016,11 +1141,9 @@
                 [header]="signatureDialogTitle"
                 [draggable]="false"
                 [resizable]="false">
-
             <div class="signature-dialog-content" *ngIf="selectedSignature">
                 <img [src]="selectedSignature" alt="Signature" class="signature-full"/>
             </div>
-
             <ng-template pTemplate="footer">
                 <p-button
                         label="Fermer"
@@ -1030,6 +1153,7 @@
                 ></p-button>
             </ng-template>
         </p-dialog>
+
         <!-- ============================================= -->
         <!-- SECTION WORKFLOW HIÉRARCHIQUE -->
         <!-- ============================================= -->
@@ -1037,6 +1161,8 @@
             <div class="workflow-container">
 
                 <!-- TIMELINE VISUELLE DU WORKFLOW -->
+
+                <!-- TIMELINE VISUELLE DU WORKFLOW (MODIFIÉE) -->
                 <div class="workflow-timeline mb-4" *ngIf="isEdit">
                     <div class="timeline-step" [class.active]="statutActuel === 'BROUILLON'">
                         <div class="timeline-dot"></div>
@@ -1045,6 +1171,11 @@
                     <div class="timeline-step" [class.active]="statutActuel === 'A_APPROUVER'">
                         <div class="timeline-dot"></div>
                         <div class="timeline-label">Approbation</div>
+                    </div>
+                    <!-- ✅ Ajouter une étape REFUS si l'évaluation a été refusée -->
+                    <div class="timeline-step" [class.active]="evaluationComplete?.statut === 'REFUSEE' || refusInfo">
+                        <div class="timeline-dot" style="background-color: #f39c12"></div>
+                        <div class="timeline-label" style="color: #f39c12">Refusée</div>
                     </div>
                     <div class="timeline-step" [class.active]="statutActuel === 'A_VALIDER_SERVICE'">
                         <div class="timeline-dot"></div>
@@ -1089,6 +1220,9 @@
                 </div>
 
                 <!-- CAS 2: A_APPROUVER - Le collaborateur approuve -->
+                <!-- Dans formulaire-evaluation.component.html, dans la section workflow -->
+
+                <!-- CAS 2: A_APPROUVER - Le collaborateur approuve -->
                 <div *ngIf="statutActuel === 'A_APPROUVER' && canApprove"
                      class="workflow-card approbation">
                     <div class="workflow-icon">
@@ -1131,13 +1265,58 @@
                                         label="Refuser"
                                         icon="pi pi-undo"
                                         styleClass="p-button-warning w-full"
-                                        (onClick)="refuserEvaluation()"
+                                        (onClick)="ouvrirDialogueRefus()"
                                         [disabled]="saving"
                                 ></p-button>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Dialogue de refus -->
+                <p-dialog
+                        header="Motif du refus"
+                        [(visible)]="showRefusDialog"
+                        [modal]="true"
+                        [style]="{width: '500px'}"
+                        [draggable]="false"
+                        [resizable]="false">
+
+                    <div class="field">
+                        <label for="motifRefus" class="font-bold block mb-2">
+                            Veuillez expliquer le motif du refus <span class="text-red-500">*</span>
+                        </label>
+                        <textarea
+                                id="motifRefus"
+                                pInputTextarea
+                                [(ngModel)]="refusMotif"
+                                rows="5"
+                                placeholder="Expliquez pourquoi vous refusez cette évaluation..."
+                                class="w-full"
+                                [class.ng-invalid]="refusSubmitted && !refusMotif"
+                                autofocus
+                        ></textarea>
+                        <small class="text-red-500" *ngIf="refusSubmitted && !refusMotif">
+                            Le motif du refus est obligatoire
+                        </small>
+                    </div>
+
+                    <ng-template pTemplate="footer">
+                        <p-button
+                                label="Annuler"
+                                icon="pi pi-times"
+                                (onClick)="annulerRefus()"
+                                styleClass="p-button-text"
+                        ></p-button>
+                        <p-button
+                                label="Confirmer le refus"
+                                icon="pi pi-check"
+                                (onClick)="confirmerRefus()"
+                                styleClass="p-button-warning"
+                                [disabled]="!refusMotif"
+                        ></p-button>
+                    </ng-template>
+                </p-dialog>
 
                 <!-- CAS 3: A_VALIDER_SERVICE - Le chef de service de l'évaluateur valide -->
                 <div *ngIf="statutActuel === 'A_VALIDER_SERVICE' && canValidate"
@@ -1173,7 +1352,7 @@
                                         label="Retourner"
                                         icon="pi pi-undo"
                                         styleClass="p-button-warning w-full"
-                                        (onClick)="retourPourModification()"
+                                        (onClick)="openRetourDialog()"
                                         [disabled]="saving"
                                 ></p-button>
                             </div>
@@ -1215,7 +1394,7 @@
                                         label="Retourner"
                                         icon="pi pi-undo"
                                         styleClass="p-button-warning w-full"
-                                        (onClick)="retourPourModification()"
+                                        (onClick)="openRetourDialog()"
                                         [disabled]="saving"
                                 ></p-button>
                             </div>
@@ -1234,15 +1413,60 @@
                     <div class="workflow-icon"><i class="pi pi-check-circle"></i></div>
                     <div class="workflow-content">
                         <h3>Évaluation validée !</h3>
-                        <p *ngIf="evaluationComplete?.dateValidation">Validée le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</p>
+                        <p *ngIf="evaluationComplete?.dateValidation">Validée
+                            le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</p>
                         <p-button label="Voir la liste" icon="pi pi-list"
                                   styleClass="p-button-outlined" (onClick)="cancel()"></p-button>
                     </div>
                 </div>
 
-                <!-- CAS 7: Message pour les autres cas -->
-                <div *ngIf="isEdit && !canEdit && !canSubmit && !canValidate && !canApprove && statutActuel !== 'VALIDEE'"
+                <!-- CAS 7: ANNULEE -->
+                <div *ngIf="statutActuel === 'ANNULEE'" class="workflow-card annulee">
+                    <div class="workflow-icon"><i class="pi pi-ban"></i></div>
+                    <div class="workflow-content">
+                        <h3>Évaluation annulée</h3>
+                        <p *ngIf="evaluationComplete?.dateAnnulation">Annulée
+                            le {{ evaluationComplete?.dateAnnulation | date:'dd/MM/yyyy' }}</p>
+                        <p *ngIf="evaluationComplete?.motifAnnulation">Motif
+                            : {{ evaluationComplete?.motifAnnulation }}</p>
+                        <p-button label="Voir la liste" icon="pi pi-list"
+                                  styleClass="p-button-outlined" (onClick)="cancel()"></p-button>
+                    </div>
+                </div>
+
+                <hr>
+                <!-- CAS SPÉCIAL: Actions d'administration (pour ADMIN et DIRECTEUR) -->
+                <div *ngIf="isEdit && (authService.isAdmin() || (authService.isDirecteur() && statutActuel !== 'VALIDEE' && statutActuel !== 'ANNULEE'))"
+                     class="workflow-card annulation">
+                    <div class="workflow-icon">
+                        <i class="pi pi-ban"></i>
+                    </div>
+                    <div class="workflow-content">
+                        <h3>Actions d'administration</h3>
+                        <p>
+                            En tant qu'{{ authService.isAdmin() ? 'administrateur' : 'directeur' }},
+                            vous pouvez annuler cette évaluation.
+                            <span *ngIf="authService.isDirecteur() && statutActuel === 'VALIDEE'" class="text-warning">
+                                (Les évaluations validées ne peuvent pas être annulées par un directeur)
+                            </span>
+                        </p>
+
+                        <div class="workflow-actions">
+                            <p-button
+                                    label="Annuler cette évaluation"
+                                    icon="pi pi-ban"
+                                    styleClass="p-button-danger p-button-lg"
+                                    (onClick)="openAnnulationDialog()"
+                                    [disabled]="saving || (authService.isDirecteur() && statutActuel === 'VALIDEE')"
+                            ></p-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAS 8: Message pour les autres cas -->
+                <div *ngIf="isEdit && !canEdit && !canSubmit && !canValidate && !canApprove && statutActuel !== 'VALIDEE' && statutActuel !== 'ANNULEE'"
                      class="info-message-workflow">
+
                     <i class="pi pi-info-circle"></i>
                     <span>Cette évaluation est en cours de traitement par un autre acteur.</span>
                 </div>
@@ -1250,7 +1474,7 @@
         </div>
 
         <!-- ============================================= -->
-        <!-- BOUTONS DE NAVIGATION (CORRIGÉS) -->
+        <!-- BOUTONS DE NAVIGATION -->
         <!-- ============================================= -->
         <div class="navigation-buttons">
             <!-- Bouton Précédent -->
@@ -1276,17 +1500,7 @@
                         styleClass="p-button-outlined p-button-secondary"
                 ></p-button>
 
-                <!-- Sauvegarder -->
-              <!--  <p-button
-                        *ngIf="canEdit"
-                        label="Sauvegarder"
-                        icon="pi pi-save"
-                        (onClick)="saveDraft()"
-                        [loading]="saving"
-                        styleClass="p-button-secondary"
-                ></p-button>-->
-
-                <!-- BOUTON SUIVANT (indispensable pour avancer) -->
+                <!-- BOUTON SUIVANT -->
                 <p-button
                         *ngIf="activeStep < steps.length - 1"
                         label="Suivant"

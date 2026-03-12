@@ -130,6 +130,10 @@ import { DetailsCollaborateurComponent } from './pages/components/details-collab
 import { DashboardComponent } from './pages/components/dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
 import { CollaborateurEvaluationsComponentComponent } from './pages/components/collaborateur-evaluations-component/collaborateur-evaluations-component.component';
+import { SafeUrlPipePipe } from './pages/pipe/SafeUrlPipe/safe-url-pipe.pipe';
+import { AnnulationDialogComponent } from './pages/components/annulation-dialog/annulation-dialog.component';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ChangePasswordComponent } from './pages/components/change-password/change-password.component';
 
 FullCalendarModule.registerPlugins([
     dayGridPlugin,
@@ -160,6 +164,7 @@ FullCalendarModule.registerPlugins([
         ChartModule,
         CheckboxModule,
         RouterModule,
+        InputTextareaModule,
         ChipModule,
         ChipsModule,
         CodeHighlighterModule,
@@ -256,11 +261,16 @@ FullCalendarModule.registerPlugins([
         DetailsCollaborateurComponent,
         DashboardComponent,
         CollaborateurEvaluationsComponentComponent,
+        SafeUrlPipePipe,
+        AnnulationDialogComponent,
+        ChangePasswordComponent,
+        
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},
         MessageService,
         MenuService,
+        DialogService,
         ConfirmationService,
         DatePipe,
         [ { provide: LOCALE_ID, useValue: 'fr-FR' }],
