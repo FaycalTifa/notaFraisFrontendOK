@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {Evaluation, StatutColors, StatutLabels } from '../../models/entities/evaluation';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { Table } from 'primeng/table';
+import { ExportService } from '../../services/Export/export.service';
+import { AnneeExerciceService } from '../../services/anneeExercice/annee-exercice.service';
 
 @Component({
   selector: 'app-liste-evaluations',
@@ -12,6 +15,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./liste-evaluations.component.scss']
 })
 export class ListeEvaluationsComponent implements OnInit {
+
+    @ViewChild('dt') dt!: Table;
 
     evaluations: Evaluation[] = [];
     evaluationsAFaire: Evaluation[] = [];
@@ -26,19 +31,209 @@ export class ListeEvaluationsComponent implements OnInit {
     selectedRefusePar: string = '';
     selectedAnnulePar: string = '';
     selectedDateAnnulation: Date | null = null;
+    selectedEvaluation: Evaluation | null = null; // ✅ Pour la sélection
+    anneesDisponibles: number[] = []; // Pour stocker les années disponibles
+    anneeSelectionneePourRapport: number = new Date().getFullYear(); // Année par défaut
 
     constructor(
         private evaluationService: EvaluationService,
         public authService: AuthService,
         private router: Router,
         private messageService: MessageService,
+        private exportService: ExportService,
+        private anneeExerciceService: AnneeExerciceService,
         private confirmationService: ConfirmationService
     ) {}
 
     ngOnInit(): void {
         this.loadEvaluations();
+        this.loadAnneesExercice(); // ✅ Charger les années
         if (this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'])) {
             this.loadEvaluationsAFaire();
+        }
+    }
+
+    // ✅ Charger les années depuis annee_exercice
+    loadAnneesExercice(): void {
+        // Vous devez avoir un service pour les années
+        this.anneeExerciceService.getAllAnnees().subscribe({
+            next: (data) => {
+                this.anneesDisponibles = data
+                    .map(a => a.annee)
+                    .sort((a, b) => b - a); // Tri décroissant
+
+                // Sélectionner la première année disponible par défaut
+                if (this.anneesDisponibles.length > 0) {
+                    this.anneeSelectionneePourRapport = this.anneesDisponibles[0];
+                }
+            },
+            error: (error) => {
+                console.error('Erreur chargement années:', error);
+                // Fallback: année courante
+                this.anneesDisponibles = [new Date().getFullYear()];
+            }
+        });
+    }
+
+    // ✅ Méthode pour sélectionner une évaluation
+    selectEvaluation(evaluation: Evaluation): void {
+        this.selectedEvaluation = evaluation;
+    }
+
+    // Exporter une évaluation spécifique
+    exportEvaluation(evaluation: any): void {
+        // Récupérer les détails du collaborateur et évaluateur
+        const collaborateur = evaluation.collaborateur || {
+            prenoms: evaluation.collaborateurNom?.split(' ')[0] || '',
+            nom: evaluation.collaborateurNom?.split(' ').slice(1).join(' ') || evaluation.collaborateurNom,
+            matricule: '',
+            posteActuel: ''
+        };
+
+        const evaluateur = evaluation.evaluateur || {
+            prenoms: evaluation.evaluateurNom?.split(' ')[0] || '',
+            nom: evaluation.evaluateurNom?.split(' ').slice(1).join(' ') || evaluation.evaluateurNom
+        };
+
+        this.exportService.exportEvaluationToPDF(evaluation, collaborateur, evaluateur);
+    }
+
+    // ✅ Exporter toutes les évaluations en Excel
+    exportToExcel(): void {
+        if (this.filteredEvaluations.length === 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: 'Aucune évaluation à exporter'
+            });
+            return;
+        }
+
+        try {
+            this.exportService.exportToExcel(this.filteredEvaluations, 'liste_evaluations');
+            this.messageService.add({
+                severity: 'success',
+                summary: 'Succès',
+                detail: `${this.filteredEvaluations.length} évaluations exportées avec succès`
+            });
+        } catch (error) {
+            console.error('Erreur export:', error);
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Erreur lors de l\'export Excel'
+            });
+        }
+    }
+
+    // ✅ Générer le rapport annuel
+    // Version améliorée avec sélection d'année
+    exportAnnualReport(): void {
+        console.log('-------- EXPORT ANNUEL DEMARRÉ -------------');
+        console.log('📅 AnneesDisponibles:', this.anneesDisponibles);
+
+        if (this.anneesDisponibles.length === 0) {
+            console.log('⚠️ Aucune année disponible');
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: 'Aucune année disponible dans la base'
+            });
+            return;
+        }
+
+        console.log('📅 Première année:', this.anneesDisponibles[0]);
+
+        this.confirmationService.confirm({
+            message: `Quelle année voulez-vous pour le rapport ?`,
+            header: 'Sélection',
+            icon: 'pi pi-question-circle',
+            acceptLabel: this.anneesDisponibles[0].toString(),
+            rejectLabel: this.anneesDisponibles[1]?.toString(),
+            accept: () => {
+                console.log('✅ Année acceptée:', this.anneesDisponibles[0]);
+                this.genererRapportPourAnnee(this.anneesDisponibles[0]);
+            },
+            reject: () => {
+                if (this.anneesDisponibles[1]) {
+                    console.log('✅ Année rejetée (seconde):', this.anneesDisponibles[1]);
+                    this.genererRapportPourAnnee(this.anneesDisponibles[1]);
+                } else {
+                    console.log('❌ Aucune seconde année disponible');
+                }
+            }
+        });
+    }
+
+    private genererRapportPourAnnee(annee: number): void {
+        console.log('-------- GÉNÉRATION RAPPORT POUR', annee, '-------------');
+        console.log('📊 Nombre total d\'évaluations:', this.evaluations.length);
+
+        const evaluationsAnnee = this.evaluations.filter(e => e.annee === annee);
+        console.log('📊 Évaluations pour', annee, ':', evaluationsAnnee.length);
+
+        if (evaluationsAnnee.length === 0) {
+            console.log('⚠️ Aucune évaluation pour cette année');
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: `Aucune évaluation trouvée pour ${annee}`
+            });
+            return;
+        }
+
+        // ✅ Appeler la méthode sans await car c'est une Promise
+        this.exportService.generateAnnualReport(this.evaluations, annee)
+            .then(() => {
+                console.log('✅ Rapport généré avec succès');
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: `Rapport annuel ${annee} généré avec succès`
+                });
+            })
+            .catch(error => {
+                console.error('❌ Erreur génération rapport:', error);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: 'Erreur lors de la génération du rapport'
+                });
+            });
+    }
+
+    // ✅ Imprimer l'évaluation sélectionnée
+    printSelected(): void {
+        if (!this.selectedEvaluation) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Attention',
+                detail: 'Veuillez sélectionner une évaluation à imprimer'
+            });
+            return;
+        }
+
+        try {
+            const collaborateur = {
+                prenoms: this.selectedEvaluation.collaborateurNom?.split(' ')[0] || '',
+                nom: this.selectedEvaluation.collaborateurNom?.split(' ').slice(1).join(' ') || this.selectedEvaluation.collaborateurNom,
+                matricule: '',
+                posteActuel: ''
+            };
+
+            const evaluateur = {
+                prenoms: this.selectedEvaluation.evaluateurNom?.split(' ')[0] || '',
+                nom: this.selectedEvaluation.evaluateurNom?.split(' ').slice(1).join(' ') || this.selectedEvaluation.evaluateurNom
+            };
+
+            this.exportService.printEvaluation(this.selectedEvaluation, collaborateur, evaluateur);
+        } catch (error) {
+            console.error('Erreur impression:', error);
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Erreur lors de l\'impression'
+            });
         }
     }
 
@@ -229,7 +424,6 @@ export class ListeEvaluationsComponent implements OnInit {
             'VALIDEE': 'success',
             'ANNULEE': 'danger',
             'REFUSEE': 'danger',
-            'ARCHIVEE': 'secondary'
         };
         return colors[statut] || 'secondary';
     }
@@ -248,4 +442,13 @@ export class ListeEvaluationsComponent implements OnInit {
         }
         return note.toFixed(1) + '/10';
     }
+
+
+    // Exporter la liste en Excel
+
+
+
+
+
+
 }

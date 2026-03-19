@@ -12,6 +12,8 @@ export class AuthService {
     private apiUrl = 'http://localhost:8080/api/auth';
     private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
+    private userChangedSource = new BehaviorSubject<void>(undefined);
+    userChanged = this.userChangedSource.asObservable();
 
     // Définition des rôles
     public readonly ROLES = {
@@ -90,6 +92,12 @@ export class AuthService {
     getToken(): string | null {
         return localStorage.getItem('token');
     }
+
+    // Appeler cette méthode après login/logout
+    notifyUserChanged(): void {
+        this.userChangedSource.next();
+    }
+
 
     getCurrentUser(): LoginResponse | null {
         return this.currentUserSubject.value;

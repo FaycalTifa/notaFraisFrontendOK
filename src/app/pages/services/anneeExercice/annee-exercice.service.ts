@@ -12,7 +12,7 @@ export class AnneeExerciceService {
 
     constructor(private http: HttpClient) {}
 
-    getAll(): Observable<AnneeExercice[]> {
+    getAllAnnees(): Observable<AnneeExercice[]> {
         return this.http.get<AnneeExercice[]>(this.baseUrl);
     }
 
@@ -20,15 +20,17 @@ export class AnneeExerciceService {
         return this.http.get<AnneeExercice>(`${this.baseUrl}/${id}`);
     }
 
-    create(data: AnneeExercice): Observable<AnneeExercice> {
+    createAnnee(data: AnneeExercice): Observable<AnneeExercice> {
         return this.http.post<AnneeExercice>(this.baseUrl, data);
     }
 
-    update(id: number, data: AnneeExercice): Observable<AnneeExercice> {
+    updateAnnee(id: number, data: AnneeExercice): Observable<AnneeExercice> {
         return this.http.put<AnneeExercice>(`${this.baseUrl}/${id}`, data);
     }
 
-    delete(id: number): Observable<void> {
+    deleteAnnee(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
+
+
     }

@@ -22,7 +22,6 @@ import { RoleGuardsGuard } from './pages/guards/roleGuards/role-guards.guard';
 import { AuthGuardsGuard } from './pages/guards/authGuards/auth-guards.guard';
 import { ChangePasswordComponent } from './pages/components/change-password/change-password.component';
 
-// @ts-ignore
 @NgModule({
     imports: [
         RouterModule.forRoot([
@@ -34,7 +33,7 @@ import { ChangePasswordComponent } from './pages/components/change-password/chan
                 path: '', component: AppMainComponent,
                 canActivate: [AuthGuardsGuard], // Vérifie que l'utilisateur est connecté
                 children: [
-                    // Dashboard - accessible à tous les utilisateurs connectés
+                    // Dashboard - accessible à tous
                     {
                         path: 'dashboard',
                         component: DashboardComponent,
@@ -42,58 +41,52 @@ import { ChangePasswordComponent } from './pages/components/change-password/chan
                         data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
                     },
 
-                    // Collaborateurs - accessible aux responsables
+                    // ✅ COLLABORATEURS - accessible à TOUS
                     {
                         path: 'collaborateur',
                         component: ListeCollaborateursComponent,
                         canActivate: [RoleGuardsGuard],
-                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
                     },
+                    {
+                        path: 'collaborateurs', // Alias pour la liste
+                        component: ListeCollaborateursComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
+                    },
+                    {
+                        path: 'collaborateurs/:id', // Détail d'un collaborateur
+                        component: FormCollaborateurComponent,
+                        canActivate: [RoleGuardsGuard],
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
+                    },
+                    // Création - seulement ADMIN
                     {
                         path: 'creer-collaborateur',
                         component: FormCollaborateurComponent,
                         canActivate: [RoleGuardsGuard],
-                        data: { roles: ['ADMIN'] } // Seul l'admin peut créer
-                    },
-                    // Dans app-routing.module.ts
-
-                    {
-                        path: 'collaborateurs', // Liste au pluriel
-                        component: ListeCollaborateursComponent,
-                        canActivate: [RoleGuardsGuard],
-                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                        data: { roles: ['ADMIN'] }
                     },
                     {
-                        path: 'collaborateurs/nouveau', // Alternative à creer-collaborateur
+                        path: 'collaborateurs/nouveau',
                         component: FormCollaborateurComponent,
                         canActivate: [RoleGuardsGuard],
                         data: { roles: ['ADMIN'] }
                     },
+                    // Édition - seulement ADMIN
                     {
-                        path: 'collaborateurs/:id', // Détail d'un collaborateur
-                        component: FormCollaborateurComponent, // ou un composant de détail
-                        canActivate: [RoleGuardsGuard],
-                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
-                    },
-                    {
-                        path: 'collaborateurs/editer/:id', // Édition
+                        path: 'collaborateurs/editer/:id',
                         component: FormCollaborateurComponent,
                         canActivate: [RoleGuardsGuard],
                         data: { roles: ['ADMIN'] }
                     },
 
-                    // Évaluations
+                    // ✅ ÉVALUATIONS - accessible à TOUS
                     {
                         path: 'liste-evaluations',
                         component: ListeEvaluationsComponent,
                         canActivate: [RoleGuardsGuard],
-                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
-                    },
-                    {
-                        path: 'evaluations/nouveau',
-                        component: FormulaireEvaluationComponent,
-                        canActivate: [RoleGuardsGuard],
-                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
+                        data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
                     },
                     {
                         path: 'evaluations/:id',
@@ -101,14 +94,15 @@ import { ChangePasswordComponent } from './pages/components/change-password/chan
                         canActivate: [RoleGuardsGuard],
                         data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
                     },
+                    // Création d'évaluation - seulement les responsables
                     {
-                        path: 'evaluations/editer/:id',
+                        path: 'evaluations/nouveau',
                         component: FormulaireEvaluationComponent,
                         canActivate: [RoleGuardsGuard],
                         data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
                     },
                     {
-                        path: 'form-evaluation',
+                        path: 'evaluations/editer/:id',
                         component: FormulaireEvaluationComponent,
                         canActivate: [RoleGuardsGuard],
                         data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'] }
@@ -153,7 +147,7 @@ import { ChangePasswordComponent } from './pages/components/change-password/chan
                         canActivate:  [RoleGuardsGuard],
                         data: { roles: ['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION', 'COLLABORATEUR'] }
                     },
- {
+                    {
                         path: 'change-mot-passe',
                         component: ChangePasswordComponent,
                         canActivate:  [RoleGuardsGuard],

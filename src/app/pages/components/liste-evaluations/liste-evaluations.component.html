@@ -49,7 +49,29 @@
                 <h3>Historique des évaluations</h3>
                 <div class="flex gap-2">
                     <!-- Filtre pour afficher/masquer les annulées -->
+                    <p-button
+                            label="Exporter Excel"
+                            icon="pi pi-file-excel"
+                            styleClass="p-button-help"
+                            (onClick)="exportToExcel()"
+                            [disabled]="filteredEvaluations.length === 0"
+                    ></p-button>
 
+                    <p-button
+                            label="Rapport annuel"
+                            icon="pi pi-chart-bar"
+                            styleClass="p-button-info"
+                            (onClick)="exportAnnualReport()"
+                            [disabled]="evaluations.length === 0"
+                    ></p-button>
+
+                    <p-button
+                            label="Imprimer"
+                            icon="pi pi-print"
+                            styleClass="p-button-secondary"
+                            (onClick)="printSelected()"
+                            [disabled]="!selectedEvaluation"
+                    ></p-button>
                     <p-button
                             *ngIf="authService.hasAnyRole(['ADMIN', 'DIRECTEUR'])"
                             [label]="showCancelled ? 'Masquer les annulées' : 'Afficher les annulées'"
@@ -84,6 +106,7 @@
             >
                 <ng-template pTemplate="header">
                     <tr>
+                        <th>Select</th>
                         <th pSortableColumn="annee">Année <p-sortIcon field="annee"></p-sortIcon></th>
                         <th>Collaborateur</th>
                         <th>Évaluateur</th>
@@ -99,6 +122,13 @@
 
                 <ng-template pTemplate="body" let-eval>
                     <tr [class.annulee-row]="eval.statut === 'ANNULEE'" [class.refusee-row]="eval.motifRefus">
+                        <td>
+                            <p-radioButton
+                                    [value]="eval"
+                                    [(ngModel)]="selectedEvaluation"
+                                    (onClick)="selectEvaluation(eval)"
+                            ></p-radioButton>
+                        </td>
                         <td><span class="font-bold">{{eval.annee}}</span></td>
                         <td>{{eval.collaborateurNom}}</td>
                         <td>{{eval.evaluateurNom}}</td>

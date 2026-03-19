@@ -167,5 +167,45 @@ export class EvaluationService {
         );
     }
 
+    // Dans evaluation.service.ts - Ajouter ces méthodes
+
+// Récupérer les évaluations de l'utilisateur connecté par année
+    getMyEvaluationsByYear(annee?: number): Observable<Evaluation[]> {
+        let params = new HttpParams();
+        if (annee) {
+            params = params.set('annee', annee.toString());
+        }
+        return this.http.get<Evaluation[]>(`${this.apiUrl}/mes-evaluations`, { params });
+    }
+
+// Récupérer les années disponibles pour l'utilisateur connecté
+    getMyAvailableYears(): Observable<number[]> {
+        return this.http.get<number[]>(`${this.apiUrl}/mes-annees`);
+    }
+
+// Exporter mes évaluations en Excel par année
+    exportMyEvaluationsToExcel(annee?: number): Observable<Blob> {
+        let params = new HttpParams();
+        if (annee) {
+            params = params.set('annee', annee.toString());
+        }
+        return this.http.get(`${this.apiUrl}/mes-evaluations/export/excel`, {
+            params: params,
+            responseType: 'blob'
+        });
+    }
+
+// Exporter mes évaluations en PDF par année
+    exportMyEvaluationsToPdf(annee?: number): Observable<Blob> {
+        let params = new HttpParams();
+        if (annee) {
+            params = params.set('annee', annee.toString());
+        }
+        return this.http.get(`${this.apiUrl}/mes-evaluations/export/pdf`, {
+            params: params,
+            responseType: 'blob'
+        });
+    }
+
 
 }

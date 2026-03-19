@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnneeExercice } from '../../models/entities/entities';
 import { AnneeExerciceService } from '../../services/anneeExercice/annee-exercice.service';
 import {ConfirmationService, MessageService } from 'primeng/api';
+import {FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-annee-exercice',
@@ -10,190 +11,198 @@ import {ConfirmationService, MessageService } from 'primeng/api';
 })
 export class AnneeExerciceComponent implements OnInit {
 
-    anneeExercices: AnneeExercice[] = [];
-    loading: boolean = false;
+    // Formulaire
+    anneeForm: FormGroup;
+    showForm = false;
+    isEditing = false;
+    editingId: number | null = null;
+    submitting = false;
 
-    displayDialogue: boolean = false;
-    displayDialogueModification: boolean = false;
-    displayDialogueDetail: boolean = false;
+    // Données
+    annees: any[] = [];
+    filteredAnnees: any[] = [];
 
-    // Initialisation explicite avec true
-    newAnneeExercice: AnneeExercice = {
-        annee: new Date().getFullYear(),
-        isActived: true  // Défini explicitement à true
-    };
+    // États
+    loading = false;
+    successMessage = '';
+    errorMessage = '';
 
-    selectedAnneeExercice: AnneeExercice = {
-        annee: 0,
-        isActived: false
-    };
+    // Filtres
+    searchTerm = '';
+    filtreStatut: 'TOUS' | 'ACTIF' | 'INACTIF' = 'TOUS';
 
     constructor(
-        private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-        private anneeExerciceService: AnneeExerciceService
-    ) {}
+        private fb: FormBuilder,
+        private anneeService: AnneeExerciceService,
+        private messageService: MessageService
+    ) {
+        this.initForm();
+    }
 
     ngOnInit(): void {
-        this.loadAnneeExercices();
+        this.loadAnnees();
     }
 
-    loadAnneeExercices(): void {
+    // Getter pour faciliter l'accès aux champs
+    get f() {
+        return this.anneeForm.controls;
+    }
+
+    private initForm(): void {
+        this.anneeForm = this.fb.group({
+            annee: ['', [Validators.required, Validators.min(2000), Validators.max(2100)]],
+            isActived: [false]
+        });
+    }
+
+    loadAnnees(): void {
         this.loading = true;
-        this.anneeExerciceService.getAll().subscribe({
+        this.anneeService.getAllAnnees().subscribe({
             next: (data) => {
-                this.anneeExercices = data;
+                this.annees = data;
+                this.applyFilter();
                 this.loading = false;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Chargement',
-                    detail: 'Données chargées avec succès',
-                    life: 3000
-                });
             },
             error: (error) => {
-                console.error('Erreur chargement:', error);
+                console.error('Erreur chargement années:', error);
+                this.errorMessage = 'Erreur lors du chargement des années';
                 this.loading = false;
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Erreur',
-                    detail: 'Erreur lors du chargement des années',
-                    life: 5000
-                });
+                setTimeout(() => this.errorMessage = '', 5000);
             }
         });
     }
 
-    // --- AJOUT ---
-    onDisplayDialogue() {
-        // Réinitialisation explicite avec true
-        this.newAnneeExercice = {
-            annee: new Date().getFullYear(),
-            isActived: true  // Toujours initialisé à true
-        };
-        this.displayDialogue = true;
-
-        // Debug: Vérifiez la valeur dans la console
-        console.log('Nouvelle année créée:', this.newAnneeExercice);
+    onAdd(): void {
+        this.showForm = true;
+        this.isEditing = false;
+        this.editingId = null;
+        this.anneeForm.reset({ isActived: false });
     }
 
-    onHidenDialogue() {
-        this.displayDialogue = false;
-    }
-
-    onSave() {
-        // Debug: Vérifiez les données avant envoi
-        console.log('Données à sauvegarder:', this.newAnneeExercice);
-
-        this.loading = true;
-        this.anneeExerciceService.create(this.newAnneeExercice).subscribe({
-            next: (savedAnnee) => {
-                this.anneeExercices.push(savedAnnee);
-                this.displayDialogue = false;
-                this.loading = false;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Ajout réussi',
-                    detail: `Année ${savedAnnee.annee} ajoutée avec succès - Statut: ${savedAnnee.isActived ? 'Actif' : 'Inactif'}`
-                });
-            },
-            error: (error) => {
-                console.error('Erreur ajout:', error);
-                this.loading = false;
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Erreur',
-                    detail: 'Erreur lors de l\'ajout'
-                });
-            }
+    onEdit(annee: any): void {
+        this.showForm = true;
+        this.isEditing = true;
+        this.editingId = annee.id;
+        this.anneeForm.patchValue({
+            annee: annee.annee,
+            isActived: annee.isActived
         });
     }
 
-    // --- MODIFICATION ---
-    onDisplayDialogueModif(annee: AnneeExercice) {
-        this.selectedAnneeExercice = { ...annee };
-        this.displayDialogueModification = true;
-
-        // Debug
-        console.log('Année à modifier:', this.selectedAnneeExercice);
+    onCancel(): void {
+        this.showForm = false;
+        this.isEditing = false;
+        this.editingId = null;
+        this.anneeForm.reset({ isActived: false });
     }
 
-    onHidenDialogueModif() {
-        this.displayDialogueModification = false;
-    }
+    onSubmit(): void {
+        if (this.anneeForm.invalid) {
+            Object.keys(this.anneeForm.controls).forEach(key => {
+                this.anneeForm.get(key)?.markAsTouched();
+            });
+            return;
+        }
 
-    updateAnnee() {
-        // Debug: Vérifiez les données avant mise à jour
-        console.log('Données à modifier:', this.selectedAnneeExercice);
+        this.submitting = true;
+        const anneeData = this.anneeForm.value;
 
-        if (this.selectedAnneeExercice.id) {
-            this.loading = true;
-            this.anneeExerciceService.update(this.selectedAnneeExercice.id, this.selectedAnneeExercice).subscribe({
-                next: (updatedAnnee) => {
-                    const index = this.anneeExercices.findIndex(a => a.id === updatedAnnee.id);
-                    if (index !== -1) {
-                        this.anneeExercices[index] = updatedAnnee;
-                        this.displayDialogueModification = false;
-                        this.loading = false;
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Modification réussie',
-                            detail: `Année ${updatedAnnee.annee} modifiée avec succès - Statut: ${updatedAnnee.isActived ? 'Actif' : 'Inactif'}`
-                        });
-                    }
+        if (this.isEditing && this.editingId) {
+            // Mode édition
+            this.anneeService.updateAnnee(this.editingId, anneeData).subscribe({
+                next: () => {
+                    this.successMessage = 'Année mise à jour avec succès';
+                    this.submitting = false;
+                    this.onCancel();
+                    this.loadAnnees();
+                    setTimeout(() => this.successMessage = '', 5000);
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: 'Année mise à jour'
+                    });
                 },
                 error: (error) => {
-                    console.error('Erreur modification:', error);
-                    this.loading = false;
+                    console.error('Erreur mise à jour:', error);
+                    this.errorMessage = error.error?.message || 'Erreur lors de la mise à jour';
+                    this.submitting = false;
+                    setTimeout(() => this.errorMessage = '', 5000);
+                }
+            });
+        } else {
+            // Mode création
+            this.anneeService.createAnnee(anneeData).subscribe({
+                next: () => {
+                    this.successMessage = 'Année créée avec succès';
+                    this.submitting = false;
+                    this.onCancel();
+                    this.loadAnnees();
+                    setTimeout(() => this.successMessage = '', 5000);
+
                     this.messageService.add({
-                        severity: 'error',
-                        summary: 'Erreur',
-                        detail: 'Erreur lors de la modification'
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: 'Année créée'
                     });
+                },
+                error: (error) => {
+                    console.error('Erreur création:', error);
+                    this.errorMessage = error.error?.message || 'Erreur lors de la création';
+                    this.submitting = false;
+                    setTimeout(() => this.errorMessage = '', 5000);
                 }
             });
         }
     }
 
-    // --- SUPPRESSION ---
-    deleteAnnee(annee: AnneeExercice) {
-        this.confirmationService.confirm({
-            message: `Voulez-vous vraiment supprimer l'année ${annee.annee} ?`,
-            header: 'Confirmation de suppression',
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Oui',
-            rejectLabel: 'Non',
-            accept: () => {
-                if (annee.id) {
-                    this.loading = true;
-                    this.anneeExerciceService.delete(annee.id).subscribe({
-                        next: () => {
-                            this.anneeExercices = this.anneeExercices.filter(a => a.id !== annee.id);
-                            this.loading = false;
-                            this.messageService.add({
-                                severity: 'success',
-                                summary: 'Suppression réussie',
-                                detail: `Année ${annee.annee} supprimée avec succès`
-                            });
-                        },
-                        error: (error) => {
-                            console.error('Erreur suppression:', error);
-                            this.loading = false;
-                            this.messageService.add({
-                                severity: 'error',
-                                summary: 'Erreur',
-                                detail: 'Erreur lors de la suppression'
-                            });
-                        }
+    onDelete(id: number, annee: number): void {
+        if (confirm(`Êtes-vous sûr de vouloir supprimer l'année ${annee} ?`)) {
+            this.anneeService.deleteAnnee(id).subscribe({
+                next: () => {
+                    this.successMessage = `Année ${annee} supprimée avec succès`;
+                    this.loadAnnees();
+                    setTimeout(() => this.successMessage = '', 5000);
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Succès',
+                        detail: 'Année supprimée'
                     });
+                },
+                error: (error) => {
+                    console.error('Erreur suppression:', error);
+                    this.errorMessage = error.error?.message || 'Erreur lors de la suppression';
+                    setTimeout(() => this.errorMessage = '', 5000);
                 }
-            }
-        });
+            });
+        }
     }
 
-    // --- DETAILS ---
-    onDisplayDialoguDetail(annee: AnneeExercice) {
-        this.selectedAnneeExercice = { ...annee };
-        this.displayDialogueDetail = true;
+    applyFilter(): void {
+        // Filtrer par recherche
+        let filtered = this.annees;
+
+        if (this.searchTerm.trim()) {
+            const term = this.searchTerm.toLowerCase().trim();
+            filtered = filtered.filter(a =>
+                a.annee.toString().includes(term) ||
+                (a.isActived ? 'actif' : 'inactif').includes(term)
+            );
+        }
+
+        // Filtrer par statut
+        if (this.filtreStatut === 'ACTIF') {
+            filtered = filtered.filter(a => a.isActived);
+        } else if (this.filtreStatut === 'INACTIF') {
+            filtered = filtered.filter(a => !a.isActived);
+        }
+
+        this.filteredAnnees = filtered;
+    }
+
+    filterByStatut(statut: 'TOUS' | 'ACTIF' | 'INACTIF'): void {
+        this.filtreStatut = statut;
+        this.applyFilter();
     }
 }

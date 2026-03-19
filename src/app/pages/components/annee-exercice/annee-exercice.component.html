@@ -1,291 +1,106 @@
-<div class="grid justify-content-center">
-    <div class="col-12">
-        <div class="card shadow-2 border-round-2xl">
-            <div class="text-center mb-4">
-                <h4 class="text-primary font-bold">LISTE DES ANNÉES D'EXERCICE</h4>
-                <p class="text-600">Ajoutez, modifiez ou consultez les années d'exercice disponibles</p>
+<div class="service-container">
+    <!-- En-tête -->
+    <div class="header">
+        <h1>Gestion des années d'exercice</h1>
+        <button class="btn-add" (click)="onAdd()" [disabled]="showForm">
+            <span class="icon">➕</span> Nouvelle année
+        </button>
+    </div>
+
+    <!-- Messages -->
+    <div *ngIf="successMessage" class="alert success">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert error">{{ errorMessage }}</div>
+
+    <!-- Formulaire -->
+    <div *ngIf="showForm" class="form-section">
+        <div class="form-header">
+            <h2>{{ isEditing ? 'Modifier' : 'Nouvelle' }} année</h2>
+        </div>
+
+        <form [formGroup]="anneeForm" (ngSubmit)="onSubmit()" class="service-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Année <span class="required">*</span></label>
+                    <input type="number" formControlName="annee" placeholder="Ex: 2024" min="2000" max="2100"
+                           [class.is-invalid]="f['annee'].touched && f['annee'].invalid"/>
+                    <div *ngIf="f['annee'].touched && f['annee'].invalid" class="error-message">
+                        <small *ngIf="f['annee'].errors?.['required']">Année requise</small>
+                        <small *ngIf="f['annee'].errors?.['min'] || f['annee'].errors?.['max']">Année invalide</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Statut</label>
+                    <div class="status-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" formControlName="isActived">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">{{ f['isActived'].value ? 'Active' : 'Inactive' }}</span>
+                    </div>
+                </div>
             </div>
 
-            <p-toast></p-toast>
-            <p-confirmPopup></p-confirmPopup>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" (click)="onCancel()">Annuler</button>
+                <button type="submit" class="btn-submit" [disabled]="anneeForm.invalid || submitting">
+                    {{ submitting ? 'Enregistrement...' : (isEditing ? 'Mettre à jour' : 'Créer') }}
+                </button>
+            </div>
+        </form>
+    </div>
 
-            <p-table
-                #dt1
-                [value]="anneeExercices"
-                dataKey="id"
-                [rows]="10"
-                [loading]="loading"
-                [rowHover]="true"
-                [paginator]="true"
-                [globalFilterFields]="['annee']"
-                responsiveLayout="scroll"
-                styleClass="p-datatable-sm p-datatable-striped"
-            >
-                <ng-template pTemplate="caption">
-                    <div class="flex flex-column md:flex-row justify-content-between align-items-center gap-2">
-                        <button
-                                pButton
-                                pRipple
-                                type="button"
-                                label="Nouvelle Année"
-                                icon="pi pi-plus"
-                                (click)="onDisplayDialogue()"
-                                class="p-button-rounded p-button-info"
-                                [disabled]="loading"
-                        ></button>
+    <!-- Filtres -->
+    <div class="filters-section">
+        <div class="search-bar">
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
+                   placeholder="Rechercher par année, statut..." class="search-input"/>
+            <span class="search-icon">🔍</span>
+        </div>
 
-                        <span class="p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input
-                                    pInputText
-                                    type="text"
-                                    #filter
-                                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
-                                    placeholder="Rechercher..."
-                                    class="w-full md:w-20rem"
-                            />
-                        </span>
-                    </div>
-                </ng-template>
+        <div class="direction-filters">
+            <button class="filter-btn" [class.active]="filtreStatut === 'TOUS'"
+                    (click)="filterByStatut('TOUS')">Tous</button>
+            <button class="filter-btn" [class.active]="filtreStatut === 'ACTIF'"
+                    (click)="filterByStatut('ACTIF')">Actifs</button>
+            <button class="filter-btn" [class.active]="filtreStatut === 'INACTIF'"
+                    (click)="filterByStatut('INACTIF')">Inactifs</button>
+        </div>
+    </div>
 
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th pSortableColumn="annee">
-                            Année
-                            <p-sortIcon field="annee"></p-sortIcon>
-                        </th>
-                        <th pSortableColumn="isActived">
-                            Statut
-                            <p-sortIcon field="isActived"></p-sortIcon>
-                        </th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </ng-template>
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Chargement des années...</p>
+    </div>
 
-                <ng-template pTemplate="body" let-annee>
-                    <tr>
-                        <td>{{ annee.annee }}</td>
+    <!-- Tableau -->
+    <div *ngIf="!loading" class="table-section">
+        <div class="table-header">
+            <span class="count">{{ filteredAnnees.length }} année(s)</span>
+        </div>
 
-                        <!-- ✅ Affichage du statut dynamique -->
-                        <td>
-              <span
-                      class="p-tag"
-                      [ngClass]="annee.actif ? 'p-tag-success' : 'p-tag-danger'"
-              >
-                {{ annee.actif ? 'Actif' : 'Inactif' }}
-              </span>
-                        </td>
-
-                        <td class="text-center">
-                            <button
-                                    pButton
-                                    pRipple
-                                    icon="pi pi-pencil"
-                                    (click)="onDisplayDialogueModif(annee)"
-                                    class="p-button-rounded p-button-success mr-2"
-                                    pTooltip="Modifier"
-                                    tooltipPosition="top"
-                                    [disabled]="loading"
-                            ></button>
-
-                            <button
-                                    pButton
-                                    pRipple
-                                    icon="pi pi-trash"
-                                    (click)="deleteAnnee(annee)"
-                                    class="p-button-rounded p-button-danger mr-2"
-                                    pTooltip="Supprimer"
-                                    tooltipPosition="top"
-                                    [disabled]="loading"
-                            ></button>
-
-                            <button
-                                    pButton
-                                    pRipple
-                                    icon="pi pi-eye"
-                                    (click)="onDisplayDialoguDetail(annee)"
-                                    class="p-button-rounded p-button-help"
-                                    pTooltip="Détails"
-                                    tooltipPosition="top"
-                            ></button>
-                        </td>
-                    </tr>
-                </ng-template>
-
-
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="3" class="text-center">Aucune année trouvée</td>
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="summary">
-                    <div class="flex justify-content-end p-2 text-sm text-600">
-                        Total : {{ anneeExercices?.length || 0 }} année(s)
-                    </div>
-                </ng-template>
-            </p-table>
+        <div class="table-container">
+            <table class="service-table">
+                <thead>
+                <tr>
+                    <th>Année</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let annee of filteredAnnees">
+                    <td><span class="badge">{{ annee.annee }}</span></td>
+                    <td class="actions">
+                        <button class="btn-action btn-edit" (click)="onEdit(annee)" title="Modifier">✏️</button>
+                        <button class="btn-action btn-delete" (click)="onDelete(annee.id, annee.annee)" title="Supprimer">🗑️</button>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredAnnees.length === 0">
+                    <td colspan="6" class="empty-message">Aucune année trouvée</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<!-- POPUP D'AJOUT -->
-<p-dialog
-        header="ENREGISTREMENT D'UNE ANNÉE D'EXERCICE"
-        [(visible)]="displayDialogue"
-        [modal]="true"
-        [style]="{width: '35vw'}"
-        [breakpoints]="{'960px': '95vw'}"
-        (onHide)="onHidenDialogue()"
->
-    <form #myForm="ngForm" class="p-fluid">
-        <div class="field">
-            <label for="annee">Année *</label>
-            <input
-                    pInputText
-                    id="annee"
-                    name="annee"
-                    type="number"
-                    [(ngModel)]="newAnneeExercice.annee"
-                    required
-                    min="2000"
-                    max="2100"
-                    class="w-full"
-            />
-            <small class="text-500">Saisissez l'année d'exercice (ex: 2024)</small>
-        </div>
-
-        <div class="field flex align-items-center mt-4">
-            <p-inputSwitch
-                    [(ngModel)]="newAnneeExercice.isActived"
-                    name="isActived"
-            ></p-inputSwitch>
-            <label class="ml-2 font-medium">{{ newAnneeExercice.isActived ? 'Année active' : 'Année inactive' }}</label>
-        </div>
-    </form>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
-            <button
-                    pButton
-                    label="Annuler"
-                    icon="pi pi-times"
-                    (click)="onHidenDialogue()"
-                    class="p-button-text p-button-danger"
-                    [disabled]="loading"
-            ></button>
-            <button
-                    pButton
-                    label="Enregistrer"
-                    icon="pi pi-save"
-                    [disabled]="!myForm.valid || !newAnneeExercice.annee || loading"
-                    (click)="onSave()"
-                    class="p-button-success"
-            >
-                <i *ngIf="loading" class="pi pi-spin pi-spinner mr-2"></i>
-                Enregistrer
-            </button>
-        </div>
-    </ng-template>
-</p-dialog>
-
-<!-- POPUP MODIFICATION -->
-<p-dialog
-        header="MODIFICATION D'UNE ANNÉE D'EXERCICE"
-        [(visible)]="displayDialogueModification"
-        [modal]="true"
-        [style]="{width: '35vw'}"
-        [breakpoints]="{'960px': '95vw'}"
-        (onHide)="onHidenDialogueModif()"
->
-    <form #myFormModif="ngForm" class="p-fluid" *ngIf="selectedAnneeExercice">
-        <div class="field">
-            <label for="anneeModifier">Année *</label>
-            <input
-                    pInputText
-                    id="anneeModifier"
-                    name="anneeModifier"
-                    type="number"
-                    [(ngModel)]="selectedAnneeExercice.annee"
-                    required
-                    min="2000"
-                    max="2100"
-                    class="w-full"
-            />
-            <small class="text-500">Saisissez l'année d'exercice (ex: 2024)</small>
-        </div>
-
-        <div class="field flex align-items-center mt-4">
-            <p-inputSwitch
-                    [(ngModel)]="selectedAnneeExercice.isActived"
-                    name="isActivedModif"
-            ></p-inputSwitch>
-            <label class="ml-2 font-medium">{{ selectedAnneeExercice.isActived ? 'Année active' : 'Année inactive' }}</label>
-        </div>
-    </form>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
-            <button
-                    pButton
-                    label="Annuler"
-                    icon="pi pi-times"
-                    (click)="onHidenDialogueModif()"
-                    class="p-button-text p-button-danger"
-                    [disabled]="loading"
-            ></button>
-            <button
-                    pButton
-                    label="Enregistrer"
-                    icon="pi pi-save"
-                    [disabled]="!myFormModif?.valid || !selectedAnneeExercice?.annee || loading"
-                    (click)="updateAnnee()"
-                    class="p-button-success"
-            >
-                <i *ngIf="loading" class="pi pi-spin pi-spinner mr-2"></i>
-                Enregistrer
-            </button>
-        </div>
-    </ng-template>
-</p-dialog>
-
-<!-- POPUP DETAILS -->
-<p-dialog
-        header="DÉTAIL D'UNE ANNÉE D'EXERCICE"
-        [(visible)]="displayDialogueDetail"
-        [modal]="true"
-        [style]="{width: '30vw'}"
-        [breakpoints]="{'960px': '95vw'}"
->
-    <div class="p-fluid" *ngIf="selectedAnneeExercice">
-        <div class="field grid">
-            <div class="col-4 font-bold">Année :</div>
-            <div class="col-8 text-primary font-medium">{{ selectedAnneeExercice.annee }}</div>
-        </div>
-        <div class="field grid">
-            <div class="col-4 font-bold">Statut :</div>
-            <div class="col-8">
-                <span
-                        class="p-tag"
-                        [ngClass]="selectedAnneeExercice.isActived ? 'p-tag-success' : 'p-tag-danger'"
-                >
-                    {{ selectedAnneeExercice.isActived ? 'Actif' : 'Inactif' }}
-                </span>
-            </div>
-        </div>
-        <div class="field grid" *ngIf="selectedAnneeExercice.id">
-            <div class="col-4 font-bold">ID :</div>
-            <div class="col-8 text-600">{{ selectedAnneeExercice.id }}</div>
-        </div>
-    </div>
-
-    <ng-template pTemplate="footer">
-        <button
-                pButton
-                label="Fermer"
-                icon="pi pi-times"
-                (click)="displayDialogueDetail = false"
-                class="p-button-text p-button-danger"
-        ></button>
-    </ng-template>
-</p-dialog>

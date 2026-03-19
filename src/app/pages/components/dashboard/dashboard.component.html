@@ -136,6 +136,170 @@
             </div>
         </div>
 
+        <!-- dashboard.component.html - Ajouter la carte d'export personnel -->
+
+        <!-- dashboard.component.html - Section des exports améliorée -->
+
+        <!-- Carte d'export personnel -->
+        <div class="col-12">
+            <div class="card export-card">
+                <div class="card-header">
+                    <h3>📊 Mes exports personnels</h3>
+                    <p class="text-500">Exportez vos évaluations (comme évaluateur ou évalué) par année</p>
+                </div>
+
+                <div class="grid">
+                    <!-- Sélection de l'année -->
+                    <div class="col-12 md:col-3">
+                        <div class="export-option p-3 border-round surface-ground h-full">
+                            <div class="flex flex-column align-items-center text-center">
+                                <i class="pi pi-calendar" style="font-size: 2.5rem; color: #2196F3; margin-bottom: 1rem;"></i>
+                                <h4 class="mt-0 mb-2">Année</h4>
+                                <p class="text-500 text-sm mb-3">Sélectionnez une année</p>
+                                <!-- Version avec p-dropdown simple -->
+                                <p-dropdown
+                                        [options]="anneesDisponibles"
+                                        [(ngModel)]="anneeSelectionnee"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Choisir une année"
+                                        styleClass="w-full"
+                                        (onChange)="onAnneeChange()"
+                                        [showClear]="true"
+                                >
+                                    <ng-template pTemplate="empty">
+                                        <div class="p-3 text-center text-gray-500">Aucune année disponible</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Excel -->
+                    <div class="col-12 md:col-3">
+                        <div class="export-option p-3 border-round surface-ground h-full">
+                            <div class="flex flex-column align-items-center text-center">
+                                <i class="pi pi-file-excel" style="font-size: 2.5rem; color: #4CAF50; margin-bottom: 1rem;"></i>
+                                <h4 class="mt-0 mb-2">Export Excel</h4>
+                                <p class="text-500 text-sm mb-3">Télécharger en format Excel</p>
+                                <div class="stats-mini mb-3" *ngIf="anneeSelectionnee">
+                                    <span class="badge">{{ mesEvaluationsFiltrees.length }} éval.</span>
+                                </div>
+                                <p-button
+                                        label="Exporter"
+                                        icon="pi pi-download"
+                                        styleClass="p-button-success p-button-sm w-full"
+                                        [disabled]="!anneeSelectionnee || mesEvaluationsFiltrees.length === 0"
+                                        (onClick)="exportMesEvaluations()"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rapport PDF -->
+                    <div class="col-12 md:col-3">
+                        <div class="export-option p-3 border-round surface-ground h-full">
+                            <div class="flex flex-column align-items-center text-center">
+                                <i class="pi pi-file-pdf" style="font-size: 2.5rem; color: #f44336; margin-bottom: 1rem;"></i>
+                                <h4 class="mt-0 mb-2">Rapport PDF</h4>
+                                <p class="text-500 text-sm mb-3">Rapport détaillé personnalisé</p>
+                                <div class="stats-mini mb-3" *ngIf="anneeSelectionnee">
+                                    <span class="badge">{{ getNoteMoyenne() }}</span>
+                                </div>
+                                <p-button
+                                        label="Générer"
+                                        icon="pi pi-file-pdf"
+                                        styleClass="p-button-danger p-button-sm w-full"
+                                        [disabled]="!anneeSelectionnee || mesEvaluationsFiltrees.length === 0"
+                                        (onClick)="genererMonRapport()"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Résumé rapide -->
+                    <div class="col-12 md:col-3">
+                        <div class="export-option p-3 border-round surface-ground h-full"
+                             *ngIf="anneeSelectionnee && mesEvaluationsFiltrees.length > 0">
+                            <div class="flex flex-column">
+                                <h4 class="mt-0 mb-3">Résumé {{ anneeSelectionnee }}</h4>
+                                <div class="stats-grid-mini">
+                                    <div class="stat-mini-item">
+                                        <span class="stat-mini-value">{{ mesEvaluationsFiltrees.length }}</span>
+                                        <span class="stat-mini-label">Total</span>
+                                    </div>
+                                    <div class="stat-mini-item">
+                                        <span class="stat-mini-value">{{ getNbCommeEvaluateur() }}</span>
+                                        <span class="stat-mini-label">Évaluateur</span>
+                                    </div>
+                                    <div class="stat-mini-item">
+                                        <span class="stat-mini-value">{{ getNbCommeEvalue() }}</span>
+                                        <span class="stat-mini-label">Évalué</span>
+                                    </div>
+                                    <div class="stat-mini-item">
+                                        <span class="stat-mini-value">{{ getNoteMoyenne() }}</span>
+                                        <span class="stat-mini-label">Moyenne</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="export-option p-3 border-round surface-ground h-full flex align-items-center justify-content-center"
+                             *ngIf="anneeSelectionnee && mesEvaluationsFiltrees.length === 0">
+                            <div class="text-center text-gray-500">
+                                <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                                <p>Aucune évaluation<br>pour {{ anneeSelectionnee }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liste rapide des évaluations de l'année -->
+                <div class="mt-4" *ngIf="anneeSelectionnee && mesEvaluationsFiltrees.length > 0">
+                    <p-divider></p-divider>
+                    <div class="flex align-items-center justify-content-between mb-2">
+                        <h4 class="m-0">Mes évaluations {{ anneeSelectionnee }}</h4>
+                        <p-button
+                                label="Voir tout"
+                                icon="pi pi-arrow-right"
+                                iconPos="right"
+                                styleClass="p-button-text p-button-sm"
+                                (onClick)="navigateTo('/liste-evaluations')"
+                        ></p-button>
+                    </div>
+                    <div class="grid">
+                        <div *ngFor="let eval of mesEvaluationsFiltrees.slice(0, 3)" class="col-12 md:col-4">
+                            <div class="evaluation-mini-card p-3 border-round surface-ground" (click)="navigateTo('/evaluations/' + eval.id)">
+                                <div class="flex align-items-center justify-content-between">
+                                    <span class="font-bold">{{ eval.collaborateurNom }}</span>
+                                    <span class="role-badge" [class.evaluateur]="eval.evaluateurId === currentUser?.id">
+                                {{ eval.evaluateurId === currentUser?.id ? 'Évaluateur' : 'Évalué' }}
+                            </span>
+                                </div>
+                                <div class="flex align-items-center gap-2 mt-2 text-500">
+                                    <i class="pi pi-calendar" style="font-size: 0.8rem;"></i>
+                                    <span>{{ eval.dateEntretien | date:'dd/MM/yyyy' }}</span>
+                                </div>
+                                <div class="flex align-items-center justify-content-between mt-2">
+                            <span class="note" [style.color]="getNoteColor(eval.noteGlobaleFinale)">
+                                {{ eval.noteGlobaleFinale?.toFixed(1) || '-' }}/10
+                            </span>
+                                    <p-tag
+                                            [value]="getStatutLabel(eval.statut)"
+                                            [severity]="getStatutClass(eval.statut)"
+                                            styleClass="text-xs"
+                                    ></p-tag>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dans dashboard.component.html -->
+
+
         <!-- Graphiques et alertes -->
         <div class="dashboard-row">
             <!-- Graphique circulaire (Statuts) -->

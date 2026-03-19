@@ -25,16 +25,26 @@ export class AppMenuComponent implements OnInit {
 
     ngOnInit() {
         this.buildMenu();
+
+        // Reconstruire le menu quand l'utilisateur change (optionnel)
+        this.authService.userChanged.subscribe(() => {
+            this.buildMenu();
+        });
     }
 
     buildMenu() {
+        console.log('🔄 Construction du menu...');
+        console.log('👤 Utilisateur connecté:', this.authService.getCurrentUser());
+
         // Menu de base visible par tous les utilisateurs connectés
         const baseMenu = [
             {
                 label: 'TABLEAU DE BORD',
                 icon: 'pi pi-fw pi-home',
-                routerLink: ['/dashboard'],
-                visible: this.authService.isAuthenticated()
+                visible: this.authService.isAuthenticated(),
+                items: [
+                    {label: 'DASHBOARD', icon: 'pi pi-sitemap', routerLink: ['/dashboard']},
+                ]
             }
         ];
 
@@ -51,59 +61,66 @@ export class AppMenuComponent implements OnInit {
             ]
         };
 
-        // Menu COLLABORATEURS (visible pour ADMIN, DIRECTEUR, CHEF_SERVICE, CHEF_SECTION)
+        // Menu COLLABORATEURS - visible par TOUS
         const collaborateurMenu = {
             label: 'COLLABORATEURS',
             icon: 'pi pi-fw pi-users',
-            visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION']),
+            visible: this.authService.isAuthenticated(),
             items: [
                 {label: 'LISTE COLLABORATEURS', icon: 'pi pi-list', routerLink: ['/collaborateur']},
-                {label: 'CRÉER COLLABORATEUR', icon: 'pi pi-user-plus', routerLink: ['/creer-collaborateur'],
-                    visible: this.authService.isAdmin()}
+                {
+                    label: 'CRÉER COLLABORATEUR',
+                    icon: 'pi pi-user-plus',
+                    routerLink: ['/creer-collaborateur'],
+                    visible: this.authService.isAdmin()
+                }
             ]
         };
 
-        // Menu ÉVALUATIONS (visible pour ADMIN, DIRECTEUR, CHEF_SERVICE, CHEF_SECTION)
+        // Menu ÉVALUATIONS - visible par TOUS
         const evaluationMenu = {
             label: 'ÉVALUATIONS',
             icon: 'pi pi-fw pi-star',
-            visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION']),
+            visible: this.authService.isAuthenticated(),
             items: [
                 {label: 'LISTE ÉVALUATIONS', icon: 'pi pi-list', routerLink: ['/liste-evaluations']},
-                {label: 'CRÉER ÉVALUATION', icon: 'pi pi-plus-circle', routerLink: ['/evaluations/nouveau']},
-                {label: 'MON ÉVALUATION', icon: 'pi pi-user', routerLink: ['/mon-levaluations']}
+                {
+                    label: 'CRÉER ÉVALUATION',
+                    icon: 'pi pi-plus-circle',
+                    routerLink: ['/evaluations/nouveau'],
+                    visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION'])
+                },
+                {label: 'MES ÉVALUATIONS', icon: 'pi pi-user', routerLink: ['/mon-levaluations']}
             ]
         };
 
-        // Menu MES INFORMATIONS (visible pour tous)
+        // Menu MON ESPACE (visible pour tous)
         const monEspaceMenu = {
             label: 'MON ESPACE',
             icon: 'pi pi-fw pi-user',
             visible: this.authService.isAuthenticated(),
             items: [
-                {label: 'MON ÉVALUATION', icon: 'pi pi-star', routerLink: ['/mon-levaluations']},
+                {label: 'MES ÉVALUATIONS', icon: 'pi pi-star', routerLink: ['/mon-levaluations']},
                 {label: 'CHANGER MOT DE PASSE', icon: 'pi pi-lock', routerLink: ['/change-mot-passe']},
             ]
         };
 
-        // Menu ADMINISTRATION (visible seulement pour ADMIN)
-        const adminMenu = {
-            label: 'RECAP',
-            icon: 'pi pi-fw pi-shield',
-            visible: this.authService.hasAnyRole(['ADMIN', 'DIRECTEUR', 'CHEF_SERVICE', 'CHEF_SECTION']),
-            items: [
-                {label: 'DASHBOARD', icon: 'pi pi-chart-line', routerLink: ['/dashboard']},
-            ]
-        };
-
-        // Construire le menu en fonction des rôles
-        this.model = [
+        // Construire le menu en filtrant les éléments visibles
+        const allMenus = [
             ...baseMenu,
             parametrageMenu,
             collaborateurMenu,
             evaluationMenu,
             monEspaceMenu,
-            adminMenu
-        ].filter(item => item.visible); // Filtrer les éléments non visibles
+        ];
+
+        // Filtrer les menus principaux
+        this.model = allMenus.filter(item => {
+            const visible = item.visible !== false;
+            console.log(`📌 Menu ${item.label}:`, visible);
+            return visible;
+        });
+
+        console.log('✅ Menu final:', this.model);
     }
 }

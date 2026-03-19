@@ -124,7 +124,6 @@ import { FormCollaborateurComponent } from './pages/components/form-collaborateu
 import { HierarchieViewComponent } from './pages/components/hierarchie-view/hierarchie-view.component';
 import { RoleLabelPipe } from './pages/pipe/RoleLabel/role-label.pipe';
 import { ListeEvaluationsComponent } from './pages/components/liste-evaluations/liste-evaluations.component';
-import { FormulaireEvaluationComponent } from './pages/components/formulaire-evaluation/formulaire-evaluation.component';
 import { AuthIntercepInterceptor } from './pages/interceptor/authInterceptor/auth-intercep.interceptor';
 import { DetailsCollaborateurComponent } from './pages/components/details-collaborateur/details-collaborateur.component';
 import { DashboardComponent } from './pages/components/dashboard/dashboard.component';
@@ -134,6 +133,7 @@ import { SafeUrlPipePipe } from './pages/pipe/SafeUrlPipe/safe-url-pipe.pipe';
 import { AnnulationDialogComponent } from './pages/components/annulation-dialog/annulation-dialog.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ChangePasswordComponent } from './pages/components/change-password/change-password.component';
+import { FormulaireEvaluationComponent } from './pages/components/formulaire-evaluation/formulaire-evaluation.component';
 
 FullCalendarModule.registerPlugins([
     dayGridPlugin,

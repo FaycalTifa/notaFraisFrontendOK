@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { DialogService } from 'primeng/dynamicdialog';
 import { AnnulationDialogComponent } from '../annulation-dialog/annulation-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AnneeExerciceService } from '../../services/anneeExercice/annee-exercice.service';
 
 @Component({
   selector: 'app-formulaire-evaluation',
@@ -62,6 +63,8 @@ export class FormulaireEvaluationComponent implements OnInit {
     canValidate: boolean = false;
     canApprove: boolean = false;
     canRefuse: boolean = false;
+
+    annees: any[] = []; // ✅ Liste des années depuis le service
 
     evaluateurSignature: string ;
     collaborateurSignature: string;
@@ -163,7 +166,7 @@ export class FormulaireEvaluationComponent implements OnInit {
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private dialogService: DialogService,
-        private sanitizer: DomSanitizer,
+        private anneeExerciceService: AnneeExerciceService,
         private http: HttpClient
     ) {
         this.currentUser = this.authService.getCurrentUser();
@@ -173,33 +176,96 @@ export class FormulaireEvaluationComponent implements OnInit {
     // INITIALISATION
     // =============================================
     ngOnInit(): void {
+        console.log('=== DÉBOGAGE INIT ===');
+
         this.loadCollaborateurs();
+        this.loadAnnees();
 
-        this.route.params.subscribe(params => {
-            const id = params['id'];
-            if (id) {
-                this.isEdit = true;
-                this.evaluationId = +id;
-                this.loadEvaluation(this.evaluationId);
-            } else {
-                // NOUVELLE ÉVALUATION
-                console.log('NOUVELLE ÉVALUATION');
-                this.isEdit = false;
-                this.activeStep = 0;
-                this.canEdit = true;
-                this.canSubmit = false;
-                this.canValidate = false;
-                this.canApprove = false;
-                this.canRefuse = false;
-                this.statutActuel = 'BROUILLON';
+        // ÉTAPE 1: Vérifier les paramètres de route pour l'édition
+        const routeId = this.route.snapshot.params['id'];
+        const queryCollaborateurId = this.route.snapshot.queryParams['collaborateurId'];
+
+        console.log('Route params (id):', routeId);
+        console.log('Query params (collaborateurId):', queryCollaborateurId);
+
+        // CAS 1: ÉDITION d'une évaluation existante
+        if (routeId && !isNaN(+routeId)) {
+            console.log('📝 CAS 1: Édition évaluation ID:', routeId);
+            this.isEdit = true;
+            this.evaluationId = +routeId;
+            this.loadEvaluation(this.evaluationId);
+            return; // IMPORTANT: On arrête ici pour l'édition
+        }
+
+        // CAS 2: NOUVELLE ÉVALUATION avec collaborateur pré-sélectionné
+        if (queryCollaborateurId && !isNaN(+queryCollaborateurId)) {
+            console.log('➕ CAS 2: Nouvelle évaluation pour collaborateur:', queryCollaborateurId);
+            this.evaluation.collaborateurId = +queryCollaborateurId;
+            this.isEdit = false;
+            this.activeStep = 0;
+            this.canEdit = true;
+            this.canSubmit = false;
+            this.canValidate = false;
+            this.canApprove = false;
+            this.canRefuse = false;
+            this.statutActuel = 'BROUILLON';
+            return;
+        }
+
+        // CAS 3: NOUVELLE ÉVALUATION sans collaborateur pré-sélectionné
+        console.log('➕ CAS 3: Nouvelle évaluation sans collaborateur');
+        this.isEdit = false;
+        this.activeStep = 0;
+        this.canEdit = true;
+        this.canSubmit = false;
+        this.canValidate = false;
+        this.canApprove = false;
+        this.canRefuse = false;
+        this.statutActuel = 'BROUILLON';
+    }
+
+
+    // =============================================
+    // CHARGEMENT DES ANNÉES
+    // =============================================
+    // Dans formulaire-evaluation.component.ts
+    loadAnnees(): void {
+        this.anneeExerciceService.getAllAnnees().subscribe({
+            next: (data) => {
+                console.log('📅 Données brutes du service:', data);
+
+                // Transformer les données en options pour le dropdown
+                this.annees = data.map(a => ({
+                    label: a.annee.toString(),  // ✅ 'label' doit exister
+                    value: a.annee,              // ✅ 'value' doit exister
+                    isActived: a.isActived,
+                    labelWithStatus: a.isActived ?
+                        a.annee.toString() :
+                        a.annee.toString() + ' (Inactive)'
+                })).sort((a, b) => b.value - a.value);
+
+                console.log('📅 Options transformées:', this.annees);
+                console.log('📅 Nombre d\'années:', this.annees.length);
+
+                if (this.annees.length === 0) {
+                    console.warn('⚠️ Aucune année trouvée dans le service');
+                }
+            },
+            error: (error) => {
+                console.error('❌ Erreur chargement années:', error);
+                this.annees = [];
             }
         });
-
-        this.route.queryParams.subscribe(params => {
-            if (params['collaborateurId']) {
-                this.evaluation.collaborateurId = +params['collaborateurId'];
-            }
-        });
+    }
+    // Années par défaut en cas d'erreur
+    getAnneesParDefaut(): any[] {
+        const anneeCourante = new Date().getFullYear();
+        return [
+            { label: (anneeCourante - 2).toString(), value: anneeCourante - 2 },
+            { label: (anneeCourante - 1).toString(), value: anneeCourante - 1 },
+            { label: anneeCourante.toString(), value: anneeCourante },
+            { label: (anneeCourante + 1).toString(), value: anneeCourante + 1 }
+        ];
     }
 
     // Dans le composant
