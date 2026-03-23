@@ -426,43 +426,84 @@ export class ExportService {
     /**
      * Exporter les évaluations de l'utilisateur connecté par année
      */
-    exportUserEvaluationsByYear(evaluations: Evaluation[], userId: number, annee: number): void {
+// export.service.ts
+
+// export.service.ts
+
+    // export.service.ts
+
+    exportUserEvaluationsByYear(
+        evaluations: Evaluation[],  // ← Ce tableau est déjà filtré par le dashboard
+        userId: number,
+        annee: number,
+        userRole: string,
+        currentUser?: any
+    ): void {
         try {
-            // Filtrer les évaluations où l'utilisateur est soit évaluateur soit collaborateur
-            const userEvaluations = evaluations.filter(e =>
-                (e.evaluateurId === userId || e.collaborateurId === userId) &&
-                e.annee === annee
-            );
+            console.log('📊 EXPORT - Début');
+            console.log('   - userRole:', userRole);
+            console.log('   - année:', annee);
+            console.log('   - Nombre d\'évaluations reçues:', evaluations.length);
+
+            // ✅ PAS BESOIN DE REFILTRER - les données sont déjà filtrées par le dashboard
+            const userEvaluations = evaluations;
+
+            console.log(`📊 Évaluations à exporter: ${userEvaluations.length}`);
 
             if (userEvaluations.length === 0) {
                 console.log('Aucune évaluation trouvée pour cette année');
-                return;
+                throw new Error('Aucune évaluation trouvée pour cette année');
             }
 
             // Préparer les données pour Excel
             const data = userEvaluations.map(item => ({
                 'Année': item.annee,
                 'Collaborateur': item.collaborateurNom || '',
+                'Collaborateur ID': item.collaborateurId || '',
+                'Direction': item.collaborateur?.directionNom || item.collaborateur?.direction?.nom || '-',
+                'Service': item.collaborateur?.serviceNom || item.collaborateur?.service?.nom || '-',
+                'Section': item.collaborateur?.sectionNom || item.collaborateur?.section?.nom || '-',
                 'Évaluateur': item.evaluateurNom || '',
-                'Rôle': item.evaluateurId === userId ? 'Évaluateur' : 'Évalué',
+                'Évaluateur ID': item.evaluateurId || '',
                 'Date entretien': item.dateEntretien ? new Date(item.dateEntretien).toLocaleDateString('fr-FR') : '',
                 'Note Objectifs': item.noteGlobaleObjectifs?.toFixed(1) || '-',
                 'Note Tenue': item.noteGlobaleTenuePoste?.toFixed(1) || '-',
                 'Note Finale': item.noteGlobaleFinale?.toFixed(1) || '-',
                 'Statut': this.getStatutLabel(item.statut || ''),
+                'Date création': item.dateCreation ? new Date(item.dateCreation).toLocaleDateString('fr-FR') : '',
                 'Date validation': item.dateValidation ? new Date(item.dateValidation).toLocaleDateString('fr-FR') : ''
             }));
 
             // Créer le fichier Excel
             const worksheet = XLSX.utils.json_to_sheet(data);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Mes évaluations');
+
+            let sheetName = 'Évaluations';
+            if (userRole === 'ADMIN') sheetName = 'Toutes_évaluations';
+            else if (userRole === 'DIRECTEUR') sheetName = 'Évaluations_Direction';
+            else if (userRole === 'CHEF_SERVICE') sheetName = 'Évaluations_Service';
+            else if (userRole === 'CHEF_SECTION') sheetName = 'Évaluations_Section';
+            else sheetName = 'Mes_évaluations';
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
 
             // Ajuster la largeur des colonnes
             const colWidths = [
-                { wch: 10 }, { wch: 30 }, { wch: 30 }, { wch: 15 },
-                { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-                { wch: 20 }, { wch: 15 }
+                { wch: 10 }, // Année
+                { wch: 30 }, // Collaborateur
+                { wch: 15 }, // Collaborateur ID
+                { wch: 25 }, // Direction
+                { wch: 25 }, // Service
+                { wch: 25 }, // Section
+                { wch: 30 }, // Évaluateur
+                { wch: 15 }, // Évaluateur ID
+                { wch: 15 }, // Date entretien
+                { wch: 15 }, // Note Objectifs
+                { wch: 15 }, // Note Tenue
+                { wch: 15 }, // Note Finale
+                { wch: 20 }, // Statut
+                { wch: 15 }, // Date création
+                { wch: 15 }  // Date validation
             ];
             worksheet['!cols'] = colWidths;
 
@@ -470,39 +511,70 @@ export class ExportService {
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
             const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
             const dateStr = new Date().toISOString().slice(0, 10);
-            saveAs(dataBlob, `mes_evaluations_${annee}_${dateStr}.xlsx`);
+
+            let fileName = `evaluations_${annee}_${dateStr}`;
+            if (userRole === 'ADMIN') fileName = `toutes_evaluations_${annee}_${dateStr}`;
+            else if (userRole === 'DIRECTEUR') fileName = `evaluations_direction_${annee}_${dateStr}`;
+            else if (userRole === 'CHEF_SERVICE') fileName = `evaluations_service_${annee}_${dateStr}`;
+            else if (userRole === 'CHEF_SECTION') fileName = `evaluations_section_${annee}_${dateStr}`;
+            else fileName = `mes_evaluations_${annee}_${dateStr}`;
+
+            saveAs(dataBlob, `${fileName}.xlsx`);
 
             console.log(`✅ Export de ${userEvaluations.length} évaluations pour ${annee}`);
         } catch (error) {
             console.error('❌ Erreur export:', error);
+            throw error;
         }
     }
-
     /**
      * Générer un PDF récapitulatif des évaluations de l'utilisateur par année
      */
-    async generateUserAnnualReport(evaluations: Evaluation[], userId: number, annee: number): Promise<void> {
+// export.service.ts
+
+    async generateUserAnnualReport(
+        evaluations: Evaluation[],
+        userId: number,
+        annee: number,
+        userRole?: string,
+        currentUser?: any
+    ): Promise<void> {
         try {
-            // Filtrer les évaluations de l'utilisateur pour l'année
-            const userEvaluations = evaluations.filter(e =>
-                (e.evaluateurId === userId || e.collaborateurId === userId) &&
-                e.annee === annee
-            );
+            console.log('📊 GÉNÉRATION RAPPORT PERSONNEL - Début');
+            console.log('   - userRole:', userRole);
+            console.log('   - userId:', userId);
+            console.log('   - année:', annee);
+            console.log('   - Nombre d\'évaluations reçues:', evaluations.length);
+
+            // ✅ Utiliser directement les évaluations reçues (déjà filtrées)
+            const userEvaluations = evaluations;
 
             if (userEvaluations.length === 0) {
                 console.log('Aucune évaluation trouvée pour cette année');
-                return;
+                throw new Error('Aucune évaluation trouvée pour cette année');
             }
+
+            console.log(`📊 Évaluations à exporter: ${userEvaluations.length}`);
 
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const margin = 15;
             let yPos = 20;
 
-            // Titre
+            // Titre selon le rôle
             pdf.setFontSize(18);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('MON RAPPORT ANNUEL', pageWidth / 2, yPos, { align: 'center' });
+            let title = '';
+            if (userRole === 'DIRECTEUR') {
+                title = `RAPPORT DE LA DIRECTION`;
+            } else if (userRole === 'CHEF_SERVICE') {
+                title = `RAPPORT DU SERVICE`;
+            } else if (userRole === 'CHEF_SECTION') {
+                title = `RAPPORT DE LA SECTION`;
+            } else {
+                title = `MON RAPPORT ANNUEL`;
+            }
+            pdf.text(title, pageWidth / 2, yPos, { align: 'center' });
             yPos += 10;
 
             // Année
@@ -512,9 +584,16 @@ export class ExportService {
             yPos += 15;
 
             // Informations utilisateur
-            const userName = evaluations.find(e => e.evaluateurId === userId)?.evaluateurNom ||
-                evaluations.find(e => e.collaborateurId === userId)?.collaborateurNom ||
-                'Utilisateur';
+            let userInfo = '';
+            if (userRole === 'DIRECTEUR') {
+                userInfo = currentUser?.directionNom || 'Directeur';
+            } else if (userRole === 'CHEF_SERVICE') {
+                userInfo = currentUser?.serviceNom || 'Chef de Service';
+            } else if (userRole === 'CHEF_SECTION') {
+                userInfo = currentUser?.sectionNom || 'Chef de Section';
+            } else {
+                userInfo = currentUser?.nomComplet || 'Utilisateur';
+            }
 
             pdf.setFontSize(11);
             pdf.setFont('helvetica', 'bold');
@@ -527,10 +606,11 @@ export class ExportService {
                 startY: yPos,
                 head: [],
                 body: [
-                    ['Utilisateur', userName],
+                    [userRole === 'DIRECTEUR' ? 'Direction' : (userRole === 'CHEF_SERVICE' ? 'Service' : (userRole === 'CHEF_SECTION' ? 'Section' : 'Utilisateur')), userInfo],
                     ['Total évaluations', userEvaluations.length.toString()],
-                    ['Comme évaluateur', userEvaluations.filter(e => e.evaluateurId === userId).length.toString()],
-                    ['Comme évalué', userEvaluations.filter(e => e.collaborateurId === userId).length.toString()]
+                    ['Note moyenne', this.calculerNoteMoyenne(userEvaluations)],
+                    ['Meilleure note', this.calculerMeilleureNote(userEvaluations)],
+                    ['Note la plus faible', this.calculerNoteMinimale(userEvaluations)]
                 ],
                 theme: 'plain',
                 styles: { fontSize: 10 },
@@ -539,34 +619,29 @@ export class ExportService {
 
             yPos = (pdf as any).lastAutoTable.finalY + 15;
 
-            // Statistiques
-            const evalValidees = userEvaluations.filter(e => e.statut === 'VALIDEE');
-            const noteMoyenne = evalValidees.reduce((sum, e) => sum + (e.noteGlobaleFinale || 0), 0) / (evalValidees.length || 1);
+            // Statistiques par statut
+            const statsParStatut = this.getStatutsParRole(userEvaluations);
 
             pdf.setFontSize(11);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('STATISTIQUES', margin, yPos);
+            pdf.text('RÉPARTITION PAR STATUT', margin, yPos);
             yPos += 7;
             pdf.line(margin, yPos, pageWidth - margin, yPos);
             yPos += 7;
 
             autoTable(pdf, {
                 startY: yPos,
-                head: [],
-                body: [
-                    ['Évaluations validées', evalValidees.length.toString()],
-                    ['Note moyenne', noteMoyenne.toFixed(1) + '/10'],
-                    ['Meilleure note', Math.max(...evalValidees.map(e => e.noteGlobaleFinale || 0)).toFixed(1) + '/10'],
-                    ['Note la plus faible', Math.min(...evalValidees.map(e => e.noteGlobaleFinale || 10)).toFixed(1) + '/10']
-                ],
-                theme: 'plain',
-                styles: { fontSize: 10 },
+                head: [['Statut', 'Nombre', 'Pourcentage']],
+                body: statsParStatut.map(s => [s.statut, s.nombre.toString(), s.pourcentage + '%']),
+                theme: 'striped',
+                headStyles: { fillColor: [52, 73, 94], textColor: 255 },
+                styles: { fontSize: 9 },
                 margin: { left: margin, right: margin }
             });
 
             yPos = (pdf as any).lastAutoTable.finalY + 15;
 
-            // Liste des évaluations
+            // Liste détaillée des évaluations
             pdf.setFontSize(11);
             pdf.setFont('helvetica', 'bold');
             pdf.text('DÉTAIL DES ÉVALUATIONS', margin, yPos);
@@ -584,7 +659,7 @@ export class ExportService {
 
             autoTable(pdf, {
                 startY: yPos,
-                head: [['Collaborateur', 'Évaluateur', 'Note', 'Statut', 'Date']],
+                head: [['Collaborateur', 'Évaluateur', 'Note', 'Statut', 'Date validation']],
                 body: evaluationsData,
                 theme: 'striped',
                 headStyles: { fillColor: [52, 73, 94], textColor: 255 },
@@ -592,15 +667,72 @@ export class ExportService {
                 margin: { left: margin, right: margin }
             });
 
+            // Pied de page
+            const pageCount = pdf.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setTextColor(150);
+                pdf.text(
+                    `Document généré le ${new Date().toLocaleDateString('fr-FR')} - Page ${i} sur ${pageCount}`,
+                    pageWidth / 2,
+                    pdf.internal.pageSize.getHeight() - 10,
+                    { align: 'center' }
+                );
+            }
+
             // Sauvegarder
-            pdf.save(`mon_rapport_${annee}.pdf`);
+            let fileName = '';
+            if (userRole === 'DIRECTEUR') fileName = `rapport_direction_${annee}.pdf`;
+            else if (userRole === 'CHEF_SERVICE') fileName = `rapport_service_${annee}.pdf`;
+            else if (userRole === 'CHEF_SECTION') fileName = `rapport_section_${annee}.pdf`;
+            else fileName = `mon_rapport_${annee}.pdf`;
+
+            pdf.save(fileName);
 
             console.log('✅ Rapport personnel généré');
         } catch (error) {
             console.error('❌ Erreur génération rapport:', error);
+            throw error;
         }
     }
 
+// ✅ Ajoutez ces méthodes utilitaires
+    private calculerNoteMoyenne(evaluations: Evaluation[]): string {
+        const avecNote = evaluations.filter(e => e.noteGlobaleFinale);
+        if (avecNote.length === 0) return '-';
+        const somme = avecNote.reduce((sum, e) => sum + (e.noteGlobaleFinale || 0), 0);
+        return (somme / avecNote.length).toFixed(1) + '/10';
+    }
+
+    private calculerMeilleureNote(evaluations: Evaluation[]): string {
+        const avecNote = evaluations.filter(e => e.noteGlobaleFinale);
+        if (avecNote.length === 0) return '-';
+        const max = Math.max(...avecNote.map(e => e.noteGlobaleFinale || 0));
+        return max.toFixed(1) + '/10';
+    }
+
+    private calculerNoteMinimale(evaluations: Evaluation[]): string {
+        const avecNote = evaluations.filter(e => e.noteGlobaleFinale);
+        if (avecNote.length === 0) return '-';
+        const min = Math.min(...avecNote.map(e => e.noteGlobaleFinale || 10));
+        return min.toFixed(1) + '/10';
+    }
+
+    private getStatutsParRole(evaluations: Evaluation[]): { statut: string, nombre: number, pourcentage: number }[] {
+        const stats = new Map<string, number>();
+        evaluations.forEach(e => {
+            const statut = this.getStatutLabel(e.statut || '');
+            stats.set(statut, (stats.get(statut) || 0) + 1);
+        });
+
+        const total = evaluations.length;
+        return Array.from(stats.entries()).map(([statut, nombre]) => ({
+            statut,
+            nombre,
+            pourcentage: Math.round((nombre / total) * 100)
+        }));
+    }
 
 
 }

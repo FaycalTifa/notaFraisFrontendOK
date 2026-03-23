@@ -26,6 +26,11 @@ export interface Evaluation {
     annulePar?: string;
     annuleParId?: number;
 
+    dateSignatureResponsable?: Date;    // ✅ Date de signature responsable
+    dateSignatureCollaborateur?: Date;  // ✅ Date de signature collaborateur
+
+    signatureResponsableBoolean?: boolean;      // true si signé, false ou undefined sinon
+    signatureCollaborateurBoolean?: boolean;     // true si signé, false ou undefined sinon
 
     // Sections
     faitsMarquants?: string[];  // Gardez pour la compatibilité

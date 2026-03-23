@@ -117,12 +117,13 @@ export class EvaluationService {
     }
 
     // Dans evaluation.service.ts
-    signerEvaluation(id: number, signature: string, isResponsable: boolean): Observable<Evaluation> {
-        const params = new HttpParams()
-            .set('signature', signature)
-            .set('isResponsable', isResponsable.toString());
+    // Dans evaluation.service.ts
 
-        return this.http.post<Evaluation>(`${this.apiUrl}/${id}/signature`, null, { params });
+    signerEvaluation(id: number, isResponsable: boolean): Observable<Evaluation> {
+        return this.http.post<Evaluation>(
+            `${this.apiUrl}/${id}/signature`,
+            { responsable: isResponsable }  // Envoi d'un objet JSON
+        );
     }
 
     deleteEvaluation(id: number): Observable<void> {
@@ -207,5 +208,11 @@ export class EvaluationService {
         });
     }
 
+    // Dans evaluation.service.ts
+    getSignaturesByEvaluationId(evaluationId: number): Observable<{evaluateurSignature: string, collaborateurSignature: string}> {
+        return this.http.get<{evaluateurSignature: string, collaborateurSignature: string}>(
+            `${this.apiUrl}/${evaluationId}/signatures`
+        );
+    }
 
 }

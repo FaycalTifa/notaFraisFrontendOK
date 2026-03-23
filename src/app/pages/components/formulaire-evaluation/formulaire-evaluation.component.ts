@@ -78,6 +78,9 @@ export class FormulaireEvaluationComponent implements OnInit {
     selectedSignature: string = '';
     signatureDialogTitle: string = '';
 
+    evaluateurSignatureImage: string = this.defaultSignature;
+    collaborateurSignatureImage: string = this.defaultSignature;
+
     // Steps
     steps = [
         { label: 'Informations' },
@@ -224,6 +227,27 @@ export class FormulaireEvaluationComponent implements OnInit {
         this.statutActuel = 'BROUILLON';
     }
 
+    // Dans le composant
+    isSignatureEnabled(type: 'responsable' | 'collaborateur'): boolean {
+        if (type === 'responsable') {
+            // Le responsable peut signer si :
+            // 1. Il est l'évaluateur
+            // 2. Il n'a pas encore signé
+            // 3. Le statut est BROUILLON
+            return this.isCurrentUserEvaluateur() &&
+                !this.evaluationComplete?.signatureResponsable &&
+                this.statutActuel === 'BROUILLON';
+        } else {
+            // Le collaborateur peut signer si :
+            // 1. Il est le collaborateur évalué
+            // 2. Il n'a pas encore signé
+            // 3. Le statut est A_APPROUVER
+            return this.isCurrentUserCollaborateur() &&
+                !this.evaluationComplete?.signatureCollaborateur &&
+                this.statutActuel === 'A_APPROUVER';
+        }
+    }
+
 
     // =============================================
     // CHARGEMENT DES ANNÉES
@@ -338,57 +362,45 @@ export class FormulaireEvaluationComponent implements OnInit {
     }
 
 // Vérifier si l'utilisateur peut signer en tant qu'évaluateur
-// Vérifier si l'utilisateur peut signer en tant qu'évaluateur
     canSignAsEvaluateur(): boolean {
-        // L'utilisateur doit être l'évaluateur
+        // Vérifications
         const isEvaluateur = this.isCurrentUserEvaluateur();
-
-        // Le statut doit être BROUILLON (l'évaluateur peut signer à tout moment)
         const bonStatut = this.statutActuel === 'BROUILLON';
+        const signatureNonApposee = !this.isResponsableSigned();
 
-        // La signature responsable ne doit pas déjà être apposée
-        const signatureNonApposee = !this.evaluationComplete?.signatureResponsable;
-
-        // Une signature pré-enregistrée doit exister
-        const signatureDisponible = !!this.evaluateurSignature;
-
+        // LOG POUR DÉBOGUER
         console.log('🔍 canSignAsEvaluateur:', {
             isEvaluateur,
             bonStatut,
             signatureNonApposee,
-            signatureDisponible,
-            result: isEvaluateur && bonStatut && signatureNonApposee && signatureDisponible
+            statutActuel: this.statutActuel,
+            evaluateurId: this.evaluationComplete?.evaluateur?.id,
+            currentUserId: this.currentUser?.id,
+            signatureBoolean: this.evaluationComplete?.signatureResponsableBoolean
         });
 
-        return isEvaluateur && bonStatut && signatureNonApposee && signatureDisponible;
+        return isEvaluateur && bonStatut && signatureNonApposee;
     }
 
-// Vérifier si l'utilisateur peut signer en tant que collaborateur
     canSignAsCollaborateur(): boolean {
-        // L'utilisateur doit être le collaborateur évalué
+        // Vérifications
         const isCollaborateur = this.isCurrentUserCollaborateur();
-
-        // Le statut doit être A_APPROUVER (le collaborateur signe lors de l'approbation)
         const bonStatut = this.statutActuel === 'A_APPROUVER';
+        const signatureNonApposee = !this.isCollaborateurSigned();
 
-        // La signature collaborateur ne doit pas déjà être apposée
-        const signatureNonApposee = !this.evaluationComplete?.signatureCollaborateur;
-
-        // Une signature pré-enregistrée doit exister
-        const signatureDisponible = !!this.collaborateurSignature;
-
+        // LOG POUR DÉBOGUER
         console.log('🔍 canSignAsCollaborateur:', {
             isCollaborateur,
             bonStatut,
             signatureNonApposee,
-            signatureDisponible,
-            result: isCollaborateur && bonStatut && signatureNonApposee && signatureDisponible
+            statutActuel: this.statutActuel,
+            collaborateurId: this.evaluationComplete?.collaborateur?.id,
+            currentUserId: this.currentUser?.id,
+            signatureBoolean: this.evaluationComplete?.signatureCollaborateurBoolean
         });
 
-        return isCollaborateur && bonStatut && signatureNonApposee && signatureDisponible;
-    }
-
-    // Méthode pour ouvrir le dialogue de refus
+        return isCollaborateur && bonStatut && signatureNonApposee;
+    }   // Méthode pour ouvrir le dialogue de refus
     ouvrirDialogueRefus(): void {
         this.refusMotif = '';
         this.showRefusDialog = true;
@@ -454,6 +466,8 @@ export class FormulaireEvaluationComponent implements OnInit {
 
 // Dans la méthode signerEvaluation, ajouter une vérification
 
+    // Dans formulaire-evaluation.component.ts
+
     signerEvaluation(type: 'responsable' | 'collaborateur'): void {
         if (!this.evaluationId) return;
 
@@ -477,7 +491,7 @@ export class FormulaireEvaluationComponent implements OnInit {
         }
 
         this.saving = true;
-        const signature = type === 'responsable' ? this.evaluateurSignature : this.collaborateurSignature;
+        const isResponsable = type === 'responsable';
 
         this.messageService.add({
             severity: 'info',
@@ -485,11 +499,10 @@ export class FormulaireEvaluationComponent implements OnInit {
             detail: 'Apposition de votre signature en cours...'
         });
 
-        this.evaluationService.signerEvaluation(this.evaluationId, signature, type === 'responsable')
+        this.evaluationService.signerEvaluation(this.evaluationId, isResponsable)
             .subscribe({
                 next: (response) => {
                     console.log('✅ Signature enregistrée:', response);
-                    console.log('📅 Date validation reçue:', response.dateValidation);
 
                     this.messageService.add({
                         severity: 'success',
@@ -499,16 +512,13 @@ export class FormulaireEvaluationComponent implements OnInit {
 
                     // Mettre à jour l'évaluation complète
                     this.evaluationComplete = response;
-
-                    // Mettre à jour le statut
                     this.statutActuel = response.statut;
 
-                    // Recharger les signatures pour être sûr
-                    if (response.evaluateur?.id) {
-                        this.loadCollaborateurSignature(response.evaluateur.id, 'evaluateur');
-                    }
-                    if (response.collaborateur?.id) {
-                        this.loadCollaborateurSignature(response.collaborateur.id, 'collaborateur');
+                    // Mettre à jour les booléens localement
+                    if (isResponsable) {
+                        this.evaluationComplete.signatureResponsableBoolean = true;
+                    } else {
+                        this.evaluationComplete.signatureCollaborateurBoolean = true;
                     }
 
                     this.saving = false;
@@ -523,6 +533,15 @@ export class FormulaireEvaluationComponent implements OnInit {
                     this.saving = false;
                 }
             });
+    }
+
+// Méthodes simplifiées pour vérifier les signatures
+    isResponsableSigned(): boolean {
+        return !!this.evaluationComplete?.signatureResponsableBoolean;
+    }
+
+    isCollaborateurSigned(): boolean {
+        return !!this.evaluationComplete?.signatureCollaborateurBoolean;
     }
 
     // Dans formulaire-evaluation.component.ts
@@ -621,23 +640,13 @@ export class FormulaireEvaluationComponent implements OnInit {
             .subscribe({
                 next: (data) => {
                     console.log('✅ Évaluation chargée:', data);
-                    console.log('📝 Signatures:', {
-                        responsable: data.signatureResponsable ? 'Présente' : 'Absente',
-                        collaborateur: data.signatureCollaborateur ? 'Présente' : 'Absente',
-                        dateValidation: data.dateValidation
-                    });
 
                     this.evaluationComplete = data;
                     this.statutActuel = data.statut || 'BROUILLON';
                     this.mapEvaluationData(data);
 
-                    // Charger les signatures des collaborateurs
-                    if (data.evaluateur?.id) {
-                        this.loadCollaborateurSignature(data.evaluateur.id, 'evaluateur');
-                    }
-                    if (data.collaborateur?.id) {
-                        this.loadCollaborateurSignature(data.collaborateur.id, 'collaborateur');
-                    }
+                    // ✅ CHARGER LES SIGNATURES DEPUIS LA TABLE COLLABORATEUR
+                    this.loadSignaturesFromCollaborateurs();
 
                     this.checkPermissions();
                 },
@@ -652,6 +661,45 @@ export class FormulaireEvaluationComponent implements OnInit {
             });
     }
 
+// ✅ Nouvelle méthode pour charger les signatures
+    loadSignaturesFromCollaborateurs(): void {
+        const evaluateurId = this.evaluationComplete?.evaluateurId || this.evaluationComplete?.evaluateur?.id;
+        const collaborateurId = this.evaluationComplete?.collaborateurId || this.evaluationComplete?.collaborateur?.id;
+
+        console.log('🔍 Chargement des signatures depuis la table collaborateur:', { evaluateurId, collaborateurId });
+
+        // Charger signature du responsable (évaluateur)
+        if (evaluateurId) {
+            this.collaborateurService.getCollaborateurSignature(evaluateurId).subscribe({
+                next: (signature) => {
+                    console.log('✅ Signature responsable reçue:', signature ? 'Présente' : 'Vide');
+                    this.evaluateurSignatureImage = this.getSafeSignature(signature);
+                },
+                error: (err) => {
+                    console.error('❌ Erreur chargement signature responsable:', err);
+                    this.evaluateurSignatureImage = this.defaultSignature;
+                }
+            });
+        } else {
+            this.evaluateurSignatureImage = this.defaultSignature;
+        }
+
+        // Charger signature du collaborateur (évalué)
+        if (collaborateurId) {
+            this.collaborateurService.getCollaborateurSignature(collaborateurId).subscribe({
+                next: (signature) => {
+                    console.log('✅ Signature collaborateur reçue:', signature ? 'Présente' : 'Vide');
+                    this.collaborateurSignatureImage = this.getSafeSignature(signature);
+                },
+                error: (err) => {
+                    console.error('❌ Erreur chargement signature collaborateur:', err);
+                    this.collaborateurSignatureImage = this.defaultSignature;
+                }
+            });
+        } else {
+            this.collaborateurSignatureImage = this.defaultSignature;
+        }
+    }
     // Charger la signature d'un collaborateur
 
     // Charger la signature d'un collaborateur

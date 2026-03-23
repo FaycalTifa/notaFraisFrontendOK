@@ -954,8 +954,9 @@
                 <!-- Signature responsable (évaluateur) -->
                 <div class="col-12 md:col-6">
                     <div class="signature-card"
-                         [class.signed]="evaluationComplete?.signatureResponsable"
-                         [class.current-user]="isCurrentUserEvaluateur()">
+                         [class.signed]="isResponsableSigned()"
+                         [class.current-user]="isCurrentUserEvaluateur()"
+                         [class.disabled]="!canSignAsEvaluateur() && !isResponsableSigned()">
 
                         <div class="signature-header">
                             <i class="pi pi-briefcase"></i>
@@ -965,48 +966,44 @@
                         </div>
 
                         <div class="signature-body">
-                            <!-- ✅ Zone d'affichage de la signature (TOUJOURS visible) -->
-                            <div *ngIf="evaluateurSignature" class="signature-display">
-                                <img [src]="getSafeSignature(evaluateurSignature)"
-                                     alt="Signature responsable"
+                            <!-- ✅ IMAGE DE LA SIGNATURE DU RESPONSABLE (depuis table collaborateur) -->
+                            <div class="signature-image-container">
+                                <img *ngIf="evaluateurSignatureImage && evaluateurSignatureImage !== defaultSignature"
+                                     [src]="evaluateurSignatureImage"
+                                     alt="Signature du responsable"
                                      class="signature-image"
-                                     (click)="openSignatureDialog(evaluateurSignature, evaluationComplete?.evaluateurNom)"
+                                     (click)="openSignatureDialog(evaluateurSignatureImage, evaluationComplete?.evaluateurNom)"
                                      (error)="onImageError($event)"
                                      title="Cliquer pour agrandir"/>
+
+                                <div *ngIf="!evaluateurSignatureImage || evaluateurSignatureImage === defaultSignature"
+                                     class="no-signature-image">
+                                    <i class="pi pi-image"></i>
+                                    <span>Aucune signature enregistrée</span>
+                                </div>
                             </div>
 
-                            <!-- Message si pas de signature du tout -->
-                            <div *ngIf="!evaluateurSignature" class="no-signature">
-                                <i class="pi pi-image"></i>
-                                <span>Aucune signature enregistrée</span>
-                            </div>
-
-                            <!-- ✅ Zone d'action (bouton ou statut) -->
-                            <div class="signature-actions">
-                                <!-- CAS 1: Déjà signé - Afficher la date -->
-                                <div *ngIf="evaluationComplete?.signatureResponsable" class="signed-info">
+                            <!-- ✅ STATUT (booléen) -->
+                            <div class="signature-status">
+                                <div *ngIf="isResponsableSigned()" class="status-badge signed">
                                     <i class="pi pi-check-circle"></i>
-                                    <span>Signé le {{ evaluationComplete?.dateValidation | date:'dd/MM/yyyy' }}</span>
+                                    <span>Signé le {{ evaluationComplete?.dateSignatureResponsable | date:'dd/MM/yyyy' }}</span>
                                 </div>
-
-                                <!-- CAS 2: Non signé mais signature disponible - Afficher le bouton -->
-                                <div *ngIf="!evaluationComplete?.signatureResponsable && canSignAsEvaluateur()"
-                                     class="signature-action">
-                                    <p-button
-                                            label="Apposer ma signature"
-                                            icon="pi pi-pencil"
-                                            styleClass="p-button-success p-button-sm"
-                                            (onClick)="signerEvaluation('responsable')"
-                                            [disabled]="saving"
-                                    ></p-button>
-                                </div>
-
-                                <!-- CAS 3: En attente (visible par les autres utilisateurs) -->
-                                <div *ngIf="!evaluationComplete?.signatureResponsable && !canSignAsEvaluateur() && evaluateurSignature"
-                                     class="pending-info">
-                                    <i class="pi pi-hourglass"></i>
+                                <div *ngIf="!isResponsableSigned()" class="status-badge unsigned">
+                                    <i class="pi pi-clock"></i>
                                     <span>En attente de signature</span>
                                 </div>
+                            </div>
+
+                            <!-- ✅ BOUTON D'ACTION -->
+                            <div class="signature-actions" *ngIf="!isResponsableSigned() && canSignAsEvaluateur()">
+                                <p-button
+                                        label="Apposer ma signature"
+                                        icon="pi pi-pencil"
+                                        styleClass="p-button-success p-button-sm w-full"
+                                        (onClick)="signerEvaluation('responsable')"
+                                        [disabled]="saving"
+                                ></p-button>
                             </div>
                         </div>
                     </div>
@@ -1015,8 +1012,9 @@
                 <!-- Signature collaborateur (évalué) -->
                 <div class="col-12 md:col-6">
                     <div class="signature-card"
-                         [class.signed]="evaluationComplete?.signatureCollaborateur"
-                         [class.current-user]="isCurrentUserCollaborateur()">
+                         [class.signed]="isCollaborateurSigned()"
+                         [class.current-user]="isCurrentUserCollaborateur()"
+                         [class.disabled]="!canSignAsCollaborateur() && !isCollaborateurSigned()">
 
                         <div class="signature-header">
                             <i class="pi pi-user"></i>
@@ -1026,52 +1024,44 @@
                         </div>
 
                         <div class="signature-body">
-                            <!-- ✅ Zone d'affichage de la signature (TOUJOURS visible) -->
-                            <div *ngIf="collaborateurSignature" class="signature-display">
-                                <img [src]="getSafeSignature(collaborateurSignature)"
-                                     alt="Signature collaborateur"
+                            <!-- ✅ IMAGE DE LA SIGNATURE DU COLLABORATEUR (depuis table collaborateur) -->
+                            <div class="signature-image-container">
+                                <img *ngIf="collaborateurSignatureImage && collaborateurSignatureImage !== defaultSignature"
+                                     [src]="collaborateurSignatureImage"
+                                     alt="Signature du collaborateur"
                                      class="signature-image"
-                                     (click)="openSignatureDialog(collaborateurSignature, evaluationComplete?.collaborateurNom)"
+                                     (click)="openSignatureDialog(collaborateurSignatureImage, evaluationComplete?.collaborateurNom)"
                                      (error)="onImageError($event)"
                                      title="Cliquer pour agrandir"/>
+
+                                <div *ngIf="!collaborateurSignatureImage || collaborateurSignatureImage === defaultSignature"
+                                     class="no-signature-image">
+                                    <i class="pi pi-image"></i>
+                                    <span>Aucune signature enregistrée</span>
+                                </div>
                             </div>
 
-                            <!-- Message si pas de signature du tout -->
-                            <div *ngIf="!collaborateurSignature" class="no-signature">
-                                <i class="pi pi-image"></i>
-                                <span>Aucune signature enregistrée</span>
-                            </div>
-
-                            <!-- ✅ Zone d'action (bouton ou statut) -->
-                            <!-- Zone d'action (bouton ou statut) -->
-                            <div class="signature-actions">
-                                <!-- CAS 1: Déjà signé - Afficher la date -->
-                                <div *ngIf="evaluationComplete?.signatureResponsable" class="signed-info">
+                            <!-- ✅ STATUT (booléen) -->
+                            <div class="signature-status">
+                                <div *ngIf="isCollaborateurSigned()" class="status-badge signed">
                                     <i class="pi pi-check-circle"></i>
-                                    <span>
-            Signé le
-                                        {{ evaluationComplete?.dateValidation ? (evaluationComplete?.dateValidation | date:'dd/MM/yyyy') : 'date inconnue' }}
-        </span>
+                                    <span>Signé le {{ evaluationComplete?.dateSignatureCollaborateur | date:'dd/MM/yyyy' }}</span>
                                 </div>
-
-                                <!-- CAS 2: Non signé mais signature disponible - Afficher le bouton -->
-                                <div *ngIf="!evaluationComplete?.signatureResponsable && canSignAsEvaluateur()"
-                                     class="signature-action">
-                                    <p-button
-                                            label="Apposer ma signature"
-                                            icon="pi pi-pencil"
-                                            styleClass="p-button-success p-button-sm"
-                                            (onClick)="signerEvaluation('responsable')"
-                                            [disabled]="saving"
-                                    ></p-button>
-                                </div>
-
-                                <!-- CAS 3: En attente (visible par les autres utilisateurs) -->
-                                <div *ngIf="!evaluationComplete?.signatureResponsable && !canSignAsEvaluateur() && evaluateurSignature"
-                                     class="pending-info">
-                                    <i class="pi pi-hourglass"></i>
+                                <div *ngIf="!isCollaborateurSigned()" class="status-badge unsigned">
+                                    <i class="pi pi-clock"></i>
                                     <span>En attente de signature</span>
                                 </div>
+                            </div>
+
+                            <!-- ✅ BOUTON D'ACTION -->
+                            <div class="signature-actions" *ngIf="!isCollaborateurSigned() && canSignAsCollaborateur()">
+                                <p-button
+                                        label="Apposer ma signature"
+                                        icon="pi pi-pencil"
+                                        styleClass="p-button-success p-button-sm w-full"
+                                        (onClick)="signerEvaluation('collaborateur')"
+                                        [disabled]="saving"
+                                ></p-button>
                             </div>
                         </div>
                     </div>

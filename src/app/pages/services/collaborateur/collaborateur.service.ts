@@ -72,4 +72,12 @@ export class CollaborateurService {
     changePassword(userId: number, passwordData: { currentPassword: string, newPassword: string }): Observable<any> {
         return this.http.post(`${this.apiUrl}/${userId}/change-password`, passwordData);
     }
+
+    // Dans collaborateur.service.ts
+
+    getCollaborateurSignature(id: number): Observable<string> {
+        return this.http.get(`${this.apiUrl}/${id}/signature`, {
+            responseType: 'text'
+        });
+    }
 }
