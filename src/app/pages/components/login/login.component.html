@@ -1,4 +1,11 @@
 <div class="login-container">
+    <!-- ✅ Le composant p-toast pour afficher les messages -->
+    <p-toast
+            position="top-center"
+            [baseZIndex]="9999"
+            [breakpoints]="{'920px': {width: '90%', right: '5%', left: '5%'}}">
+    </p-toast>
+
     <div class="login-card">
         <div class="login-header">
             <i class="pi pi-chart-line"></i>
@@ -14,8 +21,12 @@
                         type="email"
                         pInputText
                         [(ngModel)]="credentials.email"
-                        placeholder="Entrez votre email"
+                        placeholder="exemple@entreprise.com"
+                        [class.ng-invalid]="submitted && !credentials.email"
                 />
+                <small *ngIf="submitted && !credentials.email" class="p-error">
+                    L'email est requis
+                </small>
             </div>
 
             <div class="field">
@@ -25,7 +36,17 @@
                         [feedback]="false"
                         [toggleMask]="true"
                         placeholder="Entrez votre mot de passe"
+                        [class.ng-invalid]="submitted && !credentials.password"
                 ></p-password>
+                <small *ngIf="submitted && !credentials.password" class="p-error">
+                    Le mot de passe est requis
+                </small>
+            </div>
+
+            <!-- Message d'erreur inline (optionnel) -->
+            <div *ngIf="errorMessage" class="error-message">
+                <i class="pi pi-exclamation-triangle"></i>
+                <span>{{ errorMessage }}</span>
             </div>
 
             <p-button
@@ -33,13 +54,19 @@
                     (onClick)="onLogin()"
                     [loading]="loading"
                     styleClass="w-full"
+                    [disabled]="loading"
             ></p-button>
 
-            <!-- LIEN CRÉATION DE COLLABORATEUR -->
             <div class="signup-link">
                 <p>Pas encore de compte ?</p>
                 <a [routerLink]="['/creer-collaborateur']" class="create-account-link">
                     Créer un collaborateur
+                </a>
+            </div>
+
+            <div class="forgot-password">
+                <a (click)="forgotPassword()" class="forgot-link">
+                    Mot de passe oublié ?
                 </a>
             </div>
         </div>
