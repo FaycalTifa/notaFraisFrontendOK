@@ -7,7 +7,8 @@ import {LoginService} from './pages/services/login/login.service';
 
 @Component({
     selector: 'app-main',
-    templateUrl: './app.main.component.html'
+    templateUrl: './app.main.component.html',
+    styleUrls: ['./app.component.scss'] // ou .scss
 })
 export class AppMainComponent implements AfterViewInit, OnInit, OnDestroy {
 

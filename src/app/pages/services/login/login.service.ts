@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {RegisterDTO, Utilisateur} from '../../models/entities/entities';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
 
-    private baseUrl = 'http://localhost:8080/api/utilisateurs';
+    private apiUrl = `${environment.apiUrl}/utilisateurs`;
     // tslint:disable-next-line:variable-name
     private _user = new BehaviorSubject<any>(null);
     user$ = this._user.asObservable();
@@ -38,15 +39,15 @@ export class LoginService {
     }
 
     login(username: string, password: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}/login`, { username, password });
+        return this.http.post(`${this.apiUrl}/login`, { username, password });
     }
 
     createUser(utilisateur: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}/create`, utilisateur);
+        return this.http.post(`${this.apiUrl}/create`, utilisateur);
     }
 
     registerUtilisateur(dto: RegisterDTO): Observable<Utilisateur> {
-        return this.http.post<Utilisateur>(`${this.baseUrl}/register`, dto);
+        return this.http.post<Utilisateur>(`${this.apiUrl}/register`, dto);
     }
 
 

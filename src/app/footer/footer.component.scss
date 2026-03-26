@@ -1,0 +1,66 @@
+// footer.component.scss
+
+.layout-footer {
+  background-color: #1565C0;  // Bleu UAB ASSURANCE
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+  .layout-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.5rem;
+    }
+
+    .layout-footer-left {
+      .footer-copyright {
+        font-size: 0.85rem;
+        color: #e0e0e0;
+
+        i {
+          margin-right: 0.3rem;
+          color: #ffd700; // Or pour l'icône
+        }
+      }
+    }
+
+    .layout-footer-right {
+      .footer-credit {
+        font-size: 0.85rem;
+        color: #e0e0e0;
+
+        strong {
+          color: #ffd700; // Or pour le nom
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Version responsive
+@media (max-width: 768px) {
+  .layout-footer {
+    padding: 0.5rem 1rem;
+
+    .layout-footer-content {
+      .layout-footer-left,
+      .layout-footer-right {
+        width: 100%;
+      }
+    }
+  }
+}

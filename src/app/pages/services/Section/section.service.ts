@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import { Section, SectionResponse } from '../../models/entities/entities';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SectionService {
 
-    private apiUrl = 'http://localhost:8080/api/sections';
+    private apiUrl = `${environment.apiUrl}/sections`;
 
 
     constructor(private http: HttpClient) {}

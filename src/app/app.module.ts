@@ -134,6 +134,7 @@ import { AnnulationDialogComponent } from './pages/components/annulation-dialog/
 import { DialogService } from 'primeng/dynamicdialog';
 import { ChangePasswordComponent } from './pages/components/change-password/change-password.component';
 import { FormulaireEvaluationComponent } from './pages/components/formulaire-evaluation/formulaire-evaluation.component';
+import { FooterComponent } from './footer/footer.component';
 
 FullCalendarModule.registerPlugins([
     dayGridPlugin,
@@ -264,6 +265,7 @@ FullCalendarModule.registerPlugins([
         SafeUrlPipePipe,
         AnnulationDialogComponent,
         ChangePasswordComponent,
+        FooterComponent,
         
     ],
     providers: [

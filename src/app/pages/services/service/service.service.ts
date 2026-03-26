@@ -12,7 +12,7 @@ export type EntityArrayResponseType = HttpResponse<IService[]>;
   providedIn: 'root'
 })
 export class ServiceService {
-    private apiUrl = 'http://localhost:8080/api/services';
+    private apiUrl = `${environment.apiUrl}/services`;
 
     constructor(private http: HttpClient) { }
 

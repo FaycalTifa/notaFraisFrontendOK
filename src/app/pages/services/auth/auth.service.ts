@@ -4,12 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import {LoginRequest, LoginResponse } from '../../models/entities/entities';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:8080/api/auth';
+    private apiUrl = `${environment.apiUrl}/auth`;
     private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
     private userChangedSource = new BehaviorSubject<void>(undefined);

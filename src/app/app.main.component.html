@@ -19,23 +19,15 @@
         </div>
     </div>
 
+    <!-- ✅ Contenu principal avec padding-bottom pour éviter que le footer cache le contenu -->
     <div class="layout-main">
-<!--
-        <app-breadcrumb></app-breadcrumb>
--->
-
         <div class="layout-content">
             <router-outlet></router-outlet>
         </div>
-
-<!--
-        <app-footer></app-footer>
--->
     </div>
 
-<!--
-    <app-config></app-config>
--->
+    <!-- ✅ Footer fixe en bas -->
+    <app-footer></app-footer>
 
     <div *ngIf="mobileMenuActive" class="layout-mask modal-in"></div>
 

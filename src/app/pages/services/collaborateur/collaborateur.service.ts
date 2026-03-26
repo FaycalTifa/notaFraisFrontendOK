@@ -11,7 +11,8 @@ import { AuthService } from '../auth/auth.service';
 })
 export class CollaborateurService {
 
-    private apiUrl = 'http://localhost:8080/api/collaborateurs';
+   // private apiUrl = 'http://localhost:8080/api/collaborateurs';
+    private apiUrl = `${environment.apiUrl}/collaborateurs`;
 
     constructor(private http: HttpClient) { }
 

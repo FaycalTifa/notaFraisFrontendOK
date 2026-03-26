@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Agent} from '../../models/entities/entities';
 import {Observable} from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AgentService {
 
-    private apiUrl = 'http://localhost:8080/api/agents';
+   // private apiUrl = 'http://localhost:8080/api/agents';
+    private apiUrl = `${environment.apiUrl}/agents`;
 
     constructor(private http: HttpClient) { }
 

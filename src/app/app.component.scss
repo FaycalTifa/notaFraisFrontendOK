@@ -1,0 +1,110 @@
+// app.component.scss ou styles.scss
+
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+
+  // Topbar fixe
+  app-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 60px; // Ajustez selon la hauteur de votre topbar
+  }
+
+  // Menu wrapper
+  .menu-wrapper {
+    position: fixed;
+    top: 60px; // Hauteur du topbar
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    transition: all 0.3s;
+  }
+
+  // Layout main (contenu principal)
+  .layout-main {
+    margin-top: 60px; // Hauteur du topbar
+    margin-bottom: 50px; // Hauteur du footer
+    min-height: calc(100vh - 110px); // 100vh - topbar - footer
+    overflow-y: auto;
+    padding: 1rem;
+    flex: 1;
+  }
+
+  // ✅ FOOTER FIXE
+  app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 50px; // Ajustez selon la hauteur de votre footer
+    background: #fff; // Couleur de fond
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  // Masque mobile
+  .layout-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 998;
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Ajustements pour les menus horizontaux ou slim
+.layout-menu-horizontal {
+  .menu-wrapper {
+    top: 60px;
+    height: auto;
+    position: fixed;
+    width: 100%;
+  }
+
+  .layout-main {
+    margin-top: 110px; // topbar + menu horizontal
+  }
+}
+
+.layout-menu-slim {
+  .menu-wrapper {
+    width: 60px;
+  }
+
+  .layout-main {
+    margin-left: 60px;
+  }
+}
+
+// Responsive mobile
+@media (max-width: 768px) {
+  .layout-wrapper {
+    .menu-wrapper {
+      transform: translateX(-100%);
+      width: 250px;
+
+      &.layout-menu-mobile-active {
+        transform: translateX(0);
+      }
+    }
+
+    .layout-main {
+      margin-left: 0;
+      padding: 0.5rem;
+    }
+
+    app-footer {
+      height: auto;
+      min-height: 40px;
+      padding: 0.5rem;
+    }
+  }
+}

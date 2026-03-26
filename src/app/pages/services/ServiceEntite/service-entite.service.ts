@@ -9,7 +9,7 @@ import {ServiceEntity, ServiceResponse } from '../../models/entities/entities';
 })
 export class ServiceEntiteService {
 
-    private apiUrl = 'http://localhost:8080/api/services';
+    private apiUrl = `${environment.apiUrl}/services`;
 
     constructor(private http: HttpClient) { }
 

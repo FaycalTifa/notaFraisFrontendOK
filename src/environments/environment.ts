@@ -4,12 +4,8 @@
 // The list of which env maps to which file can be found in `angular-cli.json`.
 
 export const environment = {
-  production: true,
-    api : 'http://localhost:4200/api',
-    apiUrl : 'http://localhost:8080/api',
-    keycloakConfig: {
-    issuer: 'http://localhost:8080',
-    realm: 'uabsante',
-  //  clientId: 'ecaisse-afriklonnya',
-  },
+
+    production: true,
+    apiUrl: '/api',
+    api: '/api',
 };
